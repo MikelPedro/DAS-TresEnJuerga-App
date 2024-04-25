@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".actividades.MainActivity">
+    tools:context=".actividades.RegistroActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/contenedor_main"
+        android:id="@+id/contenedor_registro"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
