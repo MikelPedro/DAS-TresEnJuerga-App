@@ -1,8 +1,10 @@
-package com.das.tresenjuerga;
+package com.das.tresenjuerga.actividades;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.das.tresenjuerga.R;
 
 public class MainActivity extends AppCompatActivity {
 
