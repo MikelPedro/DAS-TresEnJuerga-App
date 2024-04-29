@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/registroE_Nombre"
+        android:id="@+id/inicioSesionE_Nombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -39,7 +39,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
-        android:id="@+id/registroE_Contrasena"
+        android:id="@+id/inicioSesionE_Contrasena"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="45dp"
@@ -47,7 +47,7 @@
         android:ems="10"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registroE_Nombre" />
+        app:layout_constraintTop_toBottomOf="@+id/inicioSesionE_Nombre" />
 
     <TextView
         android:id="@+id/textView5"
@@ -61,23 +61,23 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <Button
-        android:id="@+id/registroB_Confirmar"
+        android:id="@+id/inicioSesionB_Confirmar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="180dp"
         android:layout_marginTop="50dp"
-        android:text="@string/registro_aceptar"
+        android:text="@string/inicioSesion_aceptar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registroE_Contrasena" />
+        app:layout_constraintTop_toBottomOf="@+id/inicioSesionE_Contrasena" />
 
     <Button
-        android:id="@+id/registroB_Salir"
+        android:id="@+id/inicioSesionB_Salir"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="404dp"
         android:layout_marginTop="50dp"
         android:text="@string/volver"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registroE_Contrasena" />
+        app:layout_constraintTop_toBottomOf="@+id/inicioSesionE_Contrasena" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

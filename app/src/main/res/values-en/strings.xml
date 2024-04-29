@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">TresEnJuerga</string>
+    <string name="main_iniciarSesion">Log in</string>
+    <string name="main_registrar">Sign up</string>
+    <string name="main_salir">Exit</string>
+    <string name="main_titulo">Main menu</string>
+    <string name="registro_titulo">Sign up page</string>
+    <string name="registro_aceptar">Sign up</string>
+    <string name="inicioSesion_titulo">Sign in page</string>
+    <string name="inicioSesion_aceptar">Entrar</string>
+    <string name="usuarioLoggeado_titulo">Tic Tac Toe</string>
+    <string name="usuarioLoggeado_jugar">Play</string>
+    <string name="usuarioLoggeado_perfil">Profile</string>
+    <string name="desconectar">Log off</string>
+    <string name="entrarAPartida">See Match</string>
+    <string name="tuTurno">Your turn</string>
+    <string name="turnoDelOtro">Opponent\'s turn</string>
+    <string name="versus">"Vs: "</string>
+    <string name="perfil_titulo">Profile</string>
+    <string name="foto">Photo</string>
+    <string name="cambiarFoto">Change photo</string>
+    <string name="añadirAmigo">Add Friend</string>
+    <string name="verDetalles">See info</string>
+    <string name="retar">Challenge</string>
+    <string name="eliminar">Remove</string>
+    <string name="nombre">User</string>
+    <string name="contraseña">Password</string>
+    <string name="volver">Return</string>
+    <string name="gestionarSolicitudes">"Friend requests "</string>
+    <string name="aceptar">Accept</string>
+    <string name="rechazar">Reject</string>
+</resources>
