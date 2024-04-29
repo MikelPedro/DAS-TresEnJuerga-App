@@ -1,5 +1,6 @@
 package com.das.tresenjuerga.actividades;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +14,12 @@ import com.das.tresenjuerga.R;
 
 public class ActividadPadre extends AppCompatActivity {
 
+
+    // TODO: Están básciamente todas las actividades necesarias creadas.
+    //       La única que queda por crear es la que enseña la propia partida del tic tac toe.
+    //       Aunque puede que venga bien decorarlas un poco más
+
+
     // Toda actividad que pueda ser ejecutada hereda de esta clase
 
 
@@ -20,11 +27,11 @@ public class ActividadPadre extends AppCompatActivity {
 
 
 
-
     public static ActividadPadre getActividadActual() {return ActividadPadre.actividadEnEjecucion;} // Getter de la actividad
 
 
     private static int fragmento;
+    private int idContenedor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,33 @@ public class ActividadPadre extends AppCompatActivity {
 
     }
 
+
+    // Source de estos dos métodos: https://stackoverflow.com/questions/5123407/losing-data-when-rotate-screen
+
+    // Esto es para que se guarde el bundle entre rotaciones
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+
+
+        Bundle bundle = super.getIntent().getExtras();
+
+        for (String key : bundle.keySet()) {
+            savedInstanceState.putString(key, bundle.getString(key));
+        }
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        super.onRestoreInstanceState(savedInstanceState);
+
+        for (String key: savedInstanceState.keySet()) {
+            super.getIntent().putExtra(key, savedInstanceState.getString(key));
+        }
+
+    }
 
 
     protected void setLayout() {
@@ -126,7 +160,7 @@ public class ActividadPadre extends AppCompatActivity {
 
         // Obtener los ids en int de los recursos respectivos para poder usarlos
 
-        int idContenedor = super.getResources().getIdentifier(nombreContenedor, "id", super.getPackageName());
+        this.idContenedor = super.getResources().getIdentifier(nombreContenedor, "id", super.getPackageName());
         int idLayout = super.getResources().getIdentifier(nombreLayout, "layout", super.getPackageName());
 
 
@@ -136,11 +170,49 @@ public class ActividadPadre extends AppCompatActivity {
                               // La constructora no se puede tocar y los setters no funcionan
                               // para onCreateView
         super.getSupportFragmentManager().beginTransaction()
-                .replace(idContenedor, new MiFragmento())
+                .replace(this.idContenedor, new MiFragmento())
                 .commit();
 
 
     }
+
+    protected boolean enLandscape() {
+        return super.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public void añadirAIntent(String key, String value) {
+        super.getIntent().putExtra(key, value);
+    }
+
+    protected void quitarDeIntent(String key) {
+        super.getIntent().removeExtra(key);
+    }
+
+    public String obtenerDeIntent(String key) {return super.getIntent().getExtras().getString(key);}
+
+    protected View obtenerFragmentoOrientacion() {
+        return super.getSupportFragmentManager().findFragmentById(this.idContenedor).getView();
+    }
+
+    public void redirigirAActividad(Class ActividadTarget) {
+
+        // Cierra la actividad actual y abre ActividadTarget.
+        // Todos los datos del intent de la actividad actual se pasan a la siguiente actividad
+
+        Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
+
+        Bundle bundle = super.getIntent().getExtras();
+
+        for (String key : bundle.keySet()) {
+            intent.putExtra(key, bundle.getString(key));
+        }
+
+
+        ActividadPadre.actividadEnEjecucion.finish();
+        ActividadPadre.actividadEnEjecucion.startActivity(intent);
+    }
+
+
 
     public static class MiFragmento extends Fragment {
 

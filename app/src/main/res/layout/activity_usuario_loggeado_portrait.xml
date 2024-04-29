@@ -6,43 +6,53 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:text="@string/main_titulo"
+        android:text="@string/usuarioLoggeado_titulo"
         android:textSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/mainB_InicioSesion"
+        android:id="@+id/usuarioLoggeadoB_Jugar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:text="@string/main_iniciarSesion"
+        android:layout_marginTop="80dp"
+        android:text="@string/usuarioLoggeado_jugar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <Button
-        android:id="@+id/mainB_Registrar"
+        android:id="@+id/usuarioLoggeadoB_Perfil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:text="@string/main_registrar"
+        android:text="@string/usuarioLoggeado_perfil"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainB_InicioSesion" />
+        app:layout_constraintTop_toBottomOf="@+id/usuarioLoggeadoB_Jugar" />
 
     <Button
-        android:id="@+id/mainB_Salir"
+        android:id="@+id/usuarioLoggeadoB_Amigos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:text="@string/main_salir"
+        android:text="@string/"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainB_Registrar" />
+        app:layout_constraintTop_toBottomOf="@+id/usuarioLoggeadoB_Perfil" />
+
+    <Button
+        android:id="@+id/usuarioLoggeadoB_Salir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/desconectar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usuarioLoggeadoB_Amigos" />
 </androidx.constraintlayout.widget.ConstraintLayout>
