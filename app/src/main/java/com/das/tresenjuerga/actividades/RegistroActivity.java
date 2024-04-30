@@ -36,9 +36,16 @@ public class RegistroActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
-                    // TODO: Handlear dada de alta.
                     String user = ((EditText)RegistroActivity.super.findViewById(R.id.registroE_Nombre)).getText().toString();
                     String pass = ((EditText)RegistroActivity.super.findViewById(R.id.registroE_Nombre)).getText().toString();
+
+                    if (user.length() < 51 && pass.length() < 51 && user.length() > 0 && pass.length() > 0) {
+                        // TODO: Handlear dada de alta.
+
+                    } else {
+                        // TODO: Mostrar msg de campos entre 1-50 chars
+                    }
+
 
                     break;
                 case 1:

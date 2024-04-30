@@ -44,4 +44,14 @@
         android:text="[Placeholder]"
         app:layout_constraintStart_toEndOf="@+id/TextView20"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/instanciaPartidaB_Rechazar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/rechazar"
+        app:layout_constraintEnd_toStartOf="@+id/instanciaPartidaB_Entrar"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

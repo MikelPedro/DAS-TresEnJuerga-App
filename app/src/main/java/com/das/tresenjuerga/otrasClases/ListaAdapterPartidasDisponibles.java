@@ -17,7 +17,10 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
 
     @Override
     public View getView(int pos, View convertView, ViewGroup parent) {
-        this.tuTurno = super.getBoolean(pos, 1);
+
+        int idEstado = super.getInteger(pos, 1);
+        boolean solicitud = idEstado == 0;
+        this.tuTurno = idEstado == 2;
         this.oponente = super.getString(pos, 0);
 
 
@@ -27,20 +30,37 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
         // Llenar los campos de contra quien juega y a quien le toca
         ((TextView)view.findViewById(R.id.instanciaPartidaT_Oponente)).setText(this.oponente);
 
-        String textoTurno;
-        if (this.tuTurno) {
-            textoTurno = ActividadPadre.getActividadActual().getString(R.string.tuTurno);
+        String textoTurno = "";
 
-        } else {
-            textoTurno = ActividadPadre.getActividadActual().getString(R.string.turnoDelOtro);
+
+        switch (idEstado) {
+            case 0:
+                textoTurno = ActividadPadre.getActividadActual().getString(R.string.peticion);
+                break;
+            case 1:
+                textoTurno = ActividadPadre.getActividadActual().getString(R.string.turnoDelOtro);
+                break;
+            case 2:
+                textoTurno = ActividadPadre.getActividadActual().getString(R.string.tuTurno);
 
         }
 
+
         ((TextView)view.findViewById(R.id.instanciaPartidaT_Turno)).setText(textoTurno);
 
-
         // Dar los listeners correspondientes a los botones
-        view.findViewById(R.id.instanciaPartidaB_Entrar).setOnClickListener(new BotonListener(pos));
+
+
+        if (solicitud) {
+            view.findViewById(R.id.instanciaPartidaB_Rechazar).setOnClickListener(new BotonListener(pos,0));
+            view.findViewById(R.id.instanciaPartidaB_Entrar).setOnClickListener(new BotonListener(pos, 1));
+
+        } else {
+            view.findViewById(R.id.instanciaPartidaB_Rechazar).setVisibility(View.GONE);
+            view.findViewById(R.id.instanciaPartidaB_Entrar).setOnClickListener(new BotonListener(pos, 2));
+
+        }
+
 
 
 
@@ -54,17 +74,41 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
 
 
         private int pos;
-        public BotonListener(int pos) {
+        private int id;
+        public BotonListener(int pos, int id) {
             this.pos = pos;
+            this.id = id;
         }
 
         @Override
         public void onClick(View v) {
-            // TODO: Pasar a la UI del tic tac toe que muestra la partida.
 
-            // tuTurno tiene el valor de si es el turno del player o no, no se requiere consultar esa
-            // info a bd de nuevo. oponente contiene el nombre del oponente. El nombre del user actual
-            // está en "user" en el intent de la actividad.
+            String user = ActividadPadre.getActividadActual().obtenerDeIntent("user");
+
+
+            switch (this.id) {
+                case 0:
+
+                    // TODO: Rechazar solicitud de match
+
+                    break;
+
+                case 1:
+
+                    // TODO: Aceptar solicitud de match
+
+                    break;
+
+                case 2:
+                    // TODO: Pasar a la UI del tic tac toe que muestra la partida.
+
+                    // tuTurno tiene el valor de si es el turno del player o no, no se requiere consultar esa
+                    // info a bd de nuevo. oponente contiene el nombre del oponente. El nombre del user actual
+                    // está en "user" en el intent de la actividad.
+
+            }
+
+
 
         }
     }

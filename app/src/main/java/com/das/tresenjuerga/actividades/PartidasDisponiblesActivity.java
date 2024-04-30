@@ -10,6 +10,11 @@ import com.das.tresenjuerga.otrasClases.ListaAdapterPartidasDisponibles;
 
 public class PartidasDisponiblesActivity extends ActividadPadre {
 
+    // NOTA: EN ESTA INTERFAZ EN LA QUE SE MUESTRAN LAS PARTIDAS DEL JUGADOR EN CURSO TAMBIÉN
+    // SE MUESTRAN LAS SOLICITUDES DE JUGAR UNA PARTIDA. PERO SE MUESTRAN AL FONDO DE LA LISTA
+    // CON UN ESTADO DISTINTO. SI QUERÉIS SE PUEDE MOVER A OTRA INTERFAZ PERO POR AHORA
+    // ESTÁ PROGRAMADO ASÍ PARA TENER ALGO
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +39,7 @@ public class PartidasDisponiblesActivity extends ActividadPadre {
         }
 
 
-        Object[][] listaValores = {{"A", true}}; // Valor placeholder, TODO: pedir a BD esta data
+        Object[][] listaValores = {{"A", 1, "B", 0}}; // Valor placeholder, TODO: pedir a BD esta data
 
         // Montar el listview
         ListaAdapterPartidasDisponibles adapter = new ListaAdapterPartidasDisponibles(listaValores, cardview);
