@@ -44,12 +44,12 @@ public abstract class ListaAdapterBase extends BaseAdapter {
 
     }
 
-    protected boolean getBoolean(int idCardView, int idInfo) {
+    protected int getInteger(int idCardView, int idInfo) {
 
         if (!(this.listaValores[0] instanceof Object[])) {
-            return (boolean) this.listaValores[idCardView];
+            return (int) this.listaValores[idCardView];
         } else {
-            return (boolean) ((Object[]) this.listaValores[idCardView])[idInfo];
+            return (int) ((Object[]) this.listaValores[idCardView])[idInfo];
         }
 
     }

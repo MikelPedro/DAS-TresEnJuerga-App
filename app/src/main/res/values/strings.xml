@@ -29,5 +29,6 @@
     <string name="gestionarSolicitudes">Solicitudes de amistad</string>
     <string name="aceptar">Aceptar</string>
     <string name="rechazar">Rechazar</string>
+    <string name="peticion">peticion</string>
 
 </resources>
