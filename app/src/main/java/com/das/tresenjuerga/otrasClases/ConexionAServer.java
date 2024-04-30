@@ -295,13 +295,15 @@ public class ConexionAServer extends Worker {
                 // Tras recoger el body, pasarlo al método correspondiente para que parsee el json y
                 // recoja sus campos relevantes
 
-
                 switch (recurso) {
                     case "usuarios":
+                        respuesta = this.procesarPeticionUsuarios(idPeticion, result);
                         break;
                     case "amistades":
+                        respuesta = this.procesarPeticionAmistades(idPeticion, result);
                         break;
                     case "partidas":
+                        respuesta = this.procesarPeticionPartidas(idPeticion, result);
                         break;
 
                     default:
@@ -322,5 +324,5 @@ public class ConexionAServer extends Worker {
         return Result.success(respuesta);
     }
 }
-}
+
 
