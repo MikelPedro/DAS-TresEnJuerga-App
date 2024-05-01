@@ -5,8 +5,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
+import com.das.tresenjuerga.actividades.ActividadPadre;
 
 public class ListaAdapterSolicitudes extends ListaAdapterBase {
+
+    private String nombreSolicitante;
 
     public ListaAdapterSolicitudes(Object[] listaValores, int cardViewTarget) {
         super(listaValores, cardViewTarget);
@@ -18,8 +21,8 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
         // Generar el layout según la plantilla dada por la clase que le llama
         View view = super.crearLayout();
 
-
-        ((TextView)view.findViewById(R.id.instanciaSolicitudT_Nombre)).setText(super.getString(pos, 0));
+        this.nombreSolicitante = super.getString(pos, 0);
+        ((TextView)view.findViewById(R.id.instanciaSolicitudT_Nombre)).setText(this.nombreSolicitante);
 
 
         // Dar los listeners correspondientes a los botones
@@ -47,15 +50,20 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
         @Override
         public void onClick(View v) {
 
-            // TODO: Solicitudes de amistad
+            String[] datos = {ActividadPadre.getActividadActual().obtenerDeIntent("user"), ListaAdapterSolicitudes.this.nombreSolicitante};
+
             switch (this.id) {
                 case 0:
                     // Aceptar
+                    ActividadPadre.peticionAServidor("amistades", 3, datos, null);
 
                     break;
-                case 1:
 
+                case 1:
                     // Rechazar
+                    ActividadPadre.peticionAServidor("amistades", 4, datos, null);
+
+                    break;
 
 
             }

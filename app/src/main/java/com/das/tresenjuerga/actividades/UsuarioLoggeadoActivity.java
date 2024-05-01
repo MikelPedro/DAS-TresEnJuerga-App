@@ -17,7 +17,7 @@ public class UsuarioLoggeadoActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
-        View fragmento = super.obtenerFragmentoOrientacion();
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         fragmento.findViewById(R.id.usuarioLoggeadoB_Jugar).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.usuarioLoggeadoB_Perfil).setOnClickListener(new BotonListener(1));
         fragmento.findViewById(R.id.usuarioLoggeadoB_Amigos).setOnClickListener(new BotonListener(2));
@@ -38,17 +38,20 @@ public class UsuarioLoggeadoActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
+                    ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
                     break;
                 case 1:
+                    ActividadPadre.añadirAIntent("userAVisualizar", UsuarioLoggeadoActivity.super.obtenerDeIntent("user"));
+                    ActividadPadre.redirigirAActividad(PerfilActivity.class);
                     break;
                 case 2:
-                    UsuarioLoggeadoActivity.super.añadirAIntent("userAVisualizar", UsuarioLoggeadoActivity.super.obtenerDeIntent("user"));
-                    UsuarioLoggeadoActivity.super.redirigirAActividad(PerfilActivity.class);
+                    ActividadPadre.redirigirAActividad(AmigosActivity.class);
+
                     break;
                 case 3:
                     // Log Off, volver a Main Activity
-                    UsuarioLoggeadoActivity.super.quitarDeIntent("user");
-                    UsuarioLoggeadoActivity.super.redirigirAActividad(MainActivity.class);
+                    ActividadPadre.quitarDeIntent("user");
+                    ActividadPadre.redirigirAActividad(MainActivity.class);
 
 
             }

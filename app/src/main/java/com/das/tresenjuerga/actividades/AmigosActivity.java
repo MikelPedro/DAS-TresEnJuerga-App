@@ -19,7 +19,7 @@ public class AmigosActivity extends ActividadPadre {
     protected void onStart() {
         super.onStart();
 
-        View fragmento = super.obtenerFragmentoOrientacion();
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         ListView listView = super.findViewById(R.id.amigosL_Amigos);
         fragmento.findViewById(R.id.amigosB_Solicitudes).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.amigosB_AñadirAmigo).setOnClickListener(new BotonListener(1));
@@ -57,15 +57,15 @@ public class AmigosActivity extends ActividadPadre {
 
             switch (this.id) {
                 case 0:
-                    AmigosActivity.super.redirigirAActividad(AmigoSolicitudesActivity.class);
+                    ActividadPadre.redirigirAActividad(AmigoSolicitudesActivity.class);
                     break;
 
                 case 1:
-                    AmigosActivity.super.redirigirAActividad(AnadirAmigoActivity.class);
+                    ActividadPadre.redirigirAActividad(AnadirAmigoActivity.class);
                     break;
 
                 case 2:
-                    AmigosActivity.super.redirigirAActividad(UsuarioLoggeadoActivity.class);
+                    ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
 
             }
 

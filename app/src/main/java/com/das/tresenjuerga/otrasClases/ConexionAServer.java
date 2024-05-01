@@ -35,8 +35,6 @@ import java.net.URLConnection;
 
 /*
 
-       TODO: Añadir la funcionalidad para que se pueda llamar a Firebase desde esta clase, o hacerlo en otra clase nueva
-
 
 
         Estructura de la BD (solo requiere estos comandos y no hay instancias añadidas a ella por defecto en
@@ -81,7 +79,7 @@ import java.net.URLConnection;
         amistades.php:
 
         - usuariosFactiblesASolicitud(nombre) -> String[] [nombres de users que no son amigos tuyos ni están en solicitudes pendientes]
-        - crearSolicitud(solicitante, solicitado) -> void [se asume que el par no existe, consultar el método anterior]
+        - crearSolicitud(solicitante, solicitado) -> int [respuesta con si se ha añadido o el error ocurrido]
         - verSolicitudes(nombre) -> String[] [nombres de los users que han mandado friend request]
         - aceptarSolicitud(solicitado, solicitante) -> void
         - borrarAmistad(nombre, elAmigoAQuitar) -> void [sirve para rechazar solicitudes o borrar gente de la friendlist]
@@ -95,6 +93,11 @@ import java.net.URLConnection;
         - obtenerGamestate(nombre, oponente) -> String(9 chars), String(1 char). [Primer string devuelve estado del tablero, segundo string que figura usas. Ej: "---AB--A-"  y "B"]
         - realizarJugada(nombre, contrario, tablero) -> void [Pone al match ese el tablero dado, la idea es ir actualizando char a char por jugada]
         - quitarPartida(nombre, contrario) -> void [Sirve para rechazar la partida o eliminarla tras acabarla]
+
+
+
+         Las notificaciones a firebase se llaman internamente desde el servidor cuando algo interesante ocurre.
+
  */
 
 
@@ -170,7 +173,7 @@ public class ConexionAServer extends Worker {
 
 
 
-        if (id == 0 || id == 2 || id == 5) {
+        if (id < 3 ||  id == 5) {
             json = (JSONObject) parser.parse(result);
         }
 
@@ -181,7 +184,8 @@ public class ConexionAServer extends Worker {
             case 2:
             case 5:
                 return new Data.Builder().putString("nombres", (String)json.get("nombres")).build();
-
+            case 1:
+                return new Data.Builder().putInt("respuesta", (int)json.get("respuesta")).build();
 
             default:
                 return new Data.Builder().build();
@@ -276,7 +280,7 @@ public class ConexionAServer extends Worker {
 
             if (urlConnection.getResponseCode() == 200) {
 
-
+                // Si se hace una peticion a firebase, no nos interesa recoger el body. Salir inmediatamente del método
 
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));

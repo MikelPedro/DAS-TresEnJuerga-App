@@ -3,10 +3,14 @@ package com.das.tresenjuerga.actividades;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 
 import com.das.tresenjuerga.R;
+import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 public class AnadirAmigoActivity extends ActividadPadre {
+
+    // TODO: Obtener la lista de gente que pueden ser amigos.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +21,7 @@ public class AnadirAmigoActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
-        View fragmento = super.obtenerFragmentoOrientacion();
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         fragmento.findViewById(R.id.añadirAmigoB_Añadir).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.añadirAmigoB_Volver).setOnClickListener(new BotonListener(1));
 
@@ -36,15 +40,34 @@ public class AnadirAmigoActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
-                    // TODO: Handlear solicitud
+                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), ((EditText)AnadirAmigoActivity.super.findViewById(R.id.añadirAmigoE_User)).getText().toString()};
+                    ActividadPadre.peticionAServidor("amistades", 1, datos, new ObservadorDeAñadirAmigo());
 
                     break;
                 case 1:
                     // Volver a amigos
-                    AnadirAmigoActivity.super.redirigirAActividad(AmigosActivity.class);
+                    ActividadPadre.redirigirAActividad(AmigosActivity.class);
 
 
             }
         }
+
+        private class ObservadorDeAñadirAmigo extends ObservadorDePeticion {
+            @Override
+            protected void ejecutarTrasPeticion() {
+
+                int respuesta = super.getInt("respuesta");
+
+                if (respuesta == 0) {
+                    ActividadPadre.mostrarToast(R.string.solicitudAñadida);
+
+                } else {
+                    ActividadPadre.mostrarToast(ActividadPadre.getActividadActual().getResources().getIdentifier("errorAmigo"+respuesta, "string", ActividadPadre.getActividadActual().getPackageName()));
+
+                }
+            }
+        }
     }
+
+
 }

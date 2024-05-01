@@ -5,6 +5,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.das.tresenjuerga.R;
+import com.das.tresenjuerga.otrasClases.ListaAdapterMisAmigos;
+import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 public class PerfilActivity extends ActividadPadre {
 
@@ -19,11 +21,11 @@ public class PerfilActivity extends ActividadPadre {
     protected void onStart() {
         super.onStart();
 
-        this.miPerfil = super.obtenerDeIntent("userAVisualizar").contentEquals(super.obtenerDeIntent("user"));
+        this.miPerfil = ActividadPadre.obtenerDeIntent("userAVisualizar").contentEquals(ActividadPadre.obtenerDeIntent("user"));
 
         // TODO: Descargar foto here
 
-        View fragmento = super.obtenerFragmentoOrientacion();
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         fragmento.findViewById(R.id.perfilB_Volver).setOnClickListener(new BotonListener(2));
 
 
@@ -60,23 +62,37 @@ public class PerfilActivity extends ActividadPadre {
                     // TODO: Cambiar foto here
                     break;
                 case 1:
-                    // TODO: Pushear a BD la solicitud de jugar la partida si es posible
-
+                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("userAVisualizar")};
+                    ActividadPadre.peticionAServidor("partidas", 0, datos, new ObservadorDeRetarPartida());
 
                     break;
                 case 2:
-                    PerfilActivity.super.quitarDeIntent("userAVisualizar");
+                    ActividadPadre.quitarDeIntent("userAVisualizar");
 
                     // Dependiendo de si estoy viendo mi perfil o no, deducir de donde vinimos para volver allí
                     if (PerfilActivity.this.miPerfil) {
-                        PerfilActivity.super.redirigirAActividad(UsuarioLoggeadoActivity.class);
+                        ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
 
                     } else {
-                        PerfilActivity.super.redirigirAActividad(AmigosActivity.class);
+                        ActividadPadre.redirigirAActividad(AmigosActivity.class);
 
                     }
 
 
+            }
+        }
+
+        private class ObservadorDeRetarPartida extends ObservadorDePeticion {
+            @Override
+            protected void ejecutarTrasPeticion() {
+
+                if (super.getBoolean("respuesta")) {
+                    ActividadPadre.mostrarToast(R.string.retarCorrecto);
+
+                } else {
+                    ActividadPadre.mostrarToast(R.string.retarError);
+
+                }
             }
         }
     }
