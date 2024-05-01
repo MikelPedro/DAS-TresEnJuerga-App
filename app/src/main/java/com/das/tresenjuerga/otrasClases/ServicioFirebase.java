@@ -29,6 +29,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
+
         if (remoteMessage.getNotification() != null) {
 
             // Estamos en la app al recibir el msg de Firebase, crear la notificación
@@ -93,8 +94,11 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
                     elManager.createNotificationChannel(elCanal);
                 }
+
+
+
                 String titulo = actividadActual.getString(actividadActual.getResources().getIdentifier("notifTitulo"+id, "string", actividadActual.getPackageName()));
-                String body = actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
+                String body =remoteMessage.getData().get("recibidor") + ": " +remoteMessage.getData().get("enviador") + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
 
                 elBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), com.google.android.material.R.drawable.abc_btn_check_material))
                         .setSmallIcon(android.R.drawable.checkbox_on_background)

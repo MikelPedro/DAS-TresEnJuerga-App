@@ -55,8 +55,7 @@ public class PartidasDisponiblesActivity extends ActividadPadre {
                 cardview = R.layout.cardview_solicitud_amistad_portrait;
             }
 
-            Object[] listaValores = {super.getStringArray("oponentes"), super.getIntArray("estados")};
-
+            Object[] listaValores = this.juntarArray(super.getStringArray("oponentes"), super.getIntArray("estados"));
             // Montar el listview
             ListaAdapterSolicitudes adapter = new ListaAdapterSolicitudes(listaValores, cardview);
             adapter.notifyDataSetChanged();
@@ -64,7 +63,23 @@ public class PartidasDisponiblesActivity extends ActividadPadre {
 
 
         }
+        private Object[][] juntarArray(String[] array1, int[] array2) {
+            // Proceso:  [[a, b, c] , [d,e,f]]  -> [[a,d],[b,e],[c,f]]
+
+            Object[][] resultado = new Object[array1.length][2];
+
+            for (int i = 0; i != array1.length; i++) {
+                resultado[i][0] = array1[i];
+                resultado[i][1] = array2[i];
+            }
+
+            return resultado;
+        }
     }
+
+
+
+
     private class BotonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {

@@ -1,12 +1,10 @@
 package com.das.tresenjuerga.actividades;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.lifecycle.Observer;
-import androidx.work.WorkInfo;
+
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
@@ -71,6 +69,7 @@ public class RegistroActivity extends ActividadPadre {
             protected void ejecutarTrasPeticion() {
 
                 if (super.getBoolean("respuesta")) {
+                    System.out.println("REDIRECT");
 
                     ActividadPadre.redirigirAActividad(MainActivity.class);
 

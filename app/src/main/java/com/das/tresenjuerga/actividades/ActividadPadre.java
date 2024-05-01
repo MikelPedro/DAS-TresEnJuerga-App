@@ -309,14 +309,20 @@ public class ActividadPadre extends AppCompatActivity {
         // Solo se permite el cambio de actividad si sePermiteCambiar es true o se redirige a la
         // misma actividad
 
+        System.out.println("EN REDIRECT");
+
         if (ActividadPadre.sePermiteCambio() || ActividadTarget.isInstance(actividadEnEjecucion)){
             Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
+            System.out.println("REDIRIGIENDO");
 
             Bundle bundle = actividadEnEjecucion.getIntent().getExtras();
 
-            for (String key : bundle.keySet()) {
-                intent.putExtra(key, bundle.getString(key));
+            if (bundle != null) {
+                for (String key : bundle.keySet()) {
+                    intent.putExtra(key, bundle.getString(key));
+                }
             }
+
 
 
             ActividadPadre.actividadEnEjecucion.finish();

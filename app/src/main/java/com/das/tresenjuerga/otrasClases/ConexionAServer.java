@@ -43,7 +43,7 @@ import java.net.URLConnection;
 
         CREATE DATABASE tresEnRaya;
 
-        CREATE TABLE USUARIOS(Nombre VARCHAR(256), Contraseña VARCHAR(64), SaltContraseña VARCHAR(10), Foto BLOB, PRIMARY KEY(Nombre));
+        CREATE TABLE USUARIOS(Nombre VARCHAR(256), Contraseña VARCHAR(64), SaltContraseña VARCHAR(40), Foto BLOB, PRIMARY KEY(Nombre));
         CREATE TABLE DISPOSITIVOS(Token VARCHAR(200), Cuenta VARCHAR(256), PRIMARY KEY(Token), FOREIGN KEY(Cuenta) REFERENCES USUARIOS(Nombre));
         CREATE TABLE AMISTADES(UsuarioA VARCHAR(256), UsuarioB VARCHAR(256), Aceptado TINYINT, PRIMARY KEY(UsuarioA, UsuarioB), FOREIGN KEY(UsuarioA) REFERENCES USUARIOS(Nombre), FOREIGN KEY(UsuarioB) REFERENCES USUARIOS(Nombre));
         CREATE TABLE PARTIDAS(UsuarioA VARCHAR(256), UsuarioB VARCHAR(256), Aceptado TINYINT, TurnoDeA TINYINT, Tablero VARCHAR(9), PRIMARY KEY(UsuarioA, UsuarioB), FOREIGN KEY(UsuarioA) REFERENCES USUARIOS(Nombre), FOREIGN KEY(UsuarioB) REFERENCES USUARIOS(Nombre));
@@ -103,7 +103,7 @@ import java.net.URLConnection;
 
 public class ConexionAServer extends Worker {
 
-    private static final String IP = "34.163.130.62";
+    private static final String IP = "35.197.255.16";
     private static final String PUERTO = "80";
 
     public ConexionAServer(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -147,7 +147,7 @@ public class ConexionAServer extends Worker {
 
             case 0:
             case 1:
-                return new Data.Builder().putBoolean("bool", (boolean) json.get("respuesta")).build();
+                return new Data.Builder().putBoolean("respuesta", (boolean) json.get("respuesta")).build();
 
             case 4:
                 return new Data.Builder().putString("foto", (String)json.get("foto")).build();
@@ -183,9 +183,16 @@ public class ConexionAServer extends Worker {
             case 0:
             case 2:
             case 5:
-                return new Data.Builder().putString("nombres", (String)json.get("nombres")).build();
+                JSONArray jsonArray = (JSONArray) json.get("nombres");
+                String[] nombres = new String[jsonArray.size()];
+
+                for(int i = 0; i < jsonArray.size(); i++) {
+                    nombres[i] = (String) jsonArray.get(i);
+
+                }
+                return new Data.Builder().putStringArray("nombres", nombres).build();
             case 1:
-                return new Data.Builder().putInt("respuesta", (int)json.get("respuesta")).build();
+                return new Data.Builder().putLong("respuesta", (long)json.get("respuesta")).build();
 
             default:
                 return new Data.Builder().build();
@@ -210,7 +217,7 @@ public class ConexionAServer extends Worker {
         switch (id) {
 
             case 0:
-                return new Data.Builder().putBoolean("bool", (boolean) json.get("respuesta")).build();
+                return new Data.Builder().putBoolean("respuesta", (boolean) json.get("respuesta")).build();
 
 
             case 2:
