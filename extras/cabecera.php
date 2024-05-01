@@ -60,4 +60,111 @@ function hashValor($cont, $salt) {
 
 }
 
+function notificarAFirebase($id, $enviador, $target) {
+    
+    /*
+        Eres X, otro Y
+    
+        Notif friend req   (X: Y te ha mandado) 
+        Notif accept friened req (X: Y te ha aceptado)
+        Notif req match 
+        Notif accept match
+        Notif play
+        Notif end match (draw)
+        Notf end match (loss)
+    
+    */
+    
+    $url = 'http://'.$DB_SERVER.':80/usuarios.php?id=6&&dato1='.strval($target);
+    
+    // Realizar la solicitud GET
+    $tokens = file_get_contents($url);
+    
+    $tokens = json_decode($tokens, true);
+    
+    
+    switch ($id) {
+        case "0":
+            $titulo = "Nueva solicitud de amistad";
+            $msgNotif = $target.": ".$enviador." te ha mandado una solicitud de amistad";
+            break;
+        case "1":
+            $titulo = "Tienes un nuevo amigo";
+            $msgNotif = $target.": ".$enviador." ha aceptado tu solicitud de amistad";
+            break;
+        case "2":
+            $titulo = "Solicitud de partida";
+            $msgNotif = $target.": ".$enviador." te ha retado a una partida";
+            break;
+        case "3":
+            $titulo = "Solicitud de partida aceptada";
+            $msgNotif = $target.": ".$enviador." ha aceptado la solicitud de partida";
+            break;
+        case "4":
+            $titulo = "Oponente ha jugado";
+            $msgNotif = $target.": ".$enviador." ha realizado una jugada en la partida";
+            break;
+        case "5":
+            $titulo = "Empate";
+            $msgNotif = $target.": ".$enviador." ha jugado y terminado la partida en empate";
+            break;
+        case "6":
+            $titulo = "Derrota";
+            $msgNotif = $target.":".$enviador." ha ganado la partida contra ti..." ;
+            break;    
+    }
+    
+    
+    
+    
+    
+    if (!empty($tokens['tokens'])) {
+    
+        $cabecera= array(
+            'Authorization: key=AAAA4oLSdW0:APA91bHMRr6ABO7ECxWm85-rCeO5uqYdbzxmPRAze97ilEkarz1VQ7QiihP2GDcSHMo5tFF9D2Dq97ktFVJ-uixy08XIZInfZLt-2qi1UtEULW3AamjEwYX5mfeVZPFrx-NUD3J350Ra',
+            'Content-Type: application/json'
+            );
+        $msg= array(
+            'registration_ids'=> $tokens['tokens'],
+        
+                'notification' => array(
+                    'body' => $msgNotif,
+                    'title' => $titulo,
+                    'icon' => 'checkbox_on_background'
+                ),
+                'data' => array(
+                    'id' => $id,
+                    'enviador' => $enviador
+                )
+            
+        );
+        $msgJSON= json_encode ( $msg);
+        
+        $ch = curl_init(); #inicializar el handler de curl
+        #indicar el destino de la petición, el servicio FCM de google
+        curl_setopt( $ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        #indicar que la conexión es de tipo POST
+        curl_setopt( $ch, CURLOPT_POST, true );
+        #agregar las cabeceras
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $cabecera);
+        #Indicar que se desea recibir la respuesta a la conexión en forma de string
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        #agregar los datos de la petición en formato JSON
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $msgJSON );
+        #ejecutar la llamada
+        $resultado= curl_exec( $ch );
+        #cerrar el handler de curl
+        curl_close( $ch );
+        
+        if (curl_errno($ch)) {
+            print curl_error($ch);
+        }
+        
+        
+    }
+    
+}
+
+
+
 ?>
