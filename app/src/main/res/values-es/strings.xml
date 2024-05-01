@@ -7,7 +7,7 @@
     <string name="registro_titulo">Menú registro</string>
     <string name="registro_aceptar">Registrar</string>
     <string name="inicioSesion_titulo">Menú inicio sesión</string>
-    <string name="inicioSesion_aceptar">Sign in</string>
+    <string name="inicioSesion_aceptar">Entrar</string>
     <string name="usuarioLoggeado_titulo">3 En Raya</string>
     <string name="usuarioLoggeado_jugar">Jugar</string>
     <string name="usuarioLoggeado_perfil">Perfil</string>
@@ -59,4 +59,5 @@
     <string name="errorAmigo5">Ya está en tu lista de amigos</string>
     <string name="retarCorrecto">Se ha enviado la solicitud de partida</string>
     <string name="retarError">Ya hay una partida / solicitud en marcha entre vosotros dos</string>
+    <string name="usuarioLoggeado_amigos">Amigos</string>
 </resources>

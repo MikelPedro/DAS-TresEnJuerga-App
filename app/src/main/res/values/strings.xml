@@ -59,5 +59,6 @@
     <string name="errorAmigo5">error5</string>
     <string name="retarCorrecto">correcto</string>
     <string name="retarError">Error</string>
+    <string name="usuarioLoggeado_amigos">Amigos</string>
 
 </resources>

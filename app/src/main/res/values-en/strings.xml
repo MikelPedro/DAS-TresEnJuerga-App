@@ -7,7 +7,7 @@
     <string name="registro_titulo">Sign up page</string>
     <string name="registro_aceptar">Sign up</string>
     <string name="inicioSesion_titulo">Sign in page</string>
-    <string name="inicioSesion_aceptar">Entrar</string>
+    <string name="inicioSesion_aceptar">Log in</string>
     <string name="usuarioLoggeado_titulo">Tic Tac Toe</string>
     <string name="usuarioLoggeado_jugar">Play</string>
     <string name="usuarioLoggeado_perfil">Profile</string>
@@ -59,4 +59,5 @@
     <string name="errorAmigo5">You\'re already friends with them</string>
     <string name="retarCorrecto">The match request has been sent</string>
     <string name="retarError">You already have a match / request on going between you two</string>
+    <string name="usuarioLoggeado_amigos">Friends</string>
 </resources>

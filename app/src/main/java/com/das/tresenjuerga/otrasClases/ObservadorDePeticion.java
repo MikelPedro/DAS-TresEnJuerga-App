@@ -22,8 +22,12 @@ public abstract class ObservadorDePeticion implements Observer<WorkInfo> {
     public void onChanged(WorkInfo workInfo) {
         if (workInfo != null && workInfo.getState().isFinished()) {
             this.info = workInfo.getOutputData();
-            this.ejecutarTrasPeticion();
+            for (String key: this.info.getKeyValueMap().keySet()) {
+                System.out.println(key);
+
+            }
             ActividadPadre.setPermitirCambiarActividad(true); // unlockear el thread de nuevo para que se permita usar los botones
+            this.ejecutarTrasPeticion();
         }
     }
 
@@ -32,8 +36,8 @@ public abstract class ObservadorDePeticion implements Observer<WorkInfo> {
     protected String getString(String key) {
         return this.info.getString(key);
     }
-    protected int getInt(String key) {
-        return this.info.getInt(key, 0);
+    protected long getLong(String key) {
+        return this.info.getLong(key, 0);
     }
 
     protected boolean getBoolean(String key) {

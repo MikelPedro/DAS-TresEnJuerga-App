@@ -3,6 +3,7 @@ package com.das.tresenjuerga.actividades;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ListaAdapterMisAmigos;
@@ -20,14 +21,14 @@ public class PerfilActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
-
-        this.miPerfil = ActividadPadre.obtenerDeIntent("userAVisualizar").contentEquals(ActividadPadre.obtenerDeIntent("user"));
+        String userAVisualizar = ActividadPadre.obtenerDeIntent("userAVisualizar");
+        this.miPerfil = userAVisualizar.contentEquals(ActividadPadre.obtenerDeIntent("user"));
 
         // TODO: Descargar foto here
 
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         fragmento.findViewById(R.id.perfilB_Volver).setOnClickListener(new BotonListener(2));
-
+        ((TextView)fragmento.findViewById(R.id.perfilT_Nombre)).setText(userAVisualizar);
 
         Button botonUtilidad = fragmento.findViewById(R.id.perfilB_CambiarFoto);
 

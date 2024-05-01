@@ -6,6 +6,8 @@ import android.widget.ListView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ListaAdapterMisAmigos;
+import com.das.tresenjuerga.otrasClases.ListaAdapterSolicitudes;
+import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 public class AmigosActivity extends ActividadPadre {
 
@@ -17,6 +19,8 @@ public class AmigosActivity extends ActividadPadre {
 
     @Override
     protected void onStart() {
+
+
         super.onStart();
 
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
@@ -25,25 +29,40 @@ public class AmigosActivity extends ActividadPadre {
         fragmento.findViewById(R.id.amigosB_AñadirAmigo).setOnClickListener(new BotonListener(1));
         fragmento.findViewById(R.id.amigosB_Volver).setOnClickListener(new BotonListener(2));
 
+        String[] datos =  {ActividadPadre.obtenerDeIntent("user")};
+        ActividadPadre.peticionAServidor("amistades",5,datos,new ObservadorDeSolicitudes(listView));
 
-        // Obtener orientación cardview
 
-        int cardview;
-        if (super.enLandscape()) {
-            cardview = R.layout.cardview_amigo_landscape;
-        } else {
-            cardview = R.layout.cardview_amigo_portrait;
-        }
 
-        Object[] listaValores = {"A"}; // Valor placeholder, TODO: pedir a BD esta data
-
-        // Montar el listview
-        ListaAdapterMisAmigos adapter = new ListaAdapterMisAmigos(listaValores, cardview);
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
 
     }
+    private class ObservadorDeSolicitudes extends ObservadorDePeticion {
 
+        private ListView listView;
+
+        public ObservadorDeSolicitudes (ListView listView) {this.listView = listView;}
+        @Override
+        protected void ejecutarTrasPeticion() {
+
+            // Obtener orientación cardview
+
+            int cardview;
+            if (ActividadPadre.enLandscape()) {
+                cardview = R.layout.cardview_amigo_landscape;
+            } else {
+                cardview = R.layout.cardview_amigo_portrait;
+            }
+
+            Object[] listaValores = super.getStringArray("nombres");
+
+            // Montar el listview
+            ListaAdapterMisAmigos adapter = new ListaAdapterMisAmigos(listaValores, cardview);
+            adapter.notifyDataSetChanged();
+            listView.setAdapter(adapter);
+
+
+        }
+    }
 
     private class BotonListener implements View.OnClickListener {
 

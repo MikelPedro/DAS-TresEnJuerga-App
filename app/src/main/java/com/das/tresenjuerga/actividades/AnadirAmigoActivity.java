@@ -56,7 +56,8 @@ public class AnadirAmigoActivity extends ActividadPadre {
             @Override
             protected void ejecutarTrasPeticion() {
 
-                int respuesta = super.getInt("respuesta");
+                long respuesta = super.getLong("respuesta");
+                System.out.println(respuesta);
 
                 if (respuesta == 0) {
                     ActividadPadre.mostrarToast(R.string.solicitudAñadida);
