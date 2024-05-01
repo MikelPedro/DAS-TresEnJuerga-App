@@ -39,7 +39,7 @@ public abstract class ListaAdapterBase extends BaseAdapter {
         if (!(this.listaValores[0] instanceof Object[])) {
             return (String) this.listaValores[idCardView];
         } else {
-            return (String) ((Object[]) this.listaValores[idCardView])[idInfo];
+            return (String) ((Object[]) this.listaValores[idInfo])[idCardView];
         }
 
     }
@@ -49,7 +49,7 @@ public abstract class ListaAdapterBase extends BaseAdapter {
         if (!(this.listaValores[0] instanceof Object[])) {
             return (int) this.listaValores[idCardView];
         } else {
-            return (int) ((Object[]) this.listaValores[idCardView])[idInfo];
+            return (int) ((Object[]) this.listaValores[idInfo])[idCardView];
         }
 
     }

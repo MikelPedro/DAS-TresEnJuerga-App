@@ -23,10 +23,16 @@ public class JugarActivity extends ActividadPadre {
     protected void onStart() {
         super.onStart();
 
-        View fragmento = super.obtenerFragmentoOrientacion();
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
 
     }
 
+
+    public boolean esElOponente(String oponente) {
+        return ActividadPadre.obtenerDeIntent("oponente").contentEquals(oponente);
+    }
+
+    // si se sale de esta interfaz, quitar del intent la key "oponente y tuTurno"
 
 }
 

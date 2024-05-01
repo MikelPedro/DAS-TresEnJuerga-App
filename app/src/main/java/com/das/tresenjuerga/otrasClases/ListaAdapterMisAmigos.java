@@ -5,6 +5,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
+import com.das.tresenjuerga.actividades.ActividadPadre;
+import com.das.tresenjuerga.actividades.MainActivity;
 import com.das.tresenjuerga.actividades.PerfilActivity;
 
 public class ListaAdapterMisAmigos extends ListaAdapterBase{
@@ -52,6 +54,9 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
         @Override
         public void onClick(View v) {
 
+            String[] datos = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo};
+
+
             switch (this.id) {
                 case 0:
                     // Ver perfil
@@ -59,11 +64,30 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
                     ListaAdapterMisAmigos.super.getActividad().redirigirAActividad(PerfilActivity.class);
                     break;
                 case 1:
+                    // Retar
+                    ActividadPadre.peticionAServidor("partidas", 0, datos, new ObservadorDeRetarPartida());
                     break;
                 case 2:
+                    // Borrar amigo
+                    ActividadPadre.peticionAServidor("amistades", 4, datos, null);
+
 
             }
 
+        }
+
+        private class ObservadorDeRetarPartida extends ObservadorDePeticion {
+            @Override
+            protected void ejecutarTrasPeticion() {
+
+                if (super.getBoolean("respuesta")) {
+                    ActividadPadre.mostrarToast(R.string.retarCorrecto);
+
+                } else {
+                    ActividadPadre.mostrarToast(R.string.retarError);
+
+                }
+            }
         }
     }
 }

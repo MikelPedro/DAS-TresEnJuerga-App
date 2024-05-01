@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.actividades.ActividadPadre;
+import com.das.tresenjuerga.actividades.MainActivity;
 
 public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
 
@@ -83,19 +84,20 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
         @Override
         public void onClick(View v) {
 
-            String user = ActividadPadre.getActividadActual().obtenerDeIntent("user");
 
 
             switch (this.id) {
                 case 0:
-
-                    // TODO: Rechazar solicitud de match
+                    // Rechazar match
+                    String[] datosRechazar = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterPartidasDisponibles.this.oponente, "0"};
+                    ActividadPadre.peticionAServidor("partidas", 5, datosRechazar, null);
 
                     break;
 
                 case 1:
-
-                    // TODO: Aceptar solicitud de match
+                    String[] datosAceptar = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterPartidasDisponibles.this.oponente};
+                    // Aceptar match
+                    ActividadPadre.peticionAServidor("partidas", 1, datosAceptar, null);
 
                     break;
 
@@ -106,10 +108,13 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
                     // info a bd de nuevo. oponente contiene el nombre del oponente. El nombre del user actual
                     // está en "user" en el intent de la actividad.
 
+                    // Pasar en el intent un valor extra que sea "oponente" y "tuTurno"
+
             }
 
 
 
         }
+
     }
 }

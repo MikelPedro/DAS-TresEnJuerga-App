@@ -7,6 +7,10 @@ import android.widget.ListView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ListaAdapterPartidasDisponibles;
+import com.das.tresenjuerga.otrasClases.ListaAdapterSolicitudes;
+import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
+
+import org.checkerframework.checker.units.qual.A;
 
 public class PartidasDisponiblesActivity extends ActividadPadre {
 
@@ -25,36 +29,48 @@ public class PartidasDisponiblesActivity extends ActividadPadre {
     protected void onStart() {
         super.onStart();
 
-        View fragmento = super.obtenerFragmentoOrientacion();
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         ListView listView = super.findViewById(R.id.partidasDisponiblesL_Partidas);
         fragmento.findViewById(R.id.partidasDisponiblesB_Volver).setOnClickListener(new BotonListener());
 
-        // Obtener orientación cardview
-
-        int cardview;
-        if (super.enLandscape()) {
-            cardview = R.layout.cardview_partida_landscape;
-        } else {
-            cardview = R.layout.cardview_partida_portrait;
-        }
-
-
-        Object[][] listaValores = {{"A", 1, "B", 0}}; // Valor placeholder, TODO: pedir a BD esta data
-
-        // Montar el listview
-        ListaAdapterPartidasDisponibles adapter = new ListaAdapterPartidasDisponibles(listaValores, cardview);
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
+        String[] datos = {ActividadPadre.obtenerDeIntent("user")};
+        ActividadPadre.peticionAServidor("partidas", 2, datos, new ObservadorDePartidas(listView));
 
     }
 
+    private class ObservadorDePartidas extends ObservadorDePeticion {
 
+        private ListView listView;
+
+        public ObservadorDePartidas (ListView listView) {this.listView = listView;}
+        @Override
+        protected void ejecutarTrasPeticion() {
+
+            // Obtener orientación cardview
+
+            int cardview;
+            if (ActividadPadre.enLandscape()) {
+                cardview = R.layout.cardview_solicitud_amistad_landscape;
+            } else {
+                cardview = R.layout.cardview_solicitud_amistad_portrait;
+            }
+
+            Object[] listaValores = {super.getStringArray("oponentes"), super.getIntArray("estados")};
+
+            // Montar el listview
+            ListaAdapterSolicitudes adapter = new ListaAdapterSolicitudes(listaValores, cardview);
+            adapter.notifyDataSetChanged();
+            this.listView.setAdapter(adapter);
+
+
+        }
+    }
     private class BotonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
 
             // Volver a menú de registrado
-            PartidasDisponiblesActivity.super.redirigirAActividad(UsuarioLoggeadoActivity.class);
+            ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
 
 
 

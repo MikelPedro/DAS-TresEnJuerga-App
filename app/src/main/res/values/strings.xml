@@ -30,5 +30,34 @@
     <string name="aceptar">Aceptar</string>
     <string name="rechazar">Rechazar</string>
     <string name="peticion">peticion</string>
+    <string name="notif0">solicitud</string>
+    <string name="notif1">friend aceptado</string>
+    <string name="notif2">retar</string>
+    <string name="notif3">reto aceptado</string>
+    <string name="notif4">hacer jugada</string>
+    <string name="notif5">empate</string>
+    <string name="notif6">loss</string>
+    <string name="notifTitulo0">sol</string>
+    <string name="notifTitulo1">1</string>
+    <string name="notifTitulo2">2</string>
+    <string name="notifTitulo3">3</string>
+    <string name="notifTitulo4">4</string>
+    <string name="notifTitulo5">5</string>
+    <string name="notifTitulo6">6</string>
+    <string name="si">Yes</string>
+    <string name="no">No</string>
+    <string name="tituloSalir">TituloSalir</string>
+    <string name="descSalir">Descripcion salir</string>
+    <string name="errorFormatoRegistro">chars1-50</string>
+    <string name="errorDeAutentificacion">Error</string>
+    <string name="errorNombreCogido">Error</string>
+    <string name="solicitudAñadida">add</string>
+    <string name="errorAmigo1">error1</string>
+    <string name="errorAmigo2">error2</string>
+    <string name="errorAmigo3">error3</string>
+    <string name="errorAmigo4">error4</string>
+    <string name="errorAmigo5">error5</string>
+    <string name="retarCorrecto">correcto</string>
+    <string name="retarError">Error</string>
 
 </resources>

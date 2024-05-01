@@ -1,18 +1,39 @@
 package com.das.tresenjuerga.actividades;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import com.das.tresenjuerga.R;
+import com.das.tresenjuerga.otrasClases.ConexionAServer;
+import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class ActividadPadre extends AppCompatActivity {
+
+
+
 
 
     // TODO: Están básciamente todas las actividades necesarias creadas.
@@ -33,6 +54,8 @@ public class ActividadPadre extends AppCompatActivity {
     private static int fragmento;
     private int idContenedor;
 
+    private static int sePermiteCambiarDeActividad = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +68,13 @@ public class ActividadPadre extends AppCompatActivity {
         super.setContentView(layout);
         // Al hacer setContentView se carga el layout de fragment correspondiente automáticamente
         this.setLayout();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        this.setEstilo(this.obtenerFragmentoOrientacion());
 
     }
 
@@ -174,45 +204,208 @@ public class ActividadPadre extends AppCompatActivity {
                 .commit();
 
 
+
+
     }
 
-    protected boolean enLandscape() {
-        return super.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    private void setEstilo(View fragmento) {
+
+        // Pintar los distintos elementos de la UI según el estilo elegido
+
+
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String estilo = prefs.getString("estilo","1");
+        ViewGroup viewGroup = (ViewGroup) fragmento;
+
+        if (estilo.contentEquals("1")) {
+            // Estilo día
+
+            fragmento.setBackgroundColor(Color.WHITE);
+
+            for (int i = 0; i != viewGroup.getChildCount(); i++) { // Iterar por cada elemento de la UI
+
+                View elemento = viewGroup.getChildAt(i);
+
+                if (elemento instanceof Button) {
+                    Button boton = (Button) elemento;
+                    boton.setBackgroundColor(Color.GRAY);
+                    boton.setTextColor(Color.BLACK);
+
+                } else if (elemento instanceof EditText) {
+                    EditText edit = (EditText) elemento;
+                    edit.setBackgroundColor(Color.GRAY);
+                    edit.setTextColor(Color.BLACK);
+
+
+                } else if (elemento instanceof TextView) {
+
+
+                    TextView texto = (TextView) elemento;
+                    texto.setTextColor(Color.rgb(0,0,0));
+
+
+                }
+
+
+
+            }
+
+
+
+        } else {
+            // Estilo neón
+
+            fragmento.setBackgroundColor(Color.BLACK);
+
+            for (int i = 0; i != viewGroup.getChildCount(); i++) { // Iterar por cada elemento de la UI
+                View elemento = viewGroup.getChildAt(i);
+
+                if (elemento instanceof  Button) {
+                    Button boton = (Button) elemento;
+                    boton.setBackgroundColor(Color.rgb(0, 100, 0));
+                    boton.setTextColor(Color.WHITE);
+
+                } else if (elemento instanceof EditText) {
+                    EditText edit = (EditText) elemento;
+                    edit.setBackgroundColor(Color.rgb(0, 100, 0));
+                    edit.setTextColor(Color.WHITE);
+
+
+                } else if (elemento instanceof TextView) {
+
+                    TextView texto = (TextView) elemento;
+                    texto.setTextColor(Color.WHITE);
+                }
+            }
+
+
+        }
     }
 
-    public void añadirAIntent(String key, String value) {
-        super.getIntent().putExtra(key, value);
+    protected static boolean enLandscape() {
+        return actividadEnEjecucion.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-    protected void quitarDeIntent(String key) {
-        super.getIntent().removeExtra(key);
+    public static void añadirAIntent(String key, String value) {
+        actividadEnEjecucion.getIntent().putExtra(key, value);
     }
 
-    public String obtenerDeIntent(String key) {return super.getIntent().getExtras().getString(key);}
-
-    protected View obtenerFragmentoOrientacion() {
-        return super.getSupportFragmentManager().findFragmentById(this.idContenedor).getView();
+    protected static void quitarDeIntent(String key) {
+        actividadEnEjecucion.getIntent().removeExtra(key);
     }
 
-    public void redirigirAActividad(Class ActividadTarget) {
+    public static String obtenerDeIntent(String key) {return actividadEnEjecucion.getIntent().getExtras().getString(key);}
+
+    protected static View obtenerFragmentoOrientacion() {
+        return actividadEnEjecucion.getSupportFragmentManager().findFragmentById(actividadEnEjecucion.idContenedor).getView();
+    }
+
+    public static void redirigirAActividad(Class ActividadTarget) {
 
         // Cierra la actividad actual y abre ActividadTarget.
         // Todos los datos del intent de la actividad actual se pasan a la siguiente actividad
 
-        Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
+        // Solo se permite el cambio de actividad si sePermiteCambiar es true o se redirige a la
+        // misma actividad
 
-        Bundle bundle = super.getIntent().getExtras();
+        if (ActividadPadre.sePermiteCambio() || ActividadTarget.isInstance(actividadEnEjecucion)){
+            Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
 
-        for (String key : bundle.keySet()) {
-            intent.putExtra(key, bundle.getString(key));
+            Bundle bundle = actividadEnEjecucion.getIntent().getExtras();
+
+            for (String key : bundle.keySet()) {
+                intent.putExtra(key, bundle.getString(key));
+            }
+
+
+            ActividadPadre.actividadEnEjecucion.finish();
+            ActividadPadre.actividadEnEjecucion.startActivity(intent);
         }
 
 
-        ActividadPadre.actividadEnEjecucion.finish();
-        ActividadPadre.actividadEnEjecucion.startActivity(intent);
+    }
+
+    public static void setPermitirCambiarActividad(boolean flag) {
+        if (flag) {
+            ActividadPadre.sePermiteCambiarDeActividad--;
+        } else {
+            ActividadPadre.sePermiteCambiarDeActividad++;
+        }
+    }
+
+    private static boolean sePermiteCambio() {
+        return ActividadPadre.sePermiteCambiarDeActividad <= 0;
+
+    }
+
+    public static void recargarActividad() {
+        ActividadPadre.redirigirAActividad(actividadEnEjecucion.getClass());
     }
 
 
+    public static void cerrarApp() {
+
+        ActividadPadre.actividadEnEjecucion.finish();
+        System.exit(0);
+    }
+
+    public static void mostrarToast(int idMsg) {
+        Toast.makeText(ActividadPadre.actividadEnEjecucion, idMsg, Toast.LENGTH_SHORT);
+    }
+
+
+    public static void peticionAServidor(String recurso, int idPeticion, String[] parametros, ObservadorDePeticion observador) {
+
+        // Lockear los botones durante el thread para que el user no pueda cambiar de actividad
+        ActividadPadre.setPermitirCambiarActividad(false);
+
+
+
+
+        Data datos = new Data.Builder()
+                .putString("recurso", recurso)
+                .putInt("idPeticion", idPeticion)
+                .putStringArray("parametros", parametros)
+                .build();
+
+
+
+        ActividadPadre actAct = ActividadPadre.actividadEnEjecucion;
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ConexionAServer.class).setInputData(datos).build();
+
+        if (observador != null) {
+            WorkManager.getInstance(actAct).getWorkInfoByIdLiveData(otwr.getId())
+                    .observe(actAct, observador);
+
+        } else {
+            ActividadPadre.setPermitirCambiarActividad(true);
+        }
+
+        WorkManager.getInstance(actAct).enqueue(otwr);
+    }
+
+
+    public static void pushearTokenABDYLoggear(String user) {
+
+        ActividadPadre.añadirAIntent("user", user);
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (task.isSuccessful()) {
+                    String token = task.getResult();
+                    String[] datos = {user, token};
+
+                    ActividadPadre.peticionAServidor("usuarios", 2, datos, null);
+                    ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
+                } else {
+                    Exception exception = task.getException();
+
+                }
+            }
+        });
+
+    }
 
     public static class MiFragmento extends Fragment {
 
@@ -224,3 +417,12 @@ public class ActividadPadre extends AppCompatActivity {
 
 
 }
+
+/*
+    OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ConexionBDWebService.class).setInputData(datos).build();
+                    WorkManager.getInstance(MainActivity.this).getWorkInfoByIdLiveData(otwr.getId())
+            .observe(MainActivity.this, new MainActivity.ObservadorDeAutentificacion(user));
+                    WorkManager.getInstance(MainActivity.this).enqueue(otwr);
+
+
+ */
