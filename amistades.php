@@ -62,13 +62,83 @@ function usuariosFactiblesParaSolicitud($com, $nombre) {
 }
 
 function crearSolicitud($conn, $solicitante, $solicitado) {
+    
     $solicitante = cifrar($solicitante);
     $solicitado = cifrar($solicitado);
 
-    $com = $conn->prepare("INSERT INTO AMISTADES VALUES (?, ?, 0)");	    
-    $com->bind_Param('ss', $solicitante, $solicitado);
-    $com->execute();
-    $com->close();
+
+    if ($solicitante != $solicitado) {
+
+        $com = $conn->prepare("SELECT Nombre FROM USUARIOS WHERE Nombre = ?");	    
+        $com->bind_Param('s', $solicitado);
+        $com->execute();
+        $com->store_result();
+        $com->bind_result($usuario);
+
+        if ($com->fetch()) {
+
+            $com->close();
+            $com = $conn->prepare("SELECT Aceptado, UsuarioA FROM AMISTADES WHERE (UsuarioA = ? AND UsuarioB = ?) OR (UsuarioA = ? AND UsuarioB = ?) ");	    
+            $com->bind_Param('ssss', $solicitante, $solicitado, $solicitado, $solicitante);
+            $com->execute();
+            $com->store_result();
+            $com->bind_result($aceptado, $solicitanteDeLaFriendRequestExistente);
+        
+        
+            if (!$com->fetch()) {
+                $com->close();
+                $val = true;
+                $com = $conn->prepare("INSERT INTO AMISTADES VALUES (?, ?, 0)");	    
+                $com->bind_Param('ss', $solicitante, $solicitado);
+                $com->execute();
+                $com->close();
+
+                $statusCode = 0;
+
+                // Todo correcto, mandar la notif a Firebase.
+                notificarAFirebase(0, $solicitante, $solicitado);
+                
+
+
+
+            } else {
+                $com->close();
+
+                if ($aceptado == 0) {
+
+                    if ($solicitanteDeLaFriendRequestExistente == $solicitante) {
+                        $statusCode = 3;
+                        // ERROR 3: Ya has mandado una friend request y esta pending
+
+                    } else {
+                        $statusCode = 4;
+                        // ERROR 4: La otra persona te ha mandado una friend request y esta pending
+                    }
+
+                } else {
+                    $statusCode = 5;
+                    // ERROR 5: Ya soys friends
+                }
+
+            }
+            $com->close();
+
+        } else {
+            $com->close();
+            $statusCode = 2;
+            // ERROR 2: Friend request a none
+        }
+
+    } else {
+        $statusCode = 1;
+        // ERROR 1: No friend request a self
+    }
+
+    $resultados = array(
+        'respuesta' => $statusCode
+    );
+
+    echo json_encode($resultados);
 
 }
 
@@ -108,6 +178,12 @@ function aceptarSolicitud($conn, $solicitado, $solicitante) {
     $com->execute();
     $com->close();
 
+
+    // Notificar a firebase
+    notificarAFirebase(1, $solicitado, $solicitante);
+
+
+    
 
 }
 

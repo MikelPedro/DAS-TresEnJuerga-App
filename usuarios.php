@@ -24,6 +24,12 @@ switch ($id) {
 
     case "4":
         bajarFotoDePerfil($conn, $_GET['dato1']);
+        break;
+
+    // Exclusivo llamado desde el servidor
+
+    case "5":
+        obtenerTokensDeCuenta($conn, $_GET['dato1']);
 
 
 }
@@ -157,6 +163,29 @@ function bajarFotoDePerfil($conn, $nombre) {
     echo json_encode($resultados);
  
 }
+
+function obtenerTokensDeCuenta($conn, $nombre) {
+    $user = cifrar($nombre);
+    $com = $conn->prepare("SELECT Token FROM DISPOSITIVOS WHERE Cuenta = ?");       
+    $com->bind_Param('s', $user);
+    $com->execute();
+    $com->store_result();
+    $com->bind_result($token);
+    $dispositivos = array();
+
+    while ($com->fetch()) {
+        array_push($dispositivos, $token);
+    }
+
+    $com->close();
+
+    $resultados = array(
+        'tokens' => $dispositivos
+    );
+
+    echo json_encode($resultados);
+}
+
 
 
 ?>

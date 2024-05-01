@@ -27,7 +27,7 @@ switch ($id) {
         break;
 
     case "5":
-        quitarPartida($conn, $_GET['dato1'], $_GET['dato2']); // Porque se acaba o porque se rechaza
+        quitarPartida($conn, $_GET['dato1'], $_GET['dato2'], $_GET['dato3']); // Porque se acaba o porque se rechaza
 
 
 }
@@ -55,6 +55,10 @@ function solicitarPartida($conn, $solicitante, $solicitado) {
         $com->bind_Param('ss', $solicitante, $solicitado);
         $com->execute();
         $com->close();
+
+        // Todo correcto, mandar la notif a firebase
+        notificarAFirebase(2, $solicitante, $solicitado);
+
     }
 
     $resultados = array(
@@ -73,6 +77,10 @@ function aceptarPartida($conn, $solicitado, $solicitante) {
     $com->bind_Param('ss', $solicitante, $solicitado);
     $com->execute();
     $com->close();
+
+    // Notificar a firebase
+    notificarAFirebase(3, $solicitado, $solicitante);
+
 
 }
 
@@ -143,15 +151,33 @@ function realizarJugada($conn, $nombre, $contrario, $tablero) {
     $com->execute();
     $com->close();
 
+    // Notificar a firebase
+
+    notificarAFirebase(4, $nombre, $contrario);
+
+
 }
 
-function quitarPartida($conn, $nombre, $contrario) {
+function quitarPartida($conn, $nombre, $contrario, $statusPartida) {
     $user = cifrar($nombre);
     $contrario = cifrar($contrario);
     $com = $conn->prepare("DELETE FROM PARTIDAS WHERE (UsuarioA = ? AND UsuarioB = ?) OR (UsuarioA = ? AND UsuarioB = ?) ");
     $com->bind_Param('ssss', $user, $contrario, $contrario, $user);
     $com->execute();
     $com->close();
+
+
+    // statusPartida ->  0 (no se empezó), 1 (draw), 2 ("nombre" gana)
+
+    // Notificar a firebase si fue el fin de una partida que se había empezado
+    switch ($statusPartida) {
+        case 1:
+            notificarAFirebase($nombre, $contrario, 5);
+            break;
+        case 2:
+            notificarAFirebase($nombre, $contrario, 6);
+
+    }
 }
 
 
