@@ -14,7 +14,7 @@ if (mysqli_connect_errno()) {
 
 
 function cifrar($dato) {
-	$puntero = fopen("clave.txt", "r");
+	$puntero = fopen("./extras/clave.txt", "r");
 	$clave = fgets($puntero, 50);
 	$clave = hash('sha256', $clave);
 	$iv = substr($clave, 0, 16);
@@ -24,7 +24,7 @@ function cifrar($dato) {
 }
 
 function descifrar($dato) {
-	$puntero = fopen("clave.txt", "r");
+	$puntero = fopen("./extras/clave.txt", "r");
 	$clave = fgets($puntero, 50);
 	$clave = hash('sha256', $clave);
 	$iv = substr($clave, 0, 16);
