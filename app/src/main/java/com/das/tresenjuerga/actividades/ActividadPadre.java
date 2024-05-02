@@ -54,7 +54,7 @@ public class ActividadPadre extends AppCompatActivity {
     private static int fragmento;
     private int idContenedor;
 
-    private static int sePermiteCambiarDeActividad = 0;
+    private static int cantidadLocks = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,9 +311,8 @@ public class ActividadPadre extends AppCompatActivity {
 
         System.out.println("EN REDIRECT");
 
-        if (ActividadPadre.sePermiteCambio() || ActividadTarget.isInstance(actividadEnEjecucion)){
+        if (ActividadPadre.comprobarUnlock() || ActividadTarget.isInstance(actividadEnEjecucion)){
             Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
-            System.out.println("REDIRIGIENDO");
 
             Bundle bundle = actividadEnEjecucion.getIntent().getExtras();
 
@@ -332,16 +331,16 @@ public class ActividadPadre extends AppCompatActivity {
 
     }
 
-    public static void setPermitirCambiarActividad(boolean flag) {
-        if (flag) {
-            ActividadPadre.sePermiteCambiarDeActividad--;
+    public static void lockRedirectsYPeticionesAServer(boolean flag) {
+        if (!flag) {
+            ActividadPadre.cantidadLocks--;
         } else {
-            ActividadPadre.sePermiteCambiarDeActividad++;
+            ActividadPadre.cantidadLocks++;
         }
     }
 
-    private static boolean sePermiteCambio() {
-        return ActividadPadre.sePermiteCambiarDeActividad <= 0;
+    private static boolean comprobarUnlock() {
+        return ActividadPadre.cantidadLocks <= 0;
 
     }
 
@@ -363,32 +362,39 @@ public class ActividadPadre extends AppCompatActivity {
 
     public static void peticionAServidor(String recurso, int idPeticion, String[] parametros, ObservadorDePeticion observador) {
 
-        // Lockear los botones durante el thread para que el user no pueda cambiar de actividad
-        ActividadPadre.setPermitirCambiarActividad(false);
+
+        if (ActividadPadre.comprobarUnlock()) {
+
+            // Lockear los botones durante el thread para que el user no pueda cambiar de actividad
+
+            ActividadPadre.lockRedirectsYPeticionesAServer(true);
 
 
 
 
-        Data datos = new Data.Builder()
-                .putString("recurso", recurso)
-                .putInt("idPeticion", idPeticion)
-                .putStringArray("parametros", parametros)
-                .build();
+            Data datos = new Data.Builder()
+                    .putString("recurso", recurso)
+                    .putInt("idPeticion", idPeticion)
+                    .putStringArray("parametros", parametros)
+                    .build();
 
 
 
-        ActividadPadre actAct = ActividadPadre.actividadEnEjecucion;
-        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ConexionAServer.class).setInputData(datos).build();
+            ActividadPadre actAct = ActividadPadre.actividadEnEjecucion;
+            OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ConexionAServer.class).setInputData(datos).build();
 
-        if (observador != null) {
-            WorkManager.getInstance(actAct).getWorkInfoByIdLiveData(otwr.getId())
-                    .observe(actAct, observador);
+            if (observador != null) {
+                WorkManager.getInstance(actAct).getWorkInfoByIdLiveData(otwr.getId())
+                        .observe(actAct, observador);
 
-        } else {
-            ActividadPadre.setPermitirCambiarActividad(true);
+            } else {
+                ActividadPadre.lockRedirectsYPeticionesAServer(false);
+            }
+
+            WorkManager.getInstance(actAct).enqueue(otwr);
         }
 
-        WorkManager.getInstance(actAct).enqueue(otwr);
+
     }
 
 
@@ -403,7 +409,10 @@ public class ActividadPadre extends AppCompatActivity {
                     String[] datos = {user, token};
 
                     ActividadPadre.peticionAServidor("usuarios", 2, datos, null);
+
+                    ActividadPadre.lockRedirectsYPeticionesAServer(false);
                     ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
+
                 } else {
                     Exception exception = task.getException();
 

@@ -60,5 +60,7 @@
     <string name="retarCorrecto">correcto</string>
     <string name="retarError">Error</string>
     <string name="usuarioLoggeado_amigos">Amigos</string>
+    <string name="noPoderPonerAhi">No</string>
+    <string name="noEsTuTurno">no</string>
 
 </resources>

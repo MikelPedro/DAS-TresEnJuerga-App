@@ -60,4 +60,6 @@
     <string name="retarCorrecto">The match request has been sent</string>
     <string name="retarError">You already have a match / request on going between you two</string>
     <string name="usuarioLoggeado_amigos">Friends</string>
+    <string name="noPoderPonerAhi">That space is already filled</string>
+    <string name="noEsTuTurno">You can\'t play, it\'s not your turn</string>
 </resources>

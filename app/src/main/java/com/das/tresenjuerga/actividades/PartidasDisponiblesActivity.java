@@ -50,20 +50,20 @@ public class PartidasDisponiblesActivity extends ActividadPadre {
 
             int cardview;
             if (ActividadPadre.enLandscape()) {
-                cardview = R.layout.cardview_solicitud_amistad_landscape;
+                cardview = R.layout.cardview_partida_landscape;
             } else {
-                cardview = R.layout.cardview_solicitud_amistad_portrait;
+                cardview = R.layout.cardview_partida_portrait;
             }
 
-            Object[] listaValores = this.juntarArray(super.getStringArray("oponentes"), super.getIntArray("estados"));
+            Object[] listaValores = this.juntarArray(super.getStringArray("oponentes"), super.getLongArray("estados"));
             // Montar el listview
-            ListaAdapterSolicitudes adapter = new ListaAdapterSolicitudes(listaValores, cardview);
+            ListaAdapterPartidasDisponibles adapter = new ListaAdapterPartidasDisponibles(listaValores, cardview);
             adapter.notifyDataSetChanged();
             this.listView.setAdapter(adapter);
 
 
         }
-        private Object[][] juntarArray(String[] array1, int[] array2) {
+        private Object[][] juntarArray(String[] array1, long[] array2) {
             // Proceso:  [[a, b, c] , [d,e,f]]  -> [[a,d],[b,e],[c,f]]
 
             Object[][] resultado = new Object[array1.length][2];
