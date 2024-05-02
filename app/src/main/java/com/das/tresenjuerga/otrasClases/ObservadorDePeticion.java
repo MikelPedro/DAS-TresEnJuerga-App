@@ -26,7 +26,7 @@ public abstract class ObservadorDePeticion implements Observer<WorkInfo> {
                 System.out.println(key);
 
             }
-            ActividadPadre.setPermitirCambiarActividad(true); // unlockear el thread de nuevo para que se permita usar los botones
+            ActividadPadre.lockRedirectsYPeticionesAServer(false); // unlockear el thread de nuevo para que se permita usar los botones
             this.ejecutarTrasPeticion();
         }
     }
@@ -48,8 +48,8 @@ public abstract class ObservadorDePeticion implements Observer<WorkInfo> {
         return this.info.getStringArray(key);
     }
 
-    protected int[] getIntArray(String key) {
-        return this.info.getIntArray(key);
+    protected long[] getLongArray(String key) {
+        return this.info.getLongArray(key);
     }
 
     protected boolean[] getBooleanArray(String key) {

@@ -60,4 +60,6 @@
     <string name="retarCorrecto">Se ha enviado la solicitud de partida</string>
     <string name="retarError">Ya hay una partida / solicitud en marcha entre vosotros dos</string>
     <string name="usuarioLoggeado_amigos">Amigos</string>
+    <string name="noPoderPonerAhi">Ya hay una figura ahí</string>
+    <string name="noEsTuTurno">No puedes jugar, no es tu turno</string>
 </resources>

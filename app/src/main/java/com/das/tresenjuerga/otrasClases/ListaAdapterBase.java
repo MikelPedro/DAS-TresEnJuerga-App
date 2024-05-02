@@ -1,9 +1,16 @@
 package com.das.tresenjuerga.otrasClases;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.das.tresenjuerga.actividades.ActividadPadre;
 
@@ -44,12 +51,12 @@ public abstract class ListaAdapterBase extends BaseAdapter {
 
     }
 
-    protected int getInteger(int idCardView, int idInfo) {
+    protected long getLong(int idCardView, int idInfo) {
 
         if (!(this.listaValores[0] instanceof Object[])) {
-            return (int) this.listaValores[idCardView];
+            return (long) this.listaValores[idCardView];
         } else {
-            return (int) ((Object[]) this.listaValores[idCardView])[idInfo];
+            return (long) ((Object[]) this.listaValores[idCardView])[idInfo];
         }
 
     }
@@ -62,6 +69,78 @@ public abstract class ListaAdapterBase extends BaseAdapter {
 
     private void setEstilo(View view) {
         // TODO: Settear estilo here
+
+        // Pintar los distintos elementos de la UI según el estilo elegido
+
+
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ActividadPadre.getActividadActual());
+        String estilo = prefs.getString("estilo","1");
+        ViewGroup viewGroup = (ViewGroup) view;
+
+        if (estilo.contentEquals("1")) {
+            // Estilo día
+
+            view.setBackgroundColor(Color.WHITE);
+
+            for (int i = 0; i != viewGroup.getChildCount(); i++) { // Iterar por cada elemento de la UI
+
+                View elemento = viewGroup.getChildAt(i);
+
+                if (elemento instanceof Button) {
+                    Button boton = (Button) elemento;
+                    boton.setBackgroundColor(Color.GRAY);
+                    boton.setTextColor(Color.BLACK);
+
+                } else if (elemento instanceof EditText) {
+                    EditText edit = (EditText) elemento;
+                    edit.setBackgroundColor(Color.GRAY);
+                    edit.setTextColor(Color.BLACK);
+
+
+                } else if (elemento instanceof TextView) {
+
+
+                    TextView texto = (TextView) elemento;
+                    texto.setTextColor(Color.rgb(0,0,0));
+
+
+                }
+
+
+
+            }
+
+
+
+        } else {
+            // Estilo neón
+
+            view.setBackgroundColor(Color.BLACK);
+
+            for (int i = 0; i != viewGroup.getChildCount(); i++) { // Iterar por cada elemento de la UI
+                View elemento = viewGroup.getChildAt(i);
+
+                if (elemento instanceof  Button) {
+                    Button boton = (Button) elemento;
+                    boton.setBackgroundColor(Color.rgb(0, 100, 0));
+                    boton.setTextColor(Color.WHITE);
+
+                } else if (elemento instanceof EditText) {
+                    EditText edit = (EditText) elemento;
+                    edit.setBackgroundColor(Color.rgb(0, 100, 0));
+                    edit.setTextColor(Color.WHITE);
+
+
+                } else if (elemento instanceof TextView) {
+
+                    TextView texto = (TextView) elemento;
+                    texto.setTextColor(Color.WHITE);
+                }
+            }
+
+
+        }
 
     }
 }

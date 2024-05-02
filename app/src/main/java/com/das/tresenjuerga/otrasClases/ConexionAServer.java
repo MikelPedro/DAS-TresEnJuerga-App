@@ -225,14 +225,14 @@ public class ConexionAServer extends Worker {
                 JSONArray jsonArrayEstados = (JSONArray) json.get("estados");
                 int cantidadPartidas = jsonArrayOponentes.size();
                 String[] nombresOponentes = new String[cantidadPartidas];
-                int[] estados = new int[cantidadPartidas];
+                long[] estados = new long[cantidadPartidas];
 
                 for(int i = 0; i < cantidadPartidas; i++) {
                     nombresOponentes[i] = (String) jsonArrayOponentes.get(i);
-                    estados[i] = (int) jsonArrayEstados.get(i);
+                    estados[i] = (long) jsonArrayEstados.get(i);
 
                 }
-                return new Data.Builder().putStringArray("oponentes", nombresOponentes).putIntArray("estados", estados).build();
+                return new Data.Builder().putStringArray("oponentes", nombresOponentes).putLongArray("estados", estados).build();
 
             case 3:
                 String figura = ((String) json.get("miFigura"));

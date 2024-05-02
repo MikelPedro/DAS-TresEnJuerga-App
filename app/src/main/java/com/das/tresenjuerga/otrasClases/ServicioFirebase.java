@@ -37,7 +37,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
             // Esto se ejecuta en otro thread, lockear el cambio de actividad para que no se lie con los checks
             // de la actividad en la que está
-            ActividadPadre.setPermitirCambiarActividad(false);
+            ActividadPadre.lockRedirectsYPeticionesAServer(true);
             this.esperar(10); // Esperar un poco por si justo pillamos el lock en la acción del cambio de actividad
                                   // para que de tiempo a que la nueva cargue y el user se quede atascado en ella
 
@@ -114,7 +114,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
             }
 
             // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
-            ActividadPadre.setPermitirCambiarActividad(true);
+            ActividadPadre.lockRedirectsYPeticionesAServer(false);
 
         }
 

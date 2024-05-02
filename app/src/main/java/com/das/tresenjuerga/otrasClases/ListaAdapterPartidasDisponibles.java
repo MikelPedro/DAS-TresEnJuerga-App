@@ -2,9 +2,11 @@ package com.das.tresenjuerga.otrasClases;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.actividades.ActividadPadre;
+import com.das.tresenjuerga.actividades.JugarActivity;
 import com.das.tresenjuerga.actividades.MainActivity;
 
 public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
@@ -19,7 +21,7 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
     @Override
     public View getView(int pos, View convertView, ViewGroup parent) {
 
-        int idEstado = super.getInteger(pos, 1);
+        long idEstado = super.getLong(pos, 1);
         boolean solicitud = idEstado == 0;
         this.tuTurno = idEstado == 2;
         this.oponente = super.getString(pos, 0);
@@ -33,32 +35,34 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
 
         String textoTurno = "";
 
+        if (idEstado == 0) {
+            textoTurno = ActividadPadre.getActividadActual().getString(R.string.peticion);
+        } else if (idEstado == 1) {
+            textoTurno = ActividadPadre.getActividadActual().getString(R.string.turnoDelOtro);
 
-        switch (idEstado) {
-            case 0:
-                textoTurno = ActividadPadre.getActividadActual().getString(R.string.peticion);
-                break;
-            case 1:
-                textoTurno = ActividadPadre.getActividadActual().getString(R.string.turnoDelOtro);
-                break;
-            case 2:
-                textoTurno = ActividadPadre.getActividadActual().getString(R.string.tuTurno);
+        } else {
+            textoTurno = ActividadPadre.getActividadActual().getString(R.string.tuTurno);
 
         }
+
+
 
 
         ((TextView)view.findViewById(R.id.instanciaPartidaT_Turno)).setText(textoTurno);
 
         // Dar los listeners correspondientes a los botones
 
+        Button botonDer = (Button) view.findViewById(R.id.instanciaPartidaB_Entrar);
 
         if (solicitud) {
             view.findViewById(R.id.instanciaPartidaB_Rechazar).setOnClickListener(new BotonListener(pos,0));
-            view.findViewById(R.id.instanciaPartidaB_Entrar).setOnClickListener(new BotonListener(pos, 1));
+            botonDer.setOnClickListener(new BotonListener(pos, 1));
+            botonDer.setText(R.string.aceptar);
 
         } else {
             view.findViewById(R.id.instanciaPartidaB_Rechazar).setVisibility(View.GONE);
-            view.findViewById(R.id.instanciaPartidaB_Entrar).setOnClickListener(new BotonListener(pos, 2));
+            botonDer.setOnClickListener(new BotonListener(pos, 2));
+            botonDer.setText(R.string.entrarAPartida);
 
         }
 
@@ -90,30 +94,38 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
                 case 0:
                     // Rechazar match
                     String[] datosRechazar = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterPartidasDisponibles.this.oponente, "0"};
-                    ActividadPadre.peticionAServidor("partidas", 5, datosRechazar, null);
+                    ActividadPadre.peticionAServidor("partidas", 5, datosRechazar, new ObservadorDeProcesarPeticion());
 
                     break;
 
                 case 1:
                     String[] datosAceptar = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterPartidasDisponibles.this.oponente};
                     // Aceptar match
-                    ActividadPadre.peticionAServidor("partidas", 1, datosAceptar, null);
+                    ActividadPadre.peticionAServidor("partidas", 1, datosAceptar, new ObservadorDeProcesarPeticion());
 
                     break;
 
                 case 2:
-                    // TODO: Pasar a la UI del tic tac toe que muestra la partida.
 
-                    // tuTurno tiene el valor de si es el turno del player o no, no se requiere consultar esa
-                    // info a bd de nuevo. oponente contiene el nombre del oponente. El nombre del user actual
-                    // está en "user" en el intent de la actividad.
+                    ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(ListaAdapterPartidasDisponibles.this.tuTurno));
+                    ActividadPadre.añadirAIntent("oponente", ListaAdapterPartidasDisponibles.this.oponente);
+                    ActividadPadre.redirigirAActividad(JugarActivity.class);
 
-                    // Pasar en el intent un valor extra que sea "oponente" y "tuTurno"
 
             }
 
 
 
+        }
+
+        private class ObservadorDeProcesarPeticion extends ObservadorDePeticion {
+            @Override
+            protected void ejecutarTrasPeticion() {
+                ActividadPadre.recargarActividad();
+
+
+
+            }
         }
 
     }
