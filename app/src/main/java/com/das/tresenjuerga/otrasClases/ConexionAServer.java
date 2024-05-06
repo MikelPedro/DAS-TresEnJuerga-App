@@ -93,8 +93,8 @@ import java.net.URLConnection;
         - obtenerGamestate(nombre, oponente) -> String(9 chars), String(1 char). [Primer string devuelve estado del tablero, segundo string que figura usas. Ej: "---AB--A-"  y "B"]
         - realizarJugada(nombre, contrario, tablero) -> void [Pone al match ese el tablero dado, la idea es ir actualizando char a char por jugada]
         - quitarPartida(nombre, contrario) -> void [Sirve para rechazar la partida o eliminarla tras acabarla]
-
-
+        - quienInicioPartida(nombre, contrario) -> int (0 -> No match, 1 -> Yo, 2 -> Rival)
+        - miTurno(nombre, contrario) -> bool: empiezo yo?
 
          Las notificaciones a firebase se llaman internamente desde el servidor cuando algo interesante ocurre.
 
@@ -208,7 +208,7 @@ public class ConexionAServer extends Worker {
         JSONObject json = null;
 
 
-        if (id == 0 || id == 2 || id == 3) {
+        if (id == 0 || id == 2 || id == 3 || id == 6) {
             json = (JSONObject) parser.parse(result);
         }
 
@@ -238,6 +238,10 @@ public class ConexionAServer extends Worker {
                 String figura = ((String) json.get("miFigura"));
                 String tablero = (String) json.get("tablero");
                 return new Data.Builder().putString("miFigura", figura).putString("tablero", tablero).build();
+
+            case 6:
+                return new Data.Builder().putLong("respuesta", (long)json.get("respuesta")).build();
+
 
             default:
                 return new Data.Builder().build();
@@ -318,6 +322,7 @@ public class ConexionAServer extends Worker {
                         break;
 
                     default:
+                        // Skippear lectura de body si la peticion no es de esos recursos (o sea, una a firebase directamente)
                         respuesta = new Data.Builder().build();
 
                 }

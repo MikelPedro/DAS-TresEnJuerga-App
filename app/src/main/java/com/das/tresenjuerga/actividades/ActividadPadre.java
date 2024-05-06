@@ -295,7 +295,15 @@ public class ActividadPadre extends AppCompatActivity {
         actividadEnEjecucion.getIntent().removeExtra(key);
     }
 
-    public static String obtenerDeIntent(String key) {return actividadEnEjecucion.getIntent().getExtras().getString(key);}
+    public static String obtenerDeIntent(String key) {
+
+        if (actividadEnEjecucion.getIntent().hasExtra(key)) {
+            return actividadEnEjecucion.getIntent().getExtras().getString(key);
+        } else {
+            return "";
+        }
+    }
+
 
     protected static View obtenerFragmentoOrientacion() {
         return actividadEnEjecucion.getSupportFragmentManager().findFragmentById(actividadEnEjecucion.idContenedor).getView();
@@ -365,12 +373,6 @@ public class ActividadPadre extends AppCompatActivity {
 
         if (ActividadPadre.comprobarUnlock()) {
 
-            // Lockear los botones durante el thread para que el user no pueda cambiar de actividad
-
-            ActividadPadre.lockRedirectsYPeticionesAServer(true);
-
-
-
 
             Data datos = new Data.Builder()
                     .putString("recurso", recurso)
@@ -384,11 +386,15 @@ public class ActividadPadre extends AppCompatActivity {
             OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ConexionAServer.class).setInputData(datos).build();
 
             if (observador != null) {
+
+                // Lockear los botones durante el thread para que el user no pueda cambiar de actividad durante la petición al servidor
+                // Se ejecuta el unlock en el observador tan pronto como se procese la respuesta
+                ActividadPadre.lockRedirectsYPeticionesAServer(true);
+
+
                 WorkManager.getInstance(actAct).getWorkInfoByIdLiveData(otwr.getId())
                         .observe(actAct, observador);
 
-            } else {
-                ActividadPadre.lockRedirectsYPeticionesAServer(false);
             }
 
             WorkManager.getInstance(actAct).enqueue(otwr);

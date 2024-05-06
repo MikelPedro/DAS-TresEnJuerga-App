@@ -62,4 +62,15 @@
     <string name="usuarioLoggeado_amigos">Friends</string>
     <string name="noPoderPonerAhi">That space is already filled</string>
     <string name="noEsTuTurno">You can\'t play, it\'s not your turn</string>
+    <string name="victoria">Victory</string>
+    <string name="derrota">Defeat</string>
+    <string name="empate">Draw</string>
+    <string name="revancha">Rematch</string>
+    <string name="hanPedidoRevancha">The other player has asked for a rematch</string>
+    <string name="revanchaRechazada">The other player is not willing to rematch</string>
+    <string name="puedesPedirRevancha">You may ask for a rematch</string>
+    <string name="revanchaPedida">You have asked for a rematch, awaiting response...</string>
+    <string name="revanchaAceptado">Rematch accepted, connecting...</string>
+    <string name="revanchaReady">Match found, starting...</string>
+    <string name="errorConexion">Connection error. The other player did not connect</string>
 </resources>

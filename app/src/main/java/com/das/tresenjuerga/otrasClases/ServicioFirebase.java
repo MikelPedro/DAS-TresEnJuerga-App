@@ -15,6 +15,7 @@ import com.das.tresenjuerga.actividades.ActividadPadre;
 import com.das.tresenjuerga.actividades.AmigoSolicitudesActivity;
 import com.das.tresenjuerga.actividades.AmigosActivity;
 import com.das.tresenjuerga.actividades.JugarActivity;
+import com.das.tresenjuerga.actividades.PantallaFinActivity;
 import com.das.tresenjuerga.actividades.PartidasDisponiblesActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -32,6 +33,9 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
         if (remoteMessage.getNotification() != null) {
 
+            String recibidor = remoteMessage.getData().get("recibidor");
+            String enviador = remoteMessage.getData().get("enviador");
+
             // Estamos en la app al recibir el msg de Firebase, crear la notificación
             // (si no estuviera la app abierta, Firebase haría automáticamente este paso)
 
@@ -46,27 +50,66 @@ public class ServicioFirebase extends FirebaseMessagingService {
             boolean recargarInterfaz;
 
             switch (id) {
+
+
                 case 0:
+                    // Nueva solicitud de amistad recibida
                     recargarInterfaz = actividadActual instanceof AmigoSolicitudesActivity;
                     break;
                 case 1:
+                    // Solicitud de amistad aceptada por parte del otro
                     recargarInterfaz = actividadActual instanceof AmigosActivity;
                     break;
                 case 2:
+                    // Solicitud de partida recibida / han pedido revancha
+
+                    recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
+
                 case 3:
-                    recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity;
+                    // El otro ha aceptado la partida / revancha aceptada
+
+                    recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
+
                     break;
                 case 4:
+                    // Oponente ha jugado
                 case 5:
+                    // Partida en empate
                 case 6:
-                    if (actividadActual instanceof JugarActivity) {
-                        recargarInterfaz = ((JugarActivity)actividadActual).esElOponente(remoteMessage.getData().get("enviador"));
+                    // Partida en loss
+                    recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+
+
+                    break;
+
+                case 7:
+                    // Rechazar revancha (solo afecta si se está en la pantalla de resultados vs ese oponente en concreto
+
+                    if (actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
+                        recargarInterfaz = true;
+                        ActividadPadre.añadirAIntent("estadoRevancha", "7");
+
+                        // Eliminar la revancha creada de BD
+                        String[] data = {enviador, recibidor};
+                        ActividadPadre.peticionAServidor("partidas",5, data, null);
 
                     } else {
                         recargarInterfaz = false;
                     }
 
-                    break;
+                case 8:
+
+                    // Recibir ping request del otro lado para enviar ping answer (rematch)
+
+                    if (actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
+                        recargarInterfaz = true;
+                        ActividadPadre.añadirAIntent("estadoRevancha", "5");
+
+                    } else {
+                        recargarInterfaz = false;
+
+                    }
+
 
                 default:
                     recargarInterfaz = false;
@@ -74,7 +117,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
             }
 
             if (recargarInterfaz) {
-                actividadActual.recargarActividad();
+                ActividadPadre.recargarActividad();
 
             } else {
 
@@ -98,7 +141,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
 
                 String titulo = actividadActual.getString(actividadActual.getResources().getIdentifier("notifTitulo"+id, "string", actividadActual.getPackageName()));
-                String body =remoteMessage.getData().get("recibidor") + ": " +remoteMessage.getData().get("enviador") + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
+                String body = enviador + ": " + recibidor + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
 
                 elBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), com.google.android.material.R.drawable.abc_btn_check_material))
                         .setSmallIcon(android.R.drawable.checkbox_on_background)

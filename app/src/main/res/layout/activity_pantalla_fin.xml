@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".actividades.UsuarioLoggeadoActivity">
+    tools:context=".actividades.PantallaFinActivity">
+
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/contenedor_usuario_loggeado"
+        android:id="@+id/contenedor_pantalla_fin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"

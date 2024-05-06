@@ -62,5 +62,16 @@
     <string name="usuarioLoggeado_amigos">Amigos</string>
     <string name="noPoderPonerAhi">No</string>
     <string name="noEsTuTurno">no</string>
+    <string name="victoria">Vic</string>
+    <string name="derrota">Loss</string>
+    <string name="empate">tIE</string>
+    <string name="revancha">rematch</string>
+    <string name="hanPedidoRevancha">Pedido rematch</string>
+    <string name="revanchaRechazada">Reject</string>
+    <string name="puedesPedirRevancha">Pedir revancha</string>
+    <string name="revanchaPedida">Pedido</string>
+    <string name="revanchaAceptado">Connecting</string>
+    <string name="revanchaReady">Ready</string>
+    <string name="errorConexion">Error</string>
 
 </resources>

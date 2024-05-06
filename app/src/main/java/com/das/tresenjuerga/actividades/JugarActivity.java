@@ -30,6 +30,8 @@ public class JugarActivity extends ActividadPadre {
 
     @Override
     protected void onStart() {
+
+        // TODO: Redirect si msg firebase adecuado
         super.onStart();
 
         this.fragmento = ActividadPadre.obtenerFragmentoOrientacion();
@@ -43,9 +45,7 @@ public class JugarActivity extends ActividadPadre {
     }
 
 
-    public boolean esElOponente(String oponente) {
-        return ActividadPadre.obtenerDeIntent("oponente").contentEquals(oponente);
-    }
+
 
     private ImageView actualizarCasillaEnUI(int pos) {
 
@@ -86,7 +86,18 @@ public class JugarActivity extends ActividadPadre {
 
         }
     }
+    private void acabarPartida(int resultado) {
+        // Pre: 0 (loss), 1 (draw), 2 (Win) desde este POV
 
+        // TODO: Crear pop-up o actividad o lo que sea donde mostrar result screen
+
+        ActividadPadre.añadirAIntent("estadoRevancha", "0");
+        ActividadPadre.añadirAIntent("resultado", Integer.toString(resultado));
+        ActividadPadre.quitarDeIntent("tuTurno");
+
+        ActividadPadre.redirigirAActividad(PantallaFinActivity.class);
+
+    }
 
     private class ImagenListener implements View.OnClickListener {
 
@@ -98,7 +109,8 @@ public class JugarActivity extends ActividadPadre {
             JugarActivity actividad = JugarActivity.this;
 
 
-            if (ActividadPadre.obtenerDeIntent("tuTurno").contentEquals("false")) {
+            if (!Boolean.getBoolean(ActividadPadre.obtenerDeIntent("tuTurno"))) {
+                // No es tu turno, no se permite jugar
                 ActividadPadre.mostrarToast(R.string.noEsTuTurno);
 
 
@@ -110,7 +122,7 @@ public class JugarActivity extends ActividadPadre {
                 String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), actividad.tablero};
 
                 // Comunicar play en server
-                ActividadPadre.peticionAServidor("partidas", 4, datos, new ObservadorDePlay());
+                ActividadPadre.peticionAServidor("partidas", 4, datos, new ObservadorDePlay(this.id));
 
             } else {
                 ActividadPadre.mostrarToast(R.string.noPoderPonerAhi);
@@ -119,7 +131,16 @@ public class JugarActivity extends ActividadPadre {
         }
 
 
+
         private class ObservadorDePlay extends ObservadorDePeticion {
+
+            private int jugada;
+            public ObservadorDePlay(int jugada) {
+                this.jugada = jugada;
+
+            }
+
+
 
             @Override
             protected void ejecutarTrasPeticion() {
@@ -130,15 +151,17 @@ public class JugarActivity extends ActividadPadre {
 
                 JugarActivity actividad = JugarActivity.this;
                 String tablero = actividad.tablero;
+                char ficha = actividad.figura;
 
-                if (false /* TODO: Calcular wincon here */) {
+                if (this.gana(tablero, ficha, this.jugada)) {
 
                     // WIN
                     this.esperar(5000);
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "2"};
                     ActividadPadre.lockRedirectsYPeticionesAServer(false);
                     ActividadPadre.peticionAServidor("partidas",5, datos, null); // quitar la partida de BD
-                    // TODO: Crear pop-up o actividad o lo que sea donde mostrar result screen
+
+                    JugarActivity.this.acabarPartida(2);
 
 
                 } else if (!tablero.contains("-")) {
@@ -147,7 +170,8 @@ public class JugarActivity extends ActividadPadre {
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "1"};
                     ActividadPadre.lockRedirectsYPeticionesAServer(false);
                     ActividadPadre.peticionAServidor("partidas",5, datos, null); // quitar la partida de BD
-                    // TODO: Crear pop-up o actividad o lo que sea donde mostrar result screen
+
+                    JugarActivity.this.acabarPartida(1);
 
                 } else {
                     ActividadPadre.lockRedirectsYPeticionesAServer(false);
@@ -162,6 +186,51 @@ public class JugarActivity extends ActividadPadre {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+            }
+
+            private boolean gana(String tablero, char ficha, int pos) {
+                switch (pos) {
+                    case 0:
+                        return this.tresEnRaya(tablero, ficha, 0, 1, 2) ||
+                                this.tresEnRaya(tablero, ficha, 0, 3 ,6) ||
+                                this.tresEnRaya(tablero, ficha, 0, 4 ,8);
+                    case 1:
+                        return this.tresEnRaya(tablero, ficha, 0, 1, 2) ||
+                                this.tresEnRaya(tablero, ficha, 1, 4 ,7);
+                    case 2:
+                        return this.tresEnRaya(tablero, ficha, 0, 1, 2) ||
+                                this.tresEnRaya(tablero, ficha, 2, 5 ,8) ||
+                                this.tresEnRaya(tablero, ficha, 2, 4 ,6);
+                    case 3:
+                        return this.tresEnRaya(tablero, ficha, 0, 3, 6) ||
+                                this.tresEnRaya(tablero, ficha, 3, 4 ,5);
+                    case 4:
+                        return this.tresEnRaya(tablero, ficha, 1, 4, 7) ||
+                                this.tresEnRaya(tablero, ficha, 3, 4 ,5) ||
+                                this.tresEnRaya(tablero, ficha, 0, 4 ,8) ||
+                                this.tresEnRaya(tablero, ficha, 2, 4 ,6);
+
+                    case 5:
+                        return this.tresEnRaya(tablero, ficha, 2, 5, 8) ||
+                                this.tresEnRaya(tablero, ficha, 3, 4 ,5);
+                    case 6:
+                        return this.tresEnRaya(tablero, ficha, 0, 3, 6) ||
+                                this.tresEnRaya(tablero, ficha, 6, 7 ,8) ||
+                                this.tresEnRaya(tablero, ficha, 2, 4 ,6);
+                    case 7:
+                        return this.tresEnRaya(tablero, ficha, 1, 4, 7) ||
+                                this.tresEnRaya(tablero, ficha, 6, 7 ,8);
+                    case 8:
+                        return this.tresEnRaya(tablero, ficha, 0, 4, 8) ||
+                                this.tresEnRaya(tablero, ficha, 6, 7 ,8) ||
+                                this.tresEnRaya(tablero, ficha, 2, 5 ,8);
+                }
+
+                return false;
+            }
+
+            private boolean tresEnRaya(String tablero,char ficha, int pos1, int pos2, int pos3) {
+                return tablero.charAt(pos1) == ficha && tablero.charAt(pos2) == ficha && tablero.charAt(pos3) == ficha;
             }
         }
     }
