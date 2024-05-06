@@ -62,4 +62,15 @@
     <string name="usuarioLoggeado_amigos">Amigos</string>
     <string name="noPoderPonerAhi">Ya hay una figura ahí</string>
     <string name="noEsTuTurno">No puedes jugar, no es tu turno</string>
+    <string name="victoria">Victoria</string>
+    <string name="derrota">Derrota</string>
+    <string name="empate">Empate</string>
+    <string name="revancha">Revancha</string>
+    <string name="hanPedidoRevancha">El otro jugador ha pedido la revancha</string>
+    <string name="revanchaRechazada">El otro jugador no quiere hacer revancha</string>
+    <string name="puedesPedirRevancha">Puedes pedir revancha</string>
+    <string name="revanchaPedida">Has pedido revancha, esperando respuesta...</string>
+    <string name="revanchaAceptado">Revancha aceptada, conectando...</string>
+    <string name="revanchaReady">Partida encontrada, empezando...</string>
+    <string name="errorConexion">Error de conexión, el otro jugador no se conectó</string>
 </resources>
