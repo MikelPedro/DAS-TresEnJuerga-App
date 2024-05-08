@@ -1,5 +1,6 @@
 package com.das.tresenjuerga.actividades;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +35,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashSet;
+import java.util.Locale;
 
 public class ActividadPadre extends AppCompatActivity {
 
@@ -41,7 +44,8 @@ public class ActividadPadre extends AppCompatActivity {
 
 
     // TODO: Decorar actividades, están todas creadas ya. Si quereis mover alguna de ellas a la toolbar
-
+    // TODO: Debuggear screen de rematch y juego en vivo.
+    // TODO: Reworkear locks (bloquear el boton de la interfaz en sí en vez de la redirección). Seguir bloqueando de manera de que solo se haga una petición al servidor a la vez (cambiar para poner listeners donde hayan dos peticione simultaneas)
 
     // Toda actividad que pueda ser ejecutada hereda de esta clase
 
@@ -63,6 +67,7 @@ public class ActividadPadre extends AppCompatActivity {
         // Añadir actividades sin toolbar aquí para que no las busque
         ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("JugarActivity");
         ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("PantallaFinActivity");
+        ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("PreferenciasActivity");
 
     }
 
@@ -72,11 +77,11 @@ public class ActividadPadre extends AppCompatActivity {
 
         // Al hacer onCreate se sobrescribe la actividad anterior en ejecución con esta que se está creando
         ActividadPadre.actividadEnEjecucion = this;
+        this.setIdioma();
 
-        if (!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName()))) {
-            super.setSupportActionBar(super.findViewById(R.id.toolbar));
-        }
     }
+
+
     @Override
     public void setContentView(int layout) {
         super.setContentView(layout);
@@ -88,6 +93,11 @@ public class ActividadPadre extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        if (!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName()))) {
+            // Settear toolbar si no es una Activity blacklisted
+            super.setSupportActionBar(super.findViewById(R.id.toolbar));
+        }
         this.setEstilo(this.obtenerFragmentoOrientacion());
 
     }
@@ -122,9 +132,13 @@ public class ActividadPadre extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.getMenuInflater().inflate(R.menu.toolbar,menu);
 
-        return !ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName());
+        boolean toolbarPermitida = !ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName());
+        if (toolbarPermitida) {
+            super.getMenuInflater().inflate(R.menu.toolbar,menu);
+
+        }
+        return toolbarPermitida;
     }
 
     @Override
@@ -240,6 +254,7 @@ public class ActividadPadre extends AppCompatActivity {
         fragmento = idLayout; // Esta es la única forma de pasarle una variable a la clase
                               // La constructora no se puede tocar y los setters no funcionan
                               // para onCreateView
+
         super.getSupportFragmentManager().beginTransaction()
                 .replace(this.idContenedor, new MiFragmento())
                 .commit();
@@ -249,7 +264,7 @@ public class ActividadPadre extends AppCompatActivity {
 
     }
 
-    private void setEstilo(View fragmento) {
+    protected void setEstilo(View fragmento) {
 
         // Pintar los distintos elementos de la UI según el estilo elegido
 
@@ -267,7 +282,7 @@ public class ActividadPadre extends AppCompatActivity {
             for (int i = 0; i != viewGroup.getChildCount(); i++) { // Iterar por cada elemento de la UI
 
                 View elemento = viewGroup.getChildAt(i);
-
+                System.out.println(elemento.getClass());
                 if (elemento instanceof Button) {
                     Button boton = (Button) elemento;
                     boton.setBackgroundColor(Color.GRAY);
@@ -289,6 +304,13 @@ public class ActividadPadre extends AppCompatActivity {
                 }
 
 
+
+            }
+
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setBackgroundColor(Color.GRAY); // Establece el color de fondo de la Toolbar
+                toolbar.setTitleTextColor(Color.BLACK); // Color titulo
 
             }
 
@@ -320,8 +342,40 @@ public class ActividadPadre extends AppCompatActivity {
                 }
             }
 
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setBackgroundColor(Color.GREEN); // Establece el color de fondo de la Toolbar
+                toolbar.setTitleTextColor(Color.WHITE); // Color titulo
+
+            }
+
 
         }
+
+
+    }
+
+    private void setIdioma() {
+
+        // Post: Settear el idioma del usuario para asegurarse de que la actividad hija
+        //       se cargue en el idioma correcto
+
+        // Recoger las preferencias del usuario
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String idioma = prefs.getString("idioma","es");
+        System.out.println(idioma);
+        Locale nuevaloc = new Locale(idioma);
+
+        // Settear el idioma usando el código de eGela
+
+        Locale.setDefault(nuevaloc);
+        Configuration configuration = getBaseContext().getResources().getConfiguration();
+        configuration.setLocale(nuevaloc);
+        configuration.setLayoutDirection(nuevaloc);
+
+        Context context = getBaseContext().createConfigurationContext(configuration);
+        getBaseContext().getResources().updateConfiguration(configuration, context.getResources().getDisplayMetrics());
     }
 
     protected static boolean enLandscape() {
@@ -358,9 +412,11 @@ public class ActividadPadre extends AppCompatActivity {
         // Solo se permite el cambio de actividad si sePermiteCambiar es true o se redirige a la
         // misma actividad
 
-        System.out.println("EN REDIRECT");
+
 
         if (ActividadPadre.comprobarUnlock() || ActividadTarget.isInstance(actividadEnEjecucion)){
+
+
             Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
 
             Bundle bundle = actividadEnEjecucion.getIntent().getExtras();
@@ -406,12 +462,11 @@ public class ActividadPadre extends AppCompatActivity {
     }
 
     public static void mostrarToast(int idMsg) {
-        Toast.makeText(ActividadPadre.actividadEnEjecucion, idMsg, Toast.LENGTH_SHORT);
+        Toast.makeText(ActividadPadre.actividadEnEjecucion, idMsg, Toast.LENGTH_SHORT).show();
     }
 
 
     public static void peticionAServidor(String recurso, int idPeticion, String[] parametros, ObservadorDePeticion observador) {
-
 
         if (ActividadPadre.comprobarUnlock()) {
 
@@ -458,7 +513,7 @@ public class ActividadPadre extends AppCompatActivity {
 
                     ActividadPadre.peticionAServidor("usuarios", 2, datos, null);
 
-                    ActividadPadre.lockRedirectsYPeticionesAServer(false);
+
                     ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
 
                 } else {

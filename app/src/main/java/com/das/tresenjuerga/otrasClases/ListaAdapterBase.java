@@ -116,7 +116,7 @@ public abstract class ListaAdapterBase extends BaseAdapter {
         } else {
             // Estilo neón
 
-            view.setBackgroundColor(Color.BLACK);
+            view.setBackgroundColor(Color.BLUE);
 
             for (int i = 0; i != viewGroup.getChildCount(); i++) { // Iterar por cada elemento de la UI
                 View elemento = viewGroup.getChildAt(i);

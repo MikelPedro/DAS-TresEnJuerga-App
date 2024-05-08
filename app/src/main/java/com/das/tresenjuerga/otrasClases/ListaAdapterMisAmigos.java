@@ -60,8 +60,8 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
             switch (this.id) {
                 case 0:
                     // Ver perfil
-                    ListaAdapterMisAmigos.super.getActividad().añadirAIntent("userAVisualizar", ListaAdapterMisAmigos.this.amigo);
-                    ListaAdapterMisAmigos.super.getActividad().redirigirAActividad(PerfilActivity.class);
+                    ActividadPadre.añadirAIntent("userAVisualizar", ListaAdapterMisAmigos.this.amigo);
+                    ActividadPadre.redirigirAActividad(PerfilActivity.class);
                     break;
                 case 1:
                     // Retar
@@ -69,10 +69,10 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
                     break;
                 case 2:
                     // Borrar amigo
-                    ActividadPadre.peticionAServidor("amistades", 4, datos, null);
+                    ActividadPadre.peticionAServidor("amistades", 4, datos, new ObservadorDeBorrarAmigo());
 
                     String[] data = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo, "0"};
-                    ActividadPadre.peticionAServidor("partidas", 5, data, new ObservadorDeBorrarAmigo());
+                    ActividadPadre.peticionAServidor("partidas", 5, data, null);
 
 
 
@@ -85,6 +85,7 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
             protected void ejecutarTrasPeticion() {
                 String[] data = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo};
                 ActividadPadre.peticionAServidor("firebase",2, data, null);
+                ActividadPadre.recargarActividad();
             }
         }
 

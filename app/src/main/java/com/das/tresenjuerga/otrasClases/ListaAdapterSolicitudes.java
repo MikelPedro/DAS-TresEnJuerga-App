@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.actividades.ActividadPadre;
+import com.das.tresenjuerga.actividades.MainActivity;
 
 public class ListaAdapterSolicitudes extends ListaAdapterBase {
 
@@ -55,18 +56,28 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
             switch (this.id) {
                 case 0:
                     // Aceptar
-                    ActividadPadre.peticionAServidor("amistades", 3, datos, null);
+                    ActividadPadre.peticionAServidor("amistades", 3, datos, new ObservadorDeProcesamientoDeSolicitud());
 
                     break;
 
                 case 1:
                     // Rechazar
-                    ActividadPadre.peticionAServidor("amistades", 4, datos, null);
+                    ActividadPadre.peticionAServidor("amistades", 4, datos, new ObservadorDeProcesamientoDeSolicitud());
 
                     break;
 
 
             }
+
+        }
+    }
+
+    private class ObservadorDeProcesamientoDeSolicitud extends ObservadorDePeticion {
+        @Override
+        protected void ejecutarTrasPeticion() {
+
+            ActividadPadre.recargarActividad();
+
 
         }
     }

@@ -1,6 +1,7 @@
 package com.das.tresenjuerga.actividades;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.work.Data;
@@ -111,7 +113,6 @@ public class PerfilActivity extends ActividadPadre {
                                     byte[] fototransformada = stream.toByteArray();
                                     String fotoen64 = Base64.encodeToString(fototransformada,Base64.NO_WRAP);
 
-
                                     // Pedir a BD que nos suba la foto
 
                                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), fotoen64};
@@ -135,16 +136,26 @@ public class PerfilActivity extends ActividadPadre {
                     }
                     );
 
-            String datos[] = {ActividadPadre.obtenerDeIntent("user")};
-            ActividadPadre.peticionAServidor("usuarios", 4, datos, new ObservadorDeBajadaDeImagen());
-
         } else {
             botonUtilidad.setText(super.getString(R.string.retar));
             botonUtilidad.setOnClickListener(new BotonListener(1));
 
         }
-    }
+        String[] datos = {userAVisualizar};
+        ActividadPadre.peticionAServidor("usuarios", 4, datos, new ObservadorDeBajadaDeImagen());
 
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                // Se ha dado el permiso, colocar al user en el mapa
+                Intent intentDeFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                this.sacadorDeFoto.launch(intentDeFoto);            }
+        }
+    }
 
 
     private class ObservadorDeSubidaDeImagen extends ObservadorDePeticion {
@@ -164,14 +175,19 @@ public class PerfilActivity extends ActividadPadre {
         protected void ejecutarTrasPeticion() {
 
             String fotoString =  super.getString("foto");
+            if (fotoString != null) {
+                byte[] imagen = Base64.decode(fotoString, Base64.NO_WRAP);
 
-            try {
-                Bitmap foto = BitmapFactory.decodeStream(new ByteArrayInputStream(fotoString.getBytes("UTF-8")));
+                Bitmap foto = BitmapFactory.decodeStream(new ByteArrayInputStream(imagen));
                 ((ImageView)PerfilActivity.super.findViewById(R.id.perfilF_Foto)).setImageBitmap(foto);
 
-            } catch (UnsupportedEncodingException e) {
-                System.out.println("ERROR BAJADA FOTO");
-                throw new RuntimeException(e);
+            } else {
+
+                // NO tiene foto de perfil, poner una por defecto
+
+                // Source img: https://www.pngwing.com/es/free-png-pjkpq
+                ((ImageView)PerfilActivity.super.findViewById(R.id.perfilF_Foto)).setImageResource(R.drawable.sin_imagen_perfil);
+
             }
 
 

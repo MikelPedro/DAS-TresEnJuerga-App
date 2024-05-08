@@ -3,6 +3,7 @@ package com.das.tresenjuerga.otrasClases;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -31,6 +32,7 @@ import java.net.URLConnection;
 
 
 
+// INSERT INTO `PARTIDAS` (`UsuarioA`, `UsuarioB`, `Aceptado`, `TurnoDeA`, `Tablero`) VALUES ('YVNlUW51eEhrNFlTSUdpaFFlNmVmQT09', 'QzQ5eVFHZW9KMU81bWxvTGlGdzZZUT09', '1', '1', 'XX-------');
 
 
 /*
@@ -137,6 +139,7 @@ public class ConexionAServer extends Worker {
 
         JSONParser parser = new JSONParser();
         JSONObject json = null;
+        System.out.println(result);
 
         if (id == 0 || id == 1 || id == 4) {
             json = (JSONObject) parser.parse(result);

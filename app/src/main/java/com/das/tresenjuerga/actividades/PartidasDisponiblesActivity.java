@@ -66,6 +66,7 @@ public class PartidasDisponiblesActivity extends ActividadPadre {
         private Object[][] juntarArray(String[] array1, long[] array2) {
             // Proceso:  [[a, b, c] , [d,e,f]]  -> [[a,d],[b,e],[c,f]]
 
+
             Object[][] resultado = new Object[array1.length][2];
 
             for (int i = 0; i != array1.length; i++) {

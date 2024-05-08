@@ -27,7 +27,6 @@ public class MainActivity extends ActividadPadre {
         fragmento.findViewById(R.id.mainB_InicioSesion).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.mainB_Registrar).setOnClickListener(new BotonListener(1));
         fragmento.findViewById(R.id.mainB_Salir).setOnClickListener(new BotonListener(2));
-
     }
 
 

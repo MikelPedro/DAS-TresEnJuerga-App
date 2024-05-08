@@ -2,8 +2,10 @@ package com.das.tresenjuerga.actividades;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.das.tresenjuerga.R;
 
@@ -25,6 +27,15 @@ public class PreferenciasActivity extends ActividadPadre {
 
 
     }
+
+    @Override
+    protected void setEstilo(View fragmento) {
+        super.setEstilo(fragmento);
+        ViewGroup viewGroup = (ViewGroup) fragmento;
+
+        viewGroup.getChildAt(0).setBackgroundColor(Color.WHITE);
+    }
+
 
     private class BotonListener implements View.OnClickListener {
 

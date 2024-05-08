@@ -126,7 +126,7 @@ public class JugarActivity extends ActividadPadre {
                 idString = R.string.descPartidaTurnoDelOtro;
 
             }
-            ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Titulo)).setText(actividad.getResources().getString(idString) + " " + actividad.figura +".");
+            ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(idString) + " " + actividad.figura +".");
 
 
 
@@ -154,7 +154,8 @@ public class JugarActivity extends ActividadPadre {
             JugarActivity actividad = JugarActivity.this;
 
 
-            if (!Boolean.getBoolean(ActividadPadre.obtenerDeIntent("tuTurno"))) {
+
+            if (!Boolean.parseBoolean(ActividadPadre.obtenerDeIntent("tuTurno"))) {
 
                 if (actividad.tablero.contains("-")) {
                     // No es tu turno, no se permite jugar
@@ -166,10 +167,16 @@ public class JugarActivity extends ActividadPadre {
                 // Hacer play en client
                 actividad.tablero = actividad.tablero.substring(0, this.id) + actividad.figura + actividad.tablero.substring(this.id+1, 9);
                 actividad.actualizarCasillaEnUI(this.id);
+
+
+                System.out.println(actividad.getResources().getString(R.string.descPartidaTurnoDelOtro) + " " + actividad.figura +".");
+                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(R.string.descPartidaTurnoDelOtro) + " " + actividad.figura +".");
+
                 ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(false));
-                String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), actividad.tablero};
 
                 // Comunicar play en server
+
+                String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), actividad.tablero};
                 ActividadPadre.peticionAServidor("partidas", 4, datos, new ObservadorDePlay(this.id));
 
             } else {
@@ -189,12 +196,11 @@ public class JugarActivity extends ActividadPadre {
             }
 
 
-
             @Override
             protected void ejecutarTrasPeticion() {
-
                 ActividadPadre.lockRedirectsYPeticionesAServer(true); // Bloquear al user de que cambie de interfaz hasta que se
-                                                                           // se terminen los 3 secs si la partida debería acabar
+
+
                 // Comprobar si la partida acaba
 
                 JugarActivity actividad = JugarActivity.this;
@@ -217,6 +223,7 @@ public class JugarActivity extends ActividadPadre {
                     this.esperar(3000);
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "1"};
                     ActividadPadre.lockRedirectsYPeticionesAServer(false);
+
                     ActividadPadre.peticionAServidor("partidas",5, datos, null); // quitar la partida de BD
 
                     JugarActivity.this.acabarPartida(1);
