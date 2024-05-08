@@ -10,13 +10,39 @@ import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 public class AnadirAmigoActivity extends ActividadPadre {
 
-    // TODO: Obtener la lista de gente que pueden ser amigos.
+    // TODO: Obtener la lista de gente que pueden ser amigos. (lo de lo ultimo de la teoria)
+
+
+    /*
+        Para obtener la lista de amigos posibles, usar el siguiente codigo:
+
+
+            private void tuMetodo() {
+                String[] datos = {ActividadPadre.obtenerDeIntent("user")};
+                ActividadPadre.peticionAServidor("amistades", 0, datos, new ObservadorDeAmigosFactibles());
+            }
+
+            private class ObservadorDeAmigosFactibles extends ObservadorDePeticion {
+
+                @Override
+                protected void ejecutarTrasPeticion() {
+                    String[] genteQueNoSonAmigosTuyos = super.getStringArray("nombres");
+                    // Hacer con esa lista de string lo que haga falta
+                }
+            }
+
+
+
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_anadir_amigo);
+
     }
+
+
 
     @Override
     protected void onStart() {

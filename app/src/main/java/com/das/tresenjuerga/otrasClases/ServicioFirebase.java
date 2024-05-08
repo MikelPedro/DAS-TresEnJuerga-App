@@ -49,9 +49,10 @@ public class ServicioFirebase extends FirebaseMessagingService {
             int id = Integer.parseInt(remoteMessage.getData().get("id"));
             boolean recargarInterfaz;
 
+
             switch (id) {
 
-
+                // Notificaciones si estás fuera de la actividad correspondiente, redirects / refreshes si en la actividad
                 case 0:
                     // Nueva solicitud de amistad recibida
                     recargarInterfaz = actividadActual instanceof AmigoSolicitudesActivity;
@@ -73,14 +74,34 @@ public class ServicioFirebase extends FirebaseMessagingService {
                     break;
                 case 4:
                     // Oponente ha jugado
+                    recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+                    if (recargarInterfaz) {
+                        // Si estamos en la misma interfaz, pasar el flag del turno a true
+                        ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(true));
+                    }
+
+                    break;
                 case 5:
                     // Partida en empate
+                    recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+                    if (recargarInterfaz) {
+                        ActividadPadre.añadirAIntent("oponenteAcaboLaPartida", "1");
+
+                    }
                 case 6:
                     // Partida en loss
+
                     recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+                    if (recargarInterfaz) {
+                        ActividadPadre.añadirAIntent("oponenteAcaboLaPartida", "0");
+                    }
 
 
                     break;
+
+
+
+                // Mensajes firebase que nunca son notificaciones
 
                 case 7:
                     // Rechazar revancha (solo afecta si se está en la pantalla de resultados vs ese oponente en concreto
@@ -110,16 +131,30 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
                     }
 
+                case 9:
+                    // Ser expulsado de la partida porque te eliminó como amigo
+
+                    ActividadPadre.añadirAIntent("expulsadoPorNoAmigo", "true");
+                    recargarInterfaz = true;
+
+
 
                 default:
                     recargarInterfaz = false;
 
             }
 
+
+
             if (recargarInterfaz) {
+                // Refrescar la actividad
                 ActividadPadre.recargarActividad();
 
-            } else {
+                // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
+                ActividadPadre.lockRedirectsYPeticionesAServer(false);
+
+
+            } else if (id < 7) {
 
                 NotificationManager elManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 NotificationCompat.Builder elBuilder = new NotificationCompat.Builder(actividadActual.getActividadActual(), "IdCanal");
@@ -154,10 +189,11 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
                 elManager.notify(1, elBuilder.build());
 
+                // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
+                ActividadPadre.lockRedirectsYPeticionesAServer(false);
+
             }
 
-            // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
-            ActividadPadre.lockRedirectsYPeticionesAServer(false);
 
         }
 

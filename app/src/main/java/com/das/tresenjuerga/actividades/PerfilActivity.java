@@ -1,17 +1,40 @@
 package com.das.tresenjuerga.actividades;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import android.Manifest;
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ListaAdapterMisAmigos;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLSyntaxErrorException;
+
 public class PerfilActivity extends ActividadPadre {
 
     private boolean miPerfil;
+    private ActivityResultLauncher<Intent> sacadorDeFoto;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +47,6 @@ public class PerfilActivity extends ActividadPadre {
         String userAVisualizar = ActividadPadre.obtenerDeIntent("userAVisualizar");
         this.miPerfil = userAVisualizar.contentEquals(ActividadPadre.obtenerDeIntent("user"));
 
-        // TODO: Descargar foto here
 
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         fragmento.findViewById(R.id.perfilB_Volver).setOnClickListener(new BotonListener(2));
@@ -41,6 +63,81 @@ public class PerfilActivity extends ActividadPadre {
             botonUtilidad.setText(super.getString(R.string.cambiarFoto));
             botonUtilidad.setOnClickListener(new BotonListener(0));
 
+            // intent para camara
+
+            this.sacadorDeFoto =
+                    registerForActivityResult(new
+                            ActivityResultContracts.StartActivityForResult(), result -> {
+                        if (result.getResultCode() == RESULT_OK &&
+                                result.getData()!= null) {
+
+                            // Obtener la foto elegida
+
+
+                            Bundle bundle = result.getData().getExtras();
+                            ImageView fotoView = findViewById(R.id.perfilF_Foto);
+                            Bitmap foto = (Bitmap) bundle.get("data");
+
+                            // Rescalar a 150dpx150dp
+
+                            int anchoDestino = fotoView.getWidth();
+                            int altoDestino = fotoView.getHeight();
+
+                            int anchoImagen = foto.getWidth();
+                            int altoImagen = foto.getHeight();
+                            float ratioImagen = (float) anchoImagen / (float) altoImagen;
+                            float ratioDestino = (float) anchoDestino / (float) altoDestino;
+                            int anchoFinal = anchoDestino;
+                            int altoFinal = altoDestino;
+
+                            if (ratioDestino > ratioImagen) {
+                                anchoFinal = (int) ((float)altoDestino * ratioImagen);
+                            } else {
+                                altoFinal = (int) ((float)anchoDestino / ratioImagen);
+                            }
+
+                            if (anchoFinal == 0 || altoFinal == 0) {
+                                ActividadPadre.mostrarToast(R.string.errorFotoRotacion);
+
+                            } else {
+                                Bitmap fotoRedimensionada = Bitmap.createScaledBitmap(foto,anchoFinal,altoFinal,true);
+
+                                try {
+                                    // Codificar la imagen para subirla
+
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    fotoRedimensionada.compress(Bitmap.CompressFormat.JPEG, 10, stream);
+
+                                    byte[] fototransformada = stream.toByteArray();
+                                    String fotoen64 = Base64.encodeToString(fototransformada,Base64.NO_WRAP);
+
+
+                                    // Pedir a BD que nos suba la foto
+
+                                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), fotoen64};
+
+                                    ActividadPadre.peticionAServidor("usuarios", 3, datos, new ObservadorDeSubidaDeImagen());
+
+
+                                } catch (Exception e) {
+                                    ActividadPadre.mostrarToast(R.string.errorFotoTamaño);
+
+                                }
+                            }
+
+
+
+
+
+
+
+                        }
+                    }
+                    );
+
+            String datos[] = {ActividadPadre.obtenerDeIntent("user")};
+            ActividadPadre.peticionAServidor("usuarios", 4, datos, new ObservadorDeBajadaDeImagen());
+
         } else {
             botonUtilidad.setText(super.getString(R.string.retar));
             botonUtilidad.setOnClickListener(new BotonListener(1));
@@ -48,6 +145,40 @@ public class PerfilActivity extends ActividadPadre {
         }
     }
 
+
+
+    private class ObservadorDeSubidaDeImagen extends ObservadorDePeticion {
+
+
+        @Override
+        protected void ejecutarTrasPeticion() {
+            // La imagen se ha subido, recargar la actividad para mostrarla
+            ActividadPadre.recargarActividad();
+
+        }
+    }
+    private class ObservadorDeBajadaDeImagen extends ObservadorDePeticion {
+
+
+        @Override
+        protected void ejecutarTrasPeticion() {
+
+            String fotoString =  super.getString("foto");
+
+            try {
+                Bitmap foto = BitmapFactory.decodeStream(new ByteArrayInputStream(fotoString.getBytes("UTF-8")));
+                ((ImageView)PerfilActivity.super.findViewById(R.id.perfilF_Foto)).setImageBitmap(foto);
+
+            } catch (UnsupportedEncodingException e) {
+                System.out.println("ERROR BAJADA FOTO");
+                throw new RuntimeException(e);
+            }
+
+
+
+
+        }
+    }
 
     private class BotonListener implements View.OnClickListener {
 
@@ -60,14 +191,30 @@ public class PerfilActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
-                    // TODO: Cambiar foto here
+                    // Cambiar foto
+                    if (ContextCompat.checkSelfPermission(ActividadPadre.getActividadActual(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                        // Pedir permiso para usar cam para subir foto
+                        ActivityCompat.requestPermissions(ActividadPadre.getActividadActual(),
+                                new String[]{Manifest.permission.CAMERA},
+                                1);
+
+                    } else {
+                        // Ya tiene el permiso, abrir cam
+
+                        Intent intentDeFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        PerfilActivity.this.sacadorDeFoto.launch(intentDeFoto);
+                    }
                     break;
                 case 1:
+                    // Retar
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("userAVisualizar")};
                     ActividadPadre.peticionAServidor("partidas", 0, datos, new ObservadorDeRetarPartida());
 
                     break;
                 case 2:
+                    // Volver
+
                     ActividadPadre.quitarDeIntent("userAVisualizar");
 
                     // Dependiendo de si estoy viendo mi perfil o no, deducir de donde vinimos para volver allí

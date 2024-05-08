@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -30,15 +32,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.HashSet;
+
 public class ActividadPadre extends AppCompatActivity {
 
 
 
 
 
-    // TODO: Están básciamente todas las actividades necesarias creadas.
-    //       La única que queda por crear es la que enseña la propia partida del tic tac toe.
-    //       Aunque puede que venga bien decorarlas un poco más
+    // TODO: Decorar actividades, están todas creadas ya. Si quereis mover alguna de ellas a la toolbar
 
 
     // Toda actividad que pueda ser ejecutada hereda de esta clase
@@ -46,6 +48,7 @@ public class ActividadPadre extends AppCompatActivity {
 
     private static ActividadPadre actividadEnEjecucion; // La actividad que el user está visualizando
 
+    private static final HashSet<String> ACTIVIDADES_SIN_TOOLBAR = new HashSet<String>(); //  Actividades sin toolbar
 
 
     public static ActividadPadre getActividadActual() {return ActividadPadre.actividadEnEjecucion;} // Getter de la actividad
@@ -56,12 +59,23 @@ public class ActividadPadre extends AppCompatActivity {
 
     private static int cantidadLocks = 0;
 
+    static {
+        // Añadir actividades sin toolbar aquí para que no las busque
+        ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("JugarActivity");
+        ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("PantallaFinActivity");
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Al hacer onCreate se sobrescribe la actividad anterior en ejecución con esta que se está creando
         ActividadPadre.actividadEnEjecucion = this;
+
+        if (!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName()))) {
+            super.setSupportActionBar(super.findViewById(R.id.toolbar));
+        }
     }
     @Override
     public void setContentView(int layout) {
@@ -106,6 +120,33 @@ public class ActividadPadre extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.getMenuInflater().inflate(R.menu.toolbar,menu);
+
+        return !ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        /*
+
+        int id=item.getItemId();
+
+        if (id == R.id.toolbarConfiguracion) {
+
+        } else if ...
+
+         */
+
+        // Por ahora solo una opcion, por lo que se asume que se pincha esa
+
+        // Guardar que clase llamó para poder redirigir de vuelta ahí
+        ActividadPadre.añadirAIntent("actividadQueLlama", this.getClass().getSimpleName());
+        ActividadPadre.redirigirAActividad(PreferenciasActivity.class);
+
+        return super.onOptionsItemSelected(item);
+    }
 
     protected void setLayout() {
 
@@ -332,8 +373,9 @@ public class ActividadPadre extends AppCompatActivity {
 
 
 
-            ActividadPadre.actividadEnEjecucion.finish();
             ActividadPadre.actividadEnEjecucion.startActivity(intent);
+            ActividadPadre.actividadEnEjecucion.finish();
+
         }
 
 

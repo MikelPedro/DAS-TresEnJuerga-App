@@ -68,7 +68,7 @@ public abstract class ListaAdapterBase extends BaseAdapter {
     }
 
     private void setEstilo(View view) {
-        // TODO: Settear estilo here
+        // TODO: Settear más estilos here, por ahora solo están día y neón de la app de biliboteca
 
         // Pintar los distintos elementos de la UI según el estilo elegido
 

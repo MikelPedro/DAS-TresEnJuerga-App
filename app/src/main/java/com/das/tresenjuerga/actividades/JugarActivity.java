@@ -2,9 +2,11 @@ package com.das.tresenjuerga.actividades;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
@@ -26,20 +28,51 @@ public class JugarActivity extends ActividadPadre {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_jugar);
+
+        // Checkear flags para ver si se requiere redirect porque no tiene sentido mostrar la partida
+
+        if (ActividadPadre.obtenerDeIntent("expulsadoPorNoAmigo").contentEquals("true")) {
+
+            // El otro user te quita de amigo mientras ves su partida, como ya no existe la partida
+            // te redigires una pestaña atrás
+
+            ActividadPadre.quitarDeIntent("expulsadoPorNoAmigo");
+            ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
+        } else {
+            String estadoFinPartida = ActividadPadre.obtenerDeIntent("oponenteAcaboLaPartida");
+
+            if (!estadoFinPartida.contentEquals("")) {
+                ActividadPadre.quitarDeIntent("oponenteAcaboLaPartida");
+                this.acabarPartida(Integer.parseInt(estadoFinPartida));
+            }
+        }
+
+
     }
 
     @Override
     protected void onStart() {
 
-        // TODO: Redirect si msg firebase adecuado
         super.onStart();
 
         this.fragmento = ActividadPadre.obtenerFragmentoOrientacion();
         this.fragmento.findViewById(R.id.partidaB_Volver).setOnClickListener(new BotonListener());
+
         String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente")};
         ActividadPadre.peticionAServidor("partidas", 3, datos, new ObservadorDeTablero());
 
 
+        // TODO: Poner distintos fondos segun preferencias, por ahora fondo_0 es default
+
+        /*
+            Source imagenes:
+
+            0:
+               fondo: https://www.istockphoto.com/es/foto/pizarra-ticktacktoe-fondo-gm946399874-258448731?searchscope=image%2Cfilm
+               figuras: https://www.istockphoto.com/es/foto/tick-tack-toe-en-la-pizarra-gm1134456281-301461381?searchscope=image%2Cfilm
+
+         */
+        ((ImageView)this.fragmento.findViewById(R.id.partidaI_Fondo)).setImageResource(R.drawable.fondo_0);
 
 
     }
@@ -49,21 +82,19 @@ public class JugarActivity extends ActividadPadre {
 
     private ImageView actualizarCasillaEnUI(int pos) {
 
-        // TODO: Settear la imagen de la casilla aquí.
+        // TODO: Poner distintos X/O segun preferencias, por ahora modo_0 es default
 
         ImageView casilla = (ImageView) this.fragmento.findViewById(super.getResources().getIdentifier("partidaI_"+pos, "id", super.getPackageName()));
         char figura = this.tablero.charAt(pos);
 
         switch (figura) {
-            case 'A': // X
-               //  casilla.setImageIcon(); / casilla.setImageBitmap();  <- set image here
+            case 'X': // X
+                casilla.setImageResource(R.drawable.x_0);
                 break;
-            case 'B': // 0
-
-                break;
-            case '-': // Casilla vacía
-
-                break;
+            case 'O': // 0
+                casilla.setImageResource(R.drawable.o_0);
+         // case '-':
+         //     NOP;
 
         }
         return casilla;
@@ -83,13 +114,27 @@ public class JugarActivity extends ActividadPadre {
             }
 
 
+            // Settear titulo
+            ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Titulo)).setText(actividad.getResources().getString(R.string.tituloPartida) + " " + ActividadPadre.obtenerDeIntent("oponente"));
+
+            // Settear descripcion
+
+            int idString;
+            if (ActividadPadre.obtenerDeIntent("tuTurno").contentEquals(Boolean.toString(true))) {
+                idString = R.string.descPartidaTuTurno;
+            } else {
+                idString = R.string.descPartidaTurnoDelOtro;
+
+            }
+            ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Titulo)).setText(actividad.getResources().getString(idString) + " " + actividad.figura +".");
+
+
 
         }
     }
     private void acabarPartida(int resultado) {
         // Pre: 0 (loss), 1 (draw), 2 (Win) desde este POV
 
-        // TODO: Crear pop-up o actividad o lo que sea donde mostrar result screen
 
         ActividadPadre.añadirAIntent("estadoRevancha", "0");
         ActividadPadre.añadirAIntent("resultado", Integer.toString(resultado));
@@ -110,15 +155,18 @@ public class JugarActivity extends ActividadPadre {
 
 
             if (!Boolean.getBoolean(ActividadPadre.obtenerDeIntent("tuTurno"))) {
-                // No es tu turno, no se permite jugar
-                ActividadPadre.mostrarToast(R.string.noEsTuTurno);
+
+                if (actividad.tablero.contains("-")) {
+                    // No es tu turno, no se permite jugar
+                    ActividadPadre.mostrarToast(R.string.noEsTuTurno);
+                }
 
 
             } else if (actividad.tablero.charAt(this.id) == '-') {
                 // Hacer play en client
                 actividad.tablero = actividad.tablero.substring(0, this.id) + actividad.figura + actividad.tablero.substring(this.id+1, 9);
                 actividad.actualizarCasillaEnUI(this.id);
-                ActividadPadre.añadirAIntent("tuTurno", "false");
+                ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(false));
                 String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), actividad.tablero};
 
                 // Comunicar play en server
@@ -146,7 +194,7 @@ public class JugarActivity extends ActividadPadre {
             protected void ejecutarTrasPeticion() {
 
                 ActividadPadre.lockRedirectsYPeticionesAServer(true); // Bloquear al user de que cambie de interfaz hasta que se
-                                                                           // se terminen los 5 secs si la partida debería acabar
+                                                                           // se terminen los 3 secs si la partida debería acabar
                 // Comprobar si la partida acaba
 
                 JugarActivity actividad = JugarActivity.this;
@@ -156,7 +204,7 @@ public class JugarActivity extends ActividadPadre {
                 if (this.gana(tablero, ficha, this.jugada)) {
 
                     // WIN
-                    this.esperar(5000);
+                    this.esperar(3000);
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "2"};
                     ActividadPadre.lockRedirectsYPeticionesAServer(false);
                     ActividadPadre.peticionAServidor("partidas",5, datos, null); // quitar la partida de BD
@@ -166,7 +214,7 @@ public class JugarActivity extends ActividadPadre {
 
                 } else if (!tablero.contains("-")) {
                     // DRAW
-                    this.esperar(5000);
+                    this.esperar(3000);
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "1"};
                     ActividadPadre.lockRedirectsYPeticionesAServer(false);
                     ActividadPadre.peticionAServidor("partidas",5, datos, null); // quitar la partida de BD

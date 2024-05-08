@@ -151,14 +151,7 @@ public class ConexionAServer extends Worker {
 
             case 4:
                 return new Data.Builder().putString("foto", (String)json.get("foto")).build();
-            /*
-            // TODO: Crear el bitmap en la actividad así
-            try {
-                   BitmapFactory.decodeStream(new ByteArrayInputStream(stringDeLaFoto.getBytes("UTF-8")));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-            */
+
 
             default:
                 return new Data.Builder().build();

@@ -71,9 +71,21 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
                     // Borrar amigo
                     ActividadPadre.peticionAServidor("amistades", 4, datos, null);
 
+                    String[] data = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo, "0"};
+                    ActividadPadre.peticionAServidor("partidas", 5, data, new ObservadorDeBorrarAmigo());
+
+
 
             }
 
+        }
+        private class ObservadorDeBorrarAmigo extends ObservadorDePeticion {
+
+            @Override
+            protected void ejecutarTrasPeticion() {
+                String[] data = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo};
+                ActividadPadre.peticionAServidor("firebase",2, data, null);
+            }
         }
 
         private class ObservadorDeRetarPartida extends ObservadorDePeticion {

@@ -307,8 +307,9 @@ public class PantallaFinActivity extends ActividadPadre {
 
                     // Notificar a firebase de que se cancela la revancha
                     ActividadPadre.peticionAServidor("firebase", 0, datos, null);
-
-
+                    ActividadPadre.quitarDeIntent("estadoRevancha");
+                    ActividadPadre.quitarDeIntent("resultado");
+                    ActividadPadre.quitarDeIntent("oponente");
                     ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
 
             }
