@@ -34,7 +34,22 @@ import java.sql.SQLSyntaxErrorException;
 
 public class PerfilActivity extends ActividadPadre {
 
-    private boolean miPerfil;
+
+    /*
+        Esta pantalla indica los datos de un perfil (puede ser el tuyo o el de otro)
+
+        En el perfil se muestra la foto de perfil y el nombre del usuario
+        (teniendo una foto placeholder si no se ha sacado una ya)
+
+        Si estás visualizando tu perfil, se te permite cambiar la foto.
+        Si estás visualizando otro perfil, se te permite retar a la persona (dado que tiene que
+        ser tu amigo para que le puedas ver su perfil)
+
+
+
+     */
+
+    private boolean miPerfil; // indica si estoy viendo mi perfil o el de otra persona
     private ActivityResultLauncher<Intent> sacadorDeFoto;
 
     @Override
@@ -46,22 +61,29 @@ public class PerfilActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Comprobar si el usuario que estoy viendo y yo somos el mismo
         String userAVisualizar = ActividadPadre.obtenerDeIntent("userAVisualizar");
         this.miPerfil = userAVisualizar.contentEquals(ActividadPadre.obtenerDeIntent("user"));
 
 
+        // Cargar el fragmento de la actividad
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        // Dar listeners a los botones
         fragmento.findViewById(R.id.perfilB_Volver).setOnClickListener(new BotonListener(2));
         ((TextView)fragmento.findViewById(R.id.perfilT_Nombre)).setText(userAVisualizar);
 
+
+        // Este botón es interesante, pues se le da un listener distinto dependiendo de si puedo cambiar mi foto
+        // o retar a mi amigo
         Button botonUtilidad = fragmento.findViewById(R.id.perfilB_CambiarFoto);
 
 
-        // Esta interfaz se usa para ver los datos del perfil de ti y de tus amigos.
-        // Si estás viendo el perfil de un amigo se le permite retar a una partida
-        // Si estás viendo tu perfil, se te permite cambiar la foto
 
         if (this.miPerfil) {
+            // si es mi perfil, dar el listener de cambiar la foto
+
             botonUtilidad.setText(super.getString(R.string.cambiarFoto));
             botonUtilidad.setOnClickListener(new BotonListener(0));
 
@@ -99,6 +121,7 @@ public class PerfilActivity extends ActividadPadre {
                             }
 
                             if (anchoFinal == 0 || altoFinal == 0) {
+                                // Fallback de error por rotacion de camara
                                 ActividadPadre.mostrarToast(R.string.errorFotoRotacion);
 
                             } else {
@@ -121,6 +144,8 @@ public class PerfilActivity extends ActividadPadre {
 
 
                                 } catch (Exception e) {
+
+                                    // Error por demasiada calidad de imagen
                                     ActividadPadre.mostrarToast(R.string.errorFotoTamaño);
 
                                 }
@@ -137,21 +162,27 @@ public class PerfilActivity extends ActividadPadre {
                     );
 
         } else {
+            // si no es mi perfil, dar al botón el listener de retar
             botonUtilidad.setText(super.getString(R.string.retar));
             botonUtilidad.setOnClickListener(new BotonListener(1));
 
         }
+
+        // Pedir al servidor que nos de la foto de perfil del usuario que estamos viendo
         String[] datos = {userAVisualizar};
         ActividadPadre.peticionAServidor("usuarios", 4, datos, new ObservadorDeBajadaDeImagen());
 
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        // Procesar la respuesta del permiso de la camara
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                // Se ha dado el permiso, colocar al user en el mapa
+                // Se ha dado el permiso, abrir la camara
                 Intent intentDeFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 this.sacadorDeFoto.launch(intentDeFoto);            }
         }
@@ -174,8 +205,12 @@ public class PerfilActivity extends ActividadPadre {
         @Override
         protected void ejecutarTrasPeticion() {
 
+            // El servidor responde con la foto de perfil
+
             String fotoString =  super.getString("foto");
             if (fotoString != null) {
+
+                // Si la foto existe, cargarla
                 byte[] imagen = Base64.decode(fotoString, Base64.NO_WRAP);
 
                 Bitmap foto = BitmapFactory.decodeStream(new ByteArrayInputStream(imagen));
@@ -183,7 +218,7 @@ public class PerfilActivity extends ActividadPadre {
 
             } else {
 
-                // NO tiene foto de perfil, poner una por defecto
+                // Si la foto no existe, poner una por defecto cargada del cliente de la app
 
                 // Source img: https://www.pngwing.com/es/free-png-pjkpq
                 ((ImageView)PerfilActivity.super.findViewById(R.id.perfilF_Foto)).setImageResource(R.drawable.sin_imagen_perfil);
@@ -207,7 +242,9 @@ public class PerfilActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
-                    // Cambiar foto
+                    // El primer botón en estado 0 cambia la foto del perfil
+
+                    // Ver si tenemos permiso para la camara
                     if (ContextCompat.checkSelfPermission(ActividadPadre.getActividadActual(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
                         // Pedir permiso para usar cam para subir foto
@@ -223,21 +260,24 @@ public class PerfilActivity extends ActividadPadre {
                     }
                     break;
                 case 1:
-                    // Retar
+
+                    // El primer botón en estado 1 sirve para retar al jugador, pedir al servidor que se rete
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("userAVisualizar")};
                     ActividadPadre.peticionAServidor("partidas", 0, datos, new ObservadorDeRetarPartida());
 
                     break;
                 case 2:
-                    // Volver
+                    // El segundo botón va una interfaz atrás
 
                     ActividadPadre.quitarDeIntent("userAVisualizar");
 
                     // Dependiendo de si estoy viendo mi perfil o no, deducir de donde vinimos para volver allí
                     if (PerfilActivity.this.miPerfil) {
+                        // Si veo mi perfil, voy al menú principal de usuarios loggeados
                         ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
 
                     } else {
+                        // Si no veo mi perfil, voy a mi lista de amigos
                         ActividadPadre.redirigirAActividad(AmigosActivity.class);
 
                     }
@@ -249,6 +289,8 @@ public class PerfilActivity extends ActividadPadre {
         private class ObservadorDeRetarPartida extends ObservadorDePeticion {
             @Override
             protected void ejecutarTrasPeticion() {
+
+                // El servidor responde con si se puede retar o no, mostrar toast correspondiente
 
                 if (super.getBoolean("respuesta")) {
                     ActividadPadre.mostrarToast(R.string.retarCorrecto);

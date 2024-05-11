@@ -11,6 +11,13 @@ import com.das.tresenjuerga.otrasClases.DialogoSalir;
 
 public class MainActivity extends ActividadPadre {
 
+    /*
+        Esta es la pantalla principal de la app, tiene el botón que redirige al formulario de sign up y otro
+        para login
+
+
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -23,7 +30,11 @@ public class MainActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Obtener el fragmento de la actividad
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        // Dar listeners a los botones
         fragmento.findViewById(R.id.mainB_InicioSesion).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.mainB_Registrar).setOnClickListener(new BotonListener(1));
         fragmento.findViewById(R.id.mainB_Salir).setOnClickListener(new BotonListener(2));
@@ -41,15 +52,15 @@ public class MainActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
-                    // Ir a menú de inicio sesión
+                    // Este botón va al menú de inicio de sesión
                     ActividadPadre.redirigirAActividad(InicioSesionActivity.class);
                     break;
                 case 1:
-                    // Ir al menú de registro
+                    // Este botón va al menú de registro
                     ActividadPadre.redirigirAActividad(RegistroActivity.class);
                     break;
                 case 2:
-                    // Salir de la app
+                    // Este botón sale de la app, para ello muestra un dialogo de confirmación de salida
                     DialogoSalir alertaSalir = new DialogoSalir();
                     alertaSalir.show(ActividadPadre.getActividadActual().getSupportFragmentManager(), "etiqueta");
             }

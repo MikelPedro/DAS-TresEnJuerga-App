@@ -17,6 +17,9 @@ import com.das.tresenjuerga.actividades.ActividadPadre;
 public abstract class ListaAdapterBase extends BaseAdapter {
 
 
+    // La clase padre que hereda al resto de ArrayAdapters, tiene las funcionalidades básicas
+    // que sus hijos heredan
+
     private Object[] listaValores;
     private int cardViewTarget;
     private ActividadPadre actividad;
@@ -70,7 +73,8 @@ public abstract class ListaAdapterBase extends BaseAdapter {
     private void setEstilo(View view) {
         // TODO: Settear más estilos here, por ahora solo están día y neón de la app de biliboteca
 
-        // Pintar los distintos elementos de la UI según el estilo elegido
+        // Pintar los distintos elementos de la UI según el estilo elegido. Usa la misma lógica que estilos
+        // de actividades
 
 
 

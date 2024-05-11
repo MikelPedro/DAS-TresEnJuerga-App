@@ -12,6 +12,23 @@ import com.das.tresenjuerga.R;
 public class PreferenciasActivity extends ActividadPadre {
 
 
+
+    /*
+        Esta pantalla muestra las preferencias del usuario, que se guardan incluso cuando se cierra la app
+        Los personalizables son:
+
+        * Idioma:
+          - Español
+          - Inglés
+
+        * Estilo general
+          - Día
+          - Neón
+
+
+     */
+
+
     // TODO: Añadir mas preferencias, como el estilo de tic tac toe a usar. Por ahora solo se usa el de pizarra (el de por defecto)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +39,11 @@ public class PreferenciasActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Obtener el fragmento de la actividad
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        // Dar listeners a los botones
         fragmento.findViewById(R.id.preferenciasB_Volver).setOnClickListener(new BotonListener());
 
 
@@ -30,6 +51,10 @@ public class PreferenciasActivity extends ActividadPadre {
 
     @Override
     protected void setEstilo(View fragmento) {
+
+        // Overridear setEstilo de ActividadPadre, para poder añadir al estilo que el fondo del contenedor
+        // de las preferencias sea blanco (para que pueda ser siempre visible)
+
         super.setEstilo(fragmento);
         ViewGroup viewGroup = (ViewGroup) fragmento;
 
@@ -41,6 +66,9 @@ public class PreferenciasActivity extends ActividadPadre {
 
         @Override
         public void onClick(View v) {
+
+            // Si se pincha en el botón, volver a la actividad desde la que se llamó
+
             String actividadQueLlama = ActividadPadre.obtenerDeIntent("actividadQueLlama");
             ActividadPadre.quitarDeIntent("actividadQueLlama");
             try {

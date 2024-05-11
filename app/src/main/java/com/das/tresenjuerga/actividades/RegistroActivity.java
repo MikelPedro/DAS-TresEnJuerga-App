@@ -11,6 +11,18 @@ import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 public class RegistroActivity extends ActividadPadre {
 
+
+    /*
+        Esta interfaz tiene el registro para registrar un nuevo usuario.
+
+        Por cada usuario nuevo se le pide el nombre y contraseña
+
+        Las contraseñas se pueden repetir con otros usuarios, pero no los nombres.
+        Ambos campos deben tener entre 1 y 50 chars.
+
+
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +32,11 @@ public class RegistroActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Recoger el fragmento de la actividad
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        // Dar listeners a los botones
         fragmento.findViewById(R.id.registroB_Confirmar).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.registroB_Salir).setOnClickListener(new BotonListener(1));
 
@@ -41,10 +57,14 @@ public class RegistroActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
+
+                    // Este botón manda la petición de registro
+                    // Para ello, recoge los campos correspondientes y los manda a BD
                     String user = ((EditText) RegistroActivity.super.findViewById(R.id.registroE_Nombre)).getText().toString();
-                    String pass = ((EditText) RegistroActivity.super.findViewById(R.id.registroE_Nombre)).getText().toString();
+                    String pass = ((EditText) RegistroActivity.super.findViewById(R.id.registroE_Contrasena)).getText().toString();
 
                     if (user.length() < 51 && pass.length() < 51 && user.length() > 0 && pass.length() > 0) {
+                        // Comprobado que user y pass entre 1 y 50 chars, pedir al servidor que se registre
                         String[] datos = {user, pass};
                         ActividadPadre.peticionAServidor("usuarios", 0, datos, new ObservadorDeRegistro());
 
@@ -57,7 +77,7 @@ public class RegistroActivity extends ActividadPadre {
 
                     break;
                 case 1:
-                    // Volver al menú principal
+                    // El otro botón manda una pantalla atrás, a Main Activity
                     ActividadPadre.redirigirAActividad(MainActivity.class);
 
 
@@ -67,15 +87,15 @@ public class RegistroActivity extends ActividadPadre {
         private class ObservadorDeRegistro extends ObservadorDePeticion {
             @Override
             protected void ejecutarTrasPeticion() {
+                // El servidor nos responde con si el registro fue correcto
 
                 if (super.getBoolean("respuesta")) {
-                    System.out.println("REDIRECT");
-
+                    // Registro correcto, redirigir a Main Activity
                     ActividadPadre.redirigirAActividad(MainActivity.class);
 
                 } else {
 
-                    // Error en autentificación
+                    // Error por duplicado
                     ActividadPadre.mostrarToast(R.string.errorNombreCogido);
 
                 }

@@ -10,6 +10,8 @@ import com.das.tresenjuerga.actividades.MainActivity;
 
 public class ListaAdapterSolicitudes extends ListaAdapterBase {
 
+    // El ArrayAdapter que muestra las solicitudes de amistad
+
     private String nombreSolicitante;
 
     public ListaAdapterSolicitudes(Object[] listaValores, int cardViewTarget) {
@@ -22,6 +24,7 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
         // Generar el layout según la plantilla dada por la clase que le llama
         View view = super.crearLayout();
 
+        // Obtener el nombre de la persona que solicita
         this.nombreSolicitante = super.getString(pos, 0);
         ((TextView)view.findViewById(R.id.instanciaSolicitudT_Nombre)).setText(this.nombreSolicitante);
 
@@ -55,13 +58,13 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
 
             switch (this.id) {
                 case 0:
-                    // Aceptar
+                    // Aceptar petición, pedir esto a servidor
                     ActividadPadre.peticionAServidor("amistades", 3, datos, new ObservadorDeProcesamientoDeSolicitud());
 
                     break;
 
                 case 1:
-                    // Rechazar
+                    // Rechazar petición, pedir a servidor esto
                     ActividadPadre.peticionAServidor("amistades", 4, datos, new ObservadorDeProcesamientoDeSolicitud());
 
                     break;
@@ -75,6 +78,8 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
     private class ObservadorDeProcesamientoDeSolicitud extends ObservadorDePeticion {
         @Override
         protected void ejecutarTrasPeticion() {
+
+            // Tras procesar una solicitud, refrescar la UI para quitarla de la lista
 
             ActividadPadre.recargarActividad();
 

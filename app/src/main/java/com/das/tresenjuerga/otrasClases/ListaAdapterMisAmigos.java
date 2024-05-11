@@ -11,6 +11,8 @@ import com.das.tresenjuerga.actividades.PerfilActivity;
 
 public class ListaAdapterMisAmigos extends ListaAdapterBase{
 
+    // El ArrayAdapter que crea la lista de los amigos de un usuario
+
 
     private String amigo;
     public ListaAdapterMisAmigos(Object[] listaValores, int cardViewTarget) {
@@ -24,7 +26,6 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
         View view = super.crearLayout();
 
         // Llenar los campos de contra quien juega y a quien le toca
-
         this.amigo = super.getString(pos, 0);
         ((TextView)view.findViewById(R.id.instanciaAmigoT_Nombre)).setText(this.amigo);
 
@@ -64,11 +65,11 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
                     ActividadPadre.redirigirAActividad(PerfilActivity.class);
                     break;
                 case 1:
-                    // Retar
+                    // Retar, pedir a servidor que mande la petición
                     ActividadPadre.peticionAServidor("partidas", 0, datos, new ObservadorDeRetarPartida());
                     break;
                 case 2:
-                    // Borrar amigo
+                    // Borrar amigo, pedir a servidor que borre al usuario de su lista de amigos y su partida relacionada con él
                     ActividadPadre.peticionAServidor("amistades", 4, datos, new ObservadorDeBorrarAmigo());
 
                     String[] data = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo, "0"};
@@ -83,8 +84,11 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
 
             @Override
             protected void ejecutarTrasPeticion() {
+                // Tras borrar al amigo, forzar al otro usuario fuera de la partida que tenían si la estaba mirando
                 String[] data = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo};
                 ActividadPadre.peticionAServidor("firebase",2, data, null);
+
+                // Tras esto, recargar la actividad para quitar al usuario de la interfaz
                 ActividadPadre.recargarActividad();
             }
         }
@@ -92,6 +96,8 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
         private class ObservadorDeRetarPartida extends ObservadorDePeticion {
             @Override
             protected void ejecutarTrasPeticion() {
+
+                // Tras recibir la petición del reto, ver si fue posible o no y mostrar por toast
 
                 if (super.getBoolean("respuesta")) {
                     ActividadPadre.mostrarToast(R.string.retarCorrecto);
