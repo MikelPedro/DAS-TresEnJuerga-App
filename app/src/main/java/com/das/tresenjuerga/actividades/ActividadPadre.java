@@ -16,15 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.das.tresenjuerga.R;
@@ -307,7 +305,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
                 if (elemento instanceof Button) {
                     // Crear estilo del boton
                     Button boton = (Button) elemento;
-                    boton.setBackgroundColor(Color.GRAY);
+                    boton.setBackgroundColor(Color.RED);
                     boton.setTextColor(Color.BLACK);
 
                 } else if (elemento instanceof EditText) {
@@ -332,8 +330,8 @@ public abstract class ActividadPadre extends AppCompatActivity {
             // Crear el estilo de la toolbar si existe
             Toolbar toolbar = findViewById(R.id.toolbar);
             if (toolbar != null) {
-                toolbar.setBackgroundColor(Color.GRAY); // Establece el color de fondo de la Toolbar
-                toolbar.setTitleTextColor(Color.BLACK); // Color titulo
+                toolbar.setBackgroundColor(getResources().getColor(R.color.rojo)); // Establece el color de fondo de la Toolbar
+                toolbar.setTitleTextColor(Color.BLUE); // Color titulo
 
             }
 
@@ -349,7 +347,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
                 if (elemento instanceof  Button) {
                     Button boton = (Button) elemento;
-                    boton.setBackgroundColor(Color.rgb(0, 100, 0));
+                    boton.setBackgroundColor(Color.GREEN);
                     boton.setTextColor(Color.WHITE);
 
                 } else if (elemento instanceof EditText) {

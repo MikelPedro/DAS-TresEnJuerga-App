@@ -5,7 +5,7 @@
     <item
         android:id="@+id/toolbarConfiguracion"
         android:icon="@android:drawable/ic_menu_manage"
-        android:title="Preferencias"
+        android:title=""
         app:showAsAction="ifRoom|withText" />
 
 

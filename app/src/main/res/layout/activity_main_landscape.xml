@@ -7,13 +7,14 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="234dp"
-        android:layout_height="38dp"
-        android:layout_marginTop="52dp"
+        android:layout_width="333dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="60dp"
         android:text="@string/main_titulo"
         android:textSize="30dp"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.499"
+        app:layout_constraintHorizontal_bias="0.54"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -57,5 +58,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:srcCompat="@drawable/portadainicio" />
+        app:srcCompat="@drawable/portadamain" />
 </androidx.constraintlayout.widget.ConstraintLayout>
