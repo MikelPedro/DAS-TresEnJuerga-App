@@ -7,11 +7,12 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="221dp"
+        android:layout_height="42dp"
         android:layout_marginTop="44dp"
         android:text="@string/registro_titulo"
         android:textSize="30dp"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -64,8 +65,8 @@
         android:id="@+id/registroB_Confirmar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="48dp"
         android:text="@string/registro_aceptar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registroE_Contrasena" />
@@ -74,8 +75,8 @@
         android:id="@+id/registroB_Salir"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="268dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginStart="352dp"
+        android:layout_marginTop="48dp"
         android:text="@string/volver"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registroE_Contrasena" />
