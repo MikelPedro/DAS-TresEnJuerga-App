@@ -5,7 +5,7 @@
     <gradient
         android:startColor="@color/colorClaroBtn"
         android:endColor="@color/design_default_color_secondary_variant"
-        android:angle="1"
+        android:angle="0"
         />
     <!-- Esquinas redondeadas del botón -->
     <corners android:radius="16dp" />

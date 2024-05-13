@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -305,24 +306,24 @@ public abstract class ActividadPadre extends AppCompatActivity {
                 if (elemento instanceof Button) {
                     // Crear estilo del boton
                     Button boton = (Button) elemento;
-                    boton.setBackgroundColor(Color.RED);
-                    boton.setTextColor(Color.BLACK);
+                    boton.setBackgroundResource(R.drawable.fondo_boton_claro); // Aplicar el fondo desde drawable
+                    boton.setTextColor(Color.WHITE);
 
                 } else if (elemento instanceof EditText) {
                     // Crear estilo del campo para poner texto
                     EditText edit = (EditText) elemento;
-                    edit.setBackgroundColor(Color.GRAY);
+                    //edit.setBackgroundColor(Color.GRAY);
                     edit.setTextColor(Color.BLACK);
 
 
                 } else if (elemento instanceof TextView) {
                     // Crear el estilo del texto predefinido
                     TextView texto = (TextView) elemento;
-                    texto.setTextColor(Color.rgb(0,0,0));
+                    texto.setTypeface(null, Typeface.BOLD);
+                    texto.setTextColor(Color.rgb(38, 186, 240));
 
 
                 }
-
 
 
             }
@@ -331,7 +332,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
             Toolbar toolbar = findViewById(R.id.toolbar);
             if (toolbar != null) {
                 toolbar.setBackgroundColor(getResources().getColor(R.color.rojo)); // Establece el color de fondo de la Toolbar
-                toolbar.setTitleTextColor(Color.BLUE); // Color titulo
+                toolbar.setTitleTextColor(Color.WHITE); // Color titulo
 
             }
 
@@ -359,6 +360,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
                 } else if (elemento instanceof TextView) {
 
                     TextView texto = (TextView) elemento;
+                    texto.setTypeface(null, Typeface.BOLD);
                     texto.setTextColor(Color.WHITE);
                 }
             }
