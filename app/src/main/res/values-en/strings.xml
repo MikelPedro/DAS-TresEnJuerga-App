@@ -84,4 +84,6 @@
     <string name="tituloPartida">Match versus</string>
     <string name="descPartidaTuTurno">It\'s your turn. You\'re</string>
     <string name="descPartidaTurnoDelOtro">It\'s your opponent\'s turn. You\'re</string>
+    <string name="finDePartida">End of the match. Processing result...</string>
+    <string name="procesandoJugada">Processing play...</string>
 </resources>

@@ -15,35 +15,31 @@ import com.das.tresenjuerga.actividades.ActividadPadre;
 import com.das.tresenjuerga.actividades.AmigoSolicitudesActivity;
 import com.das.tresenjuerga.actividades.AmigosActivity;
 import com.das.tresenjuerga.actividades.JugarActivity;
+import com.das.tresenjuerga.actividades.MainActivity;
 import com.das.tresenjuerga.actividades.PantallaFinActivity;
 import com.das.tresenjuerga.actividades.PartidasDisponiblesActivity;
+import com.das.tresenjuerga.actividades.PerfilActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class ServicioFirebase extends FirebaseMessagingService {
 
-    private void esperar(int ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {}
-    }
+
 
     public void onMessageReceived(RemoteMessage remoteMessage) {
+
 
 
         // Todos los mensajes de firebase tienen un emisor y receptor, recoger dichos campos
 
         String recibidor = remoteMessage.getData().get("recibidor");
         String enviador = remoteMessage.getData().get("enviador");
+        System.out.println("Recibido de firebase:" +Integer.parseInt(remoteMessage.getData().get("id"))+", enviador:"+enviador);
 
         // Estamos en la app al recibir el msg de Firebase, crear la notificación
         // (si no estuviera la app abierta, Firebase haría automáticamente este paso)
 
-        // Esto se ejecuta en otro thread, lockear el cambio de actividad para que no se lie con los checks
-        // de la actividad en la que está
-        ActividadPadre.lockRedirectsYPeticionesAServer(true);
-        this.esperar(10); // Esperar un poco por si justo pillamos el lock en la acción del cambio de actividad
-                              // para que de tiempo a que la nueva cargue y el user se quede atascado en ella
+
 
 
 
@@ -51,7 +47,8 @@ public class ServicioFirebase extends FirebaseMessagingService {
         // hacer una redirección en vez de una notificación
         ActividadPadre actividadActual = ActividadPadre.getActividadActual();
         int id = Integer.parseInt(remoteMessage.getData().get("id"));
-        boolean recargarInterfaz;
+        boolean recargarInterfaz = false;
+        boolean forzarDeslogeo = false;
 
 
         // ids 0-6 => Notificaciones / Redirecciones
@@ -111,6 +108,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
             case 7:
                 // Rechazar revancha (solo afecta si se está en la pantalla de resultados vs ese oponente en concreto
+                System.out.println( ActividadPadre.obtenerDeIntent("oponente") + " " + enviador);
 
                 if (actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
                     recargarInterfaz = true;
@@ -122,12 +120,16 @@ public class ServicioFirebase extends FirebaseMessagingService {
                     // pues el usuario que se sale es el que pidió la revancha y el otro no tenía la opción de aceptarla, por
                     // lo que se quedaría en el inbox.
 
-                    String[] data = {enviador, recibidor};
+                    String[] data = {enviador, recibidor, "0"};
                     ActividadPadre.peticionAServidor("partidas",5, data, null);
-
+                    System.out.println("Check de redirect: true");
                 } else {
                     recargarInterfaz = false;
+                    System.out.println("Check de redirect: false");
+
                 }
+
+                break;
 
             case 8:
 
@@ -145,9 +147,18 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
                 }
 
+                break;
+
             case 9:
-                // Ser expulsado de la partida porque te eliminó como amigo
-                if (actividadActual instanceof  JugarActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
+                // Forzar recarga de lista de amigos porque un user te borro como amigo
+
+                if (actividadActual instanceof AmigosActivity) {
+
+                    recargarInterfaz = true;
+
+
+                    // Ser expulsado de la interfaz porque tu amigo te borró
+                } else if (actividadActual instanceof PerfilActivity && ActividadPadre.obtenerDeIntent("userAVisualizar").contentEquals(enviador) ||actividadActual instanceof JugarActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
 
                     // si justo estaba viendo la partida que mi amigo me quito, redirigir fuera de ella, para ello
                     // informar a la interfaz de jugar de esto y refrescarla
@@ -159,7 +170,11 @@ public class ServicioFirebase extends FirebaseMessagingService {
                 }
 
 
+                break;
 
+            case 10:
+                // Otro móvil se conecta a esta cuenta, quitar este de ella
+                forzarDeslogeo = true;
 
             default:
                 // Escenario fallback es no refrescar la interfaz, aunque no debería ejecutarse esto
@@ -173,8 +188,6 @@ public class ServicioFirebase extends FirebaseMessagingService {
             // Si es el caso, refrescar la actividad y omitir crear una posible notificación
             ActividadPadre.recargarActividad();
 
-            // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
-            ActividadPadre.lockRedirectsYPeticionesAServer(false);
 
 
         } else if (id < 7) {
@@ -215,9 +228,10 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
             elManager.notify(1, elBuilder.build());
 
-            // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
-            ActividadPadre.lockRedirectsYPeticionesAServer(false);
 
+        } else if (forzarDeslogeo) {
+            ActividadPadre.limpiarIntent();
+            ActividadPadre.redirigirAActividad(MainActivity.class);
         }
 
 
