@@ -26,6 +26,8 @@ public class AmigosActivity extends ActividadPadre {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_amigos);
+
+
     }
 
     @Override

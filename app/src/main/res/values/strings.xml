@@ -84,5 +84,7 @@
     <string name="tituloPartida">Titulo partida</string>
     <string name="descPartidaTuTurno">Desc</string>
     <string name="descPartidaTurnoDelOtro">Desc</string>
+    <string name="finDePartida">Fin de la partida. Finalizando...</string>
+    <string name="procesandoJugada">Processing play...</string>
 
 </resources>

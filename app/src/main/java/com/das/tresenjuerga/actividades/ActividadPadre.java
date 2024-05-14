@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import androidx.work.WorkManager;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ConexionAServer;
+import com.das.tresenjuerga.otrasClases.ListaAdapterBase;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -49,9 +51,13 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
 
     // TODO: Decorar actividades, están todas creadas ya. Si quereis mover alguna de ellas a la toolbar
-    // TODO: Debuggear screen de rematch y juego en vivo.
-    // TODO: Reworkear locks (bloquear el boton de la interfaz en sí en vez de la redirección). Seguir bloqueando de manera de que solo se haga una petición al servidor a la vez (cambiar para poner listeners donde hayan dos peticione simultaneas)
-
+    // TODO: Completar locks (bloquear toolbar y botones de BaseAdapters durante locks
+    // TODO: Debuggear:
+    /*
+        - Que la partida se borre si se cancela un rematch
+        - Que al rotar el dispositivo funciona correctamente la app en un match
+        - Ver que los locks van
+     */
 
 
     private static ActividadPadre actividadEnEjecucion; // La actividad que el user está visualizando
@@ -65,7 +71,8 @@ public abstract class ActividadPadre extends AppCompatActivity {
     private static int fragmento; // el layout que se va a cargar
     private int idContenedor; // el contenedor en el que se va a cargar el layout
 
-    private static int cantidadLocks = 0;
+    private static int cantidadLock = 0;
+
 
     static {
         // Las actividades que no implementan toolbar se añaden aquí para inicializar el HS
@@ -100,6 +107,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        ActividadPadre.resetLock();
 
         // Comprobar si se debe crear una toolbar
         if (!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName()))) {
@@ -418,6 +426,12 @@ public abstract class ActividadPadre extends AppCompatActivity {
         actividadEnEjecucion.getIntent().removeExtra(key);
     }
 
+    public static void limpiarIntent() {
+        if (actividadEnEjecucion.getIntent().getExtras() != null) {
+            actividadEnEjecucion.getIntent().getExtras().clear();
+        }
+    }
+
     public static String obtenerDeIntent(String key) {
 
         if (actividadEnEjecucion.getIntent().hasExtra(key)) {
@@ -438,47 +452,88 @@ public abstract class ActividadPadre extends AppCompatActivity {
         // Cierra la actividad actual y abre ActividadTarget.
         // Todos los datos del intent de la actividad actual se pasan a la siguiente actividad
 
-        // Solo se permite el cambio de actividad si sePermiteCambiar es true o se redirige a la
-        // misma actividad
 
 
 
-        if (ActividadPadre.comprobarUnlock() || ActividadTarget.isInstance(actividadEnEjecucion)){
 
 
-            // Crear el nuevo intent
-            Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
+
+        // Crear el nuevo intent
+        Intent intent = new Intent(ActividadPadre.actividadEnEjecucion, ActividadTarget);
 
 
-            // Guardar todos los datos del bundle al nuevo intent
-            Bundle bundle = actividadEnEjecucion.getIntent().getExtras();
+        // Guardar todos los datos del bundle al nuevo intent
+        Bundle bundle = actividadEnEjecucion.getIntent().getExtras();
 
-            if (bundle != null) {
-                for (String key : bundle.keySet()) {
-                    intent.putExtra(key, bundle.getString(key));
-                }
+        if (bundle != null) {
+            for (String key : bundle.keySet()) {
+                intent.putExtra(key, bundle.getString(key));
+            }
+        }
+
+
+        // Redirigir
+        ActividadPadre.actividadEnEjecucion.startActivity(intent);
+        ActividadPadre.actividadEnEjecucion.finish();
+
+
+
+
+    }
+
+    private static void resetLock() {
+        ActividadPadre.cantidadLock = 0;
+        ActividadPadre.cambiarEstadoBotones(false);
+
+    }
+
+    public static void lockBotones(boolean lock) {
+
+        if (lock) {
+            ActividadPadre.cantidadLock++;
+
+            if (ActividadPadre.cantidadLock == 1) {
+                ActividadPadre.cambiarEstadoBotones(true);
             }
 
-
-            // Redirigir
-            ActividadPadre.actividadEnEjecucion.startActivity(intent);
-            ActividadPadre.actividadEnEjecucion.finish();
-
-        }
-
-
-    }
-
-    public static void lockRedirectsYPeticionesAServer(boolean flag) {
-        if (!flag) {
-            ActividadPadre.cantidadLocks--;
         } else {
-            ActividadPadre.cantidadLocks++;
+            ActividadPadre.cantidadLock--;
+            if (ActividadPadre.cantidadLock == 0) {
+                ActividadPadre.cambiarEstadoBotones(false);
+            }
         }
+
+
+
+
     }
 
-    private static boolean comprobarUnlock() {
-        return ActividadPadre.cantidadLocks <= 0;
+    private static void cambiarEstadoBotones(boolean lock) {
+        ViewGroup view = (ViewGroup) ActividadPadre.obtenerFragmentoOrientacion();
+        Toolbar toolbar = ActividadPadre.actividadEnEjecucion.findViewById(R.id.toolbar);
+
+        for (int i = 0; i != view.getChildCount(); i++) {
+            View elemento = view.getChildAt(i);
+
+            if (elemento instanceof Button) {
+                elemento.setEnabled(!lock);
+            }
+
+        }
+
+        if (toolbar != null) {
+            Menu menu = toolbar.getMenu();
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem menuItem = menu.getItem(i);
+
+                if (menuItem != null) {
+                    menuItem.setEnabled(!lock);
+                }
+            }
+        }
+
+
+
 
     }
 
@@ -517,40 +572,42 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
 
 
-        if (ActividadPadre.comprobarUnlock()) {
 
 
-            // Construir los datos con los parámetros de entrada
+        // Construir los datos con los parámetros de entrada
 
-            Data datos = new Data.Builder()
-                    .putString("recurso", recurso)
-                    .putInt("idPeticion", idPeticion)
-                    .putStringArray("parametros", parametros)
-                    .build();
-
-
-            // Crear la tarea
-
-            ActividadPadre actAct = ActividadPadre.actividadEnEjecucion;
-            OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ConexionAServer.class).setInputData(datos).build();
-
-            if (observador != null) {
-                // Si el observador no es null, entonces también se tieen que linkar el observador a la tarea
-                // para que se ejecute cuando la tarea acabe (o sea, cuando el servidor nos responda)
-
-                // Lockear los botones durante el thread para que el user no pueda cambiar de actividad durante la petición al servidor
-                // Se ejecuta el unlock en el observador tan pronto como se procese la respuesta
-                ActividadPadre.lockRedirectsYPeticionesAServer(true);
+        Data datos = new Data.Builder()
+                .putString("recurso", recurso)
+                .putInt("idPeticion", idPeticion)
+                .putStringArray("parametros", parametros)
+                .build();
 
 
-                WorkManager.getInstance(actAct).getWorkInfoByIdLiveData(otwr.getId())
-                        .observe(actAct, observador);
+        // Crear la tarea
 
-            }
+        ActividadPadre actAct = ActividadPadre.actividadEnEjecucion;
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ConexionAServer.class).setInputData(datos).build();
 
-            // Encolar la tarea para que se ejecute ASAP
-            WorkManager.getInstance(actAct).enqueue(otwr);
+        if (observador != null) {
+
+            ActividadPadre.lockBotones(true);
+
+
+            // Si el observador no es null, entonces también se tieen que linkar el observador a la tarea
+            // para que se ejecute cuando la tarea acabe (o sea, cuando el servidor nos responda)
+
+            // Lockear los botones durante el thread para que el user no pueda cambiar de actividad durante la petición al servidor
+            // Se ejecuta el unlock en el observador tan pronto como se procese la respuesta
+
+
+            WorkManager.getInstance(actAct).getWorkInfoByIdLiveData(otwr.getId())
+                    .observe(actAct, observador);
+
         }
+
+        // Encolar la tarea para que se ejecute ASAP
+        WorkManager.getInstance(actAct).enqueue(otwr);
+
 
 
     }
