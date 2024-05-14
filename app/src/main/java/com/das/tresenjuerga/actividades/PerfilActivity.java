@@ -1,10 +1,10 @@
 package com.das.tresenjuerga.actividades;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -18,19 +18,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
-import android.Manifest;
 import com.das.tresenjuerga.R;
-import com.das.tresenjuerga.otrasClases.ListaAdapterMisAmigos;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLSyntaxErrorException;
 
 public class PerfilActivity extends ActividadPadre {
 

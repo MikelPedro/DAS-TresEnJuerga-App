@@ -21,7 +21,7 @@
         android:id="@+id/usuarioLoggeadoB_Jugar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="60dp"
         android:text="@string/usuarioLoggeado_jugar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -29,25 +29,14 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView7" />
 
     <Button
-        android:id="@+id/usuarioLoggeadoB_Perfil"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="@string/usuarioLoggeado_perfil"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usuarioLoggeadoB_Jugar" />
-
-    <Button
         android:id="@+id/usuarioLoggeadoB_Amigos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="48dp"
         android:text="@string/usuarioLoggeado_amigos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usuarioLoggeadoB_Perfil" />
+        app:layout_constraintTop_toBottomOf="@+id/usuarioLoggeadoB_Jugar" />
 
     <Button
         android:id="@+id/usuarioLoggeadoB_Salir"
@@ -64,10 +53,10 @@
         android:id="@+id/imageView7"
         android:layout_width="262dp"
         android:layout_height="229dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="84dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.557"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView4"
-        app:srcCompat="@drawable/portadamain" />
+        app:srcCompat="@drawable/portadausserlog" />
 </androidx.constraintlayout.widget.ConstraintLayout>
