@@ -17,11 +17,21 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
+        android:id="@+id/partidaI_Fondo"
+        android:layout_width="284dp"
+        android:layout_height="284dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="80dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/partidaI_0"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="88dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -31,7 +41,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="160dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="88dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -40,8 +50,8 @@
         android:id="@+id/partidaI_2"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="260dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="252dp"
+        android:layout_marginTop="88dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -50,7 +60,7 @@
         android:id="@+id/partidaI_3"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="64dp"
         android:layout_marginTop="180dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +80,7 @@
         android:id="@+id/partidaI_5"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="260dp"
+        android:layout_marginStart="252dp"
         android:layout_marginTop="180dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,8 +90,8 @@
         android:id="@+id/partidaI_6"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="270dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -91,7 +101,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="160dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="270dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -100,9 +110,32 @@
         android:id="@+id/partidaI_8"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="260dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginStart="252dp"
+        android:layout_marginTop="270dp"
         android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/partidaT_Titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/partidaT_Descripcion"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:layout_marginStart="488dp"
+        android:layout_marginTop="180dp"
+        android:text="TextView"
+        android:textSize="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

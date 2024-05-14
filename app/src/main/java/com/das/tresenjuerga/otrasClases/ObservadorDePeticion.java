@@ -16,26 +16,28 @@ import com.das.tresenjuerga.actividades.MainActivity;
 
 public abstract class ObservadorDePeticion implements Observer<WorkInfo> {
 
+    // Esta clase hereda a todos los Observers de peticiones a servidor. Incluye funciones genéricas
+    // que sus hijos pueden usar
+
     private Data info;
 
     @Override
     public void onChanged(WorkInfo workInfo) {
         if (workInfo != null && workInfo.getState().isFinished()) {
             this.info = workInfo.getOutputData();
-            for (String key: this.info.getKeyValueMap().keySet()) {
-                System.out.println(key);
 
-            }
             ActividadPadre.lockRedirectsYPeticionesAServer(false); // unlockear el thread de nuevo para que se permita usar los botones
             this.ejecutarTrasPeticion();
         }
     }
 
+    // Este es el método que sus hijos implementan, es ejecutado cuando el servidor responde con los datos
+
+
     protected abstract void ejecutarTrasPeticion();
 
-    protected String getString(String key) {
-        return this.info.getString(key);
-    }
+    // Getters de los datos del cuerpo del servidor
+    protected String getString(String key) {return this.info.getString(key);}
     protected long getLong(String key) {
         return this.info.getLong(key, 0);
     }

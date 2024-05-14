@@ -73,5 +73,16 @@
     <string name="revanchaAceptado">Connecting</string>
     <string name="revanchaReady">Ready</string>
     <string name="errorConexion">Error</string>
+    <string name="errorFotoRotacion">Error rotation</string>
+    <string name="errorFotoTamaño">Error size</string>
+    <string name="preferenciasTituloIdioma">Elige uno de estos idiomas</string>
+    <string name="preferenciasSubtituloIdioma">¿Qué idioma usas?</string>
+    <string name="preferenciasDescripcionIdioma">Elige un idioma</string>
+    <string name="preferenciasTituloEstilo">Elige uno de estos estilos</string>
+    <string name="preferenciasSubtituloEstilo">¿Qué estilo usas?</string>
+    <string name="preferenciasDescripcionEstilo">Elige un estilo</string>
+    <string name="tituloPartida">Titulo partida</string>
+    <string name="descPartidaTuTurno">Desc</string>
+    <string name="descPartidaTurnoDelOtro">Desc</string>
 
 </resources>

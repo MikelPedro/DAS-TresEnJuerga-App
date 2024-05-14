@@ -10,6 +10,13 @@ import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 public class InicioSesionActivity extends ActividadPadre {
 
+    /*
+        Esta interfaz muestra la pantalla de login.
+        Tiene campos para username y password así como un botón para enviar el formulario
+
+
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,7 +26,11 @@ public class InicioSesionActivity extends ActividadPadre {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Recoger el fragmento de la actividad
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        // Dar listener a los botones
         fragmento.findViewById(R.id.inicioSesionB_Confirmar).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.inicioSesionB_Salir).setOnClickListener(new BotonListener(1));
 
@@ -38,6 +49,8 @@ public class InicioSesionActivity extends ActividadPadre {
         public void onClick(View v) {
             switch (this.id) {
                 case 0:
+                    // Este botón envia el formulario con nuestros datos. El servidor nos respnderá si la autentificación
+                    // es correcta
                     String user = ((EditText)InicioSesionActivity.super.findViewById(R.id.inicioSesionE_Nombre)).getText().toString();
                     String pass = ((EditText)InicioSesionActivity.super.findViewById(R.id.inicioSesionE_Contrasena)).getText().toString();
 
@@ -47,7 +60,7 @@ public class InicioSesionActivity extends ActividadPadre {
 
                     break;
                 case 1:
-                    // Volver al menú principal
+                    // Este botón va una interfaz atrás, a Main Activity (menú principal)
                     ActividadPadre.redirigirAActividad(MainActivity.class);
 
 
@@ -63,11 +76,14 @@ public class InicioSesionActivity extends ActividadPadre {
             @Override
             protected void ejecutarTrasPeticion() {
 
+                // El servidor nos responde de manera booleana si la autentificación es correcta
+
                 if (super.getBoolean("respuesta")) {
+                    // Si lo es, vincular la cuenta al token del móvil y pasar a la pantalla de loggeado
                     ActividadPadre.pushearTokenABDYLoggear(user);
 
                 } else {
-                    // Error en autentificación
+                    // Este otro caso es error en autentificación
                     ActividadPadre.mostrarToast(R.string.errorDeAutentificacion);
                 }
             }

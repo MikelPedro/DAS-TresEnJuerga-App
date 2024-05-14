@@ -73,4 +73,15 @@
     <string name="revanchaAceptado">Revancha aceptada, conectando...</string>
     <string name="revanchaReady">Partida encontrada, empezando...</string>
     <string name="errorConexion">Error de conexión, el otro jugador no se conectó</string>
+    <string name="errorFotoRotacion">Fallo de parseo de imagen. Por favor no rote el móvil mientras esté en la camara</string>
+    <string name="errorFotoTamaño">La foto es demasiado grande como para guardarla.</string>
+    <string name="preferenciasTituloIdioma">Elige uno de estos idiomas</string>
+    <string name="preferenciasSubtituloIdioma">¿Qué idioma usas?</string>
+    <string name="preferenciasDescripcionIdioma">Elige un idioma</string>
+    <string name="preferenciasTituloEstilo">Elige uno de estos estilos</string>
+    <string name="preferenciasSubtituloEstilo">¿Qué estilo usas?</string>
+    <string name="preferenciasDescripcionEstilo">Elige un estilo</string>
+    <string name="tituloPartida">Partida contra</string>
+    <string name="descPartidaTuTurno">Es tu turno. Eres</string>
+    <string name="descPartidaTurnoDelOtro">Es el turno de tu oponente. Eres</string>
 </resources>

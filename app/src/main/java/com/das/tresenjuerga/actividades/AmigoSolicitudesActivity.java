@@ -12,6 +12,15 @@ import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 public class AmigoSolicitudesActivity extends ActividadPadre {
 
 
+    /*
+        Esta actividad muestra una lista con todas las solicitudes de amistad.
+
+        Por cada solicitud, se permite aceptarla o rechazarla
+
+
+     */
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,10 +30,18 @@ public class AmigoSolicitudesActivity extends ActividadPadre {
     protected void onStart() {
         super.onStart();
 
+
+        // Obtener el fragmento de la actividad
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        // Localizar el ListView
         ListView listView = super.findViewById(R.id.amigoSolicitudesL_Solicitudes);
+
+        // Dar listeners a los botones
         fragmento.findViewById(R.id.amigoSolicitudesB_Volver).setOnClickListener(new BotonListener());
 
+
+        // Preguntar a server que gente nos ha mandado solicitudes
         String[] datos =  {ActividadPadre.obtenerDeIntent("user")};
         ActividadPadre.peticionAServidor("amistades",2,datos,new ObservadorDeSolicitudes(listView));
 
@@ -40,6 +57,8 @@ public class AmigoSolicitudesActivity extends ActividadPadre {
         @Override
         protected void ejecutarTrasPeticion() {
 
+            // El server nos los nombres de los users que han mandado friend request
+
             // Obtener orientación cardview
 
             int cardview;
@@ -49,6 +68,7 @@ public class AmigoSolicitudesActivity extends ActividadPadre {
                 cardview = R.layout.cardview_solicitud_amistad_portrait;
             }
 
+            // Recoger la variable con los nombres de la gente que nos ha mandado solicitud
             Object[] listaValores = super.getStringArray("nombres");
 
             // Montar el listview
@@ -66,7 +86,7 @@ public class AmigoSolicitudesActivity extends ActividadPadre {
 
         @Override
         public void onClick(View v) {
-            // Redirigir a la actividad de amigos.
+            // El único botón redirige una pantalla atrás, a la actividad de amigos.
             ActividadPadre.redirigirAActividad(AmigosActivity.class);
         }
     }

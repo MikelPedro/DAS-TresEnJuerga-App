@@ -7,12 +7,14 @@
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
+        android:layout_width="291dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="68dp"
         android:text="@string/usuarioLoggeado_titulo"
         android:textSize="30dp"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.477"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="64dp"
         android:text="@string/usuarioLoggeado_jugar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -30,8 +32,8 @@
         android:id="@+id/usuarioLoggeadoB_Perfil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="64dp"
         android:text="@string/usuarioLoggeado_perfil"
         app:layout_constraintStart_toEndOf="@+id/usuarioLoggeadoB_Jugar"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -40,19 +42,30 @@
         android:id="@+id/usuarioLoggeadoB_Amigos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="60dp"
         android:text="@string/usuarioLoggeado_amigos"
-        app:layout_constraintStart_toEndOf="@+id/usuarioLoggeadoB_Perfil"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usuarioLoggeadoB_Jugar" />
 
     <Button
         android:id="@+id/usuarioLoggeadoB_Salir"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="172dp"
         android:text="@string/desconectar"
         app:layout_constraintStart_toEndOf="@+id/usuarioLoggeadoB_Amigos"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="255dp"
+        android:layout_height="213dp"
+        android:layout_marginEnd="36dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.686"
+        app:srcCompat="@drawable/portadamain" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,7 +18,8 @@ public class PantallaFinActivity extends ActividadPadre {
 
 
  /*
-            Esta actividad funciona por estados para manejar revanchas en vivo (TODO: Debug esto):
+         Esta actividad muestra la pantalla de revancha tras acabar una partida
+         Funciona por estados para manejar revanchas en vivo (TODO: Debug esto):
 
                 Estados:
 
@@ -80,6 +81,13 @@ public class PantallaFinActivity extends ActividadPadre {
             está en esta interfaz, la clase Firebase settea su estado al 7 y fuerza el refresco de la actividad
 
 
+         Nota: El oponente solo puede ser redirigido aquí también si tenía la misma partida abierta cuando la acabaste.
+               Si el oponente nunca es redirigido aquí no te podrá aceptar la revancha directamente, aunque se puede
+               pedir la revancha para que le salga en su lista de partidas como otra petición de partida para aceptar.
+
+               Esta pantalla de revancha solo redirige de nuevo a la pantalla de jugar si se acepta la revancha desde
+               esta misma interfaz y NO desde la inbox de partidas disponibles
+
 
          */
 
@@ -89,14 +97,42 @@ public class PantallaFinActivity extends ActividadPadre {
         super.setContentView(R.layout.activity_pantalla_fin);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Ver el estado en el que estamos
+        int estadoRev = Integer.parseInt(ActividadPadre.obtenerDeIntent("estadoRevancha"));
+
+        if (estadoRev < 4) {
+            // Los estados previos al 4 requieren comprobar el estado de la solicitud de revancha en servidor
+            String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente")};
+            ActividadPadre.peticionAServidor("partidas", 6, datos, new ObservadorDeEstadoRevancha());
+
+
+        } else {
+            // El resto de estados se saltan este paso y crean la pantalla inmediatamente
+            PantallaFinActivity.this.crearInterfaz(Integer.toString(estadoRev));
+
+        }
+
+
+
+
+
+
+
+    }
 
     private void crearInterfaz(String estado) {
         ActividadPadre.añadirAIntent("estadoRevancha", estado);
 
+
+        // Recoger el fragmento de la actividad
         View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
 
-        String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente")};
 
+        // Mostrar el título adecuado, según si se ganó, empató o perdió desde esta POV
         String titulo = "";
         switch (ActividadPadre.obtenerDeIntent("resultado")) {
             case "0":
@@ -114,15 +150,20 @@ public class PantallaFinActivity extends ActividadPadre {
         ((TextView)fragmento.findViewById(R.id.pantallaFinT_Titulo)).setText(titulo);
 
 
+        // Dar listeners a los botones
+
         Button revancha = fragmento.findViewById(R.id.pantallaFinB_Revancha);
         Button volver = fragmento.findViewById(R.id.pantallaFinB_Volver);
         TextView descripcion = fragmento.findViewById(R.id.pantallaFinT_PedidoRevancha);
 
+        String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente")};
+
+        // Procesar el estado en el que estamos
         switch (estado) {
             case "0":
                 // Se puede pedir revancha, no se ha pedido revancha por ninguna party
                 descripcion.setText(super.getResources().getString(R.string.puedesPedirRevancha));
-                revancha.setOnClickListener(new BotonListener(0));
+                revancha.setOnClickListener(new BotonListener(0)); // el primer botón sirve para pedir revancha
                 revancha.setText(super.getResources().getString(R.string.revancha));
 
                 break;
@@ -130,7 +171,7 @@ public class PantallaFinActivity extends ActividadPadre {
             case "1":
                 // Han pedido revancha, esperando tu respuesta...
                 descripcion.setText(super.getResources().getString(R.string.hanPedidoRevancha));
-                revancha.setOnClickListener(new BotonListener(1));
+                revancha.setOnClickListener(new BotonListener(1)); // el primer botón sirve para aceptar revancha
                 revancha.setText(super.getResources().getString(R.string.aceptar));
 
                 break;
@@ -144,10 +185,8 @@ public class PantallaFinActivity extends ActividadPadre {
 
 
 
-
-
             case "3":
-                // Enviar ping
+                // Revancha aceptada por ambas parties, enviar ping
 
                 ActividadPadre.peticionAServidor("firebase", 1, datos, null);
                 ActividadPadre.añadirAIntent("estadoRevancha", "4");
@@ -215,38 +254,12 @@ public class PantallaFinActivity extends ActividadPadre {
         volver.setOnClickListener(new BotonListener(2));
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-
-
-
-        int estadoRev = Integer.parseInt(ActividadPadre.obtenerDeIntent("estadoRevancha"));
-
-        if (estadoRev < 4) {
-            // Los estados previos al 4 requieren comprobar el estado de la solicitud de revancha en BD
-            String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente")};
-            ActividadPadre.peticionAServidor("partidas", 6, datos, new ObservadorDeEstadoRevancha());
-
-
-        } else {
-            // El resto de estados se saltan este paso
-            PantallaFinActivity.this.crearInterfaz(Integer.toString(estadoRev));
-
-        }
-
-
-
-
-
-
-
-    }
 
     private class ObservadorDeEstadoRevancha extends ObservadorDePeticion {
         @Override
         protected void ejecutarTrasPeticion() {
+            // Tras recibir el estado de la petición del servidor, crear la interfaz
             PantallaFinActivity.this.crearInterfaz(Long.toString(super.getLong("respuesta")));
 
 
@@ -255,6 +268,9 @@ public class PantallaFinActivity extends ActividadPadre {
     }
 
     private class ObservadorDePeticionRevancha extends ObservadorDePeticion {
+
+        // Tras haber procesado correctamente la petición de pedir revancha, updatear la interfaz
+        // para mostrar los cambios
         @Override
         protected void ejecutarTrasPeticion() {
             ActividadPadre.recargarActividad();
@@ -263,6 +279,10 @@ public class PantallaFinActivity extends ActividadPadre {
         }
     }
     private class ObservadorDeInicioRevancha extends ObservadorDePeticion {
+
+        // Tras correctamente haber pedido la revancha, aceptado y recibido los datos necesarios
+        // para jugar, cargar la interfaz de juego
+
         @Override
         protected void ejecutarTrasPeticion() {
 
@@ -290,12 +310,12 @@ public class PantallaFinActivity extends ActividadPadre {
             switch (this.id) {
 
                 case 0:
-                    // Pedir revancha
+                    // El primer botón en estado 0 pide revancha
                     ActividadPadre.peticionAServidor("partidas", 0, datos, new ObservadorDePeticionRevancha());
                     break;
 
                 case 1:
-                    // Aceptar revancha
+                    // El primer botón en estado 1 acepta revancha
                     ActividadPadre.peticionAServidor("partidas", 1, datos, new ObservadorDePeticionRevancha());
 
                     break;
@@ -303,12 +323,15 @@ public class PantallaFinActivity extends ActividadPadre {
 
 
                 case 2:
-                    // Volver a las partidas disponibles
+                    // El otro botón va una pantalla atrás, a la de partidas disponibles
 
                     // Notificar a firebase de que se cancela la revancha
                     ActividadPadre.peticionAServidor("firebase", 0, datos, null);
+                    ActividadPadre.quitarDeIntent("estadoRevancha");
+                    ActividadPadre.quitarDeIntent("resultado");
+                    ActividadPadre.quitarDeIntent("oponente");
 
-
+                    // Volver
                     ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
 
             }

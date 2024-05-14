@@ -73,4 +73,15 @@
     <string name="revanchaAceptado">Rematch accepted, connecting...</string>
     <string name="revanchaReady">Match found, starting...</string>
     <string name="errorConexion">Connection error. The other player did not connect</string>
+    <string name="errorFotoRotacion">Photo parsing error. Please do not rotate the phone while viewing the camera</string>
+    <string name="errorFotoTamaño">Photo was too big to upload.</string>
+    <string name="preferenciasTituloIdioma">Choose one of these languages</string>
+    <string name="preferenciasSubtituloIdioma">What language do you speak?</string>
+    <string name="preferenciasDescripcionIdioma">Choose a language</string>
+    <string name="preferenciasTituloEstilo">Choose one of these themes</string>
+    <string name="preferenciasSubtituloEstilo">What theme do you use?</string>
+    <string name="preferenciasDescripcionEstilo">Choose a theme</string>
+    <string name="tituloPartida">Match versus</string>
+    <string name="descPartidaTuTurno">It\'s your turn. You\'re</string>
+    <string name="descPartidaTurnoDelOtro">It\'s your opponent\'s turn. You\'re</string>
 </resources>

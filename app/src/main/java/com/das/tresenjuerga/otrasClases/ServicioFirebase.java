@@ -31,135 +31,197 @@ public class ServicioFirebase extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
 
-        if (remoteMessage.getNotification() != null) {
+        // Todos los mensajes de firebase tienen un emisor y receptor, recoger dichos campos
 
-            String recibidor = remoteMessage.getData().get("recibidor");
-            String enviador = remoteMessage.getData().get("enviador");
+        String recibidor = remoteMessage.getData().get("recibidor");
+        String enviador = remoteMessage.getData().get("enviador");
 
-            // Estamos en la app al recibir el msg de Firebase, crear la notificación
-            // (si no estuviera la app abierta, Firebase haría automáticamente este paso)
+        // Estamos en la app al recibir el msg de Firebase, crear la notificación
+        // (si no estuviera la app abierta, Firebase haría automáticamente este paso)
 
-            // Esto se ejecuta en otro thread, lockear el cambio de actividad para que no se lie con los checks
-            // de la actividad en la que está
-            ActividadPadre.lockRedirectsYPeticionesAServer(true);
-            this.esperar(10); // Esperar un poco por si justo pillamos el lock en la acción del cambio de actividad
-                                  // para que de tiempo a que la nueva cargue y el user se quede atascado en ella
-
-            ActividadPadre actividadActual = ActividadPadre.getActividadActual();
-            int id = Integer.parseInt(remoteMessage.getData().get("id"));
-            boolean recargarInterfaz;
-
-            switch (id) {
+        // Esto se ejecuta en otro thread, lockear el cambio de actividad para que no se lie con los checks
+        // de la actividad en la que está
+        ActividadPadre.lockRedirectsYPeticionesAServer(true);
+        this.esperar(10); // Esperar un poco por si justo pillamos el lock en la acción del cambio de actividad
+                              // para que de tiempo a que la nueva cargue y el user se quede atascado en ella
 
 
-                case 0:
-                    // Nueva solicitud de amistad recibida
-                    recargarInterfaz = actividadActual instanceof AmigoSolicitudesActivity;
-                    break;
-                case 1:
-                    // Solicitud de amistad aceptada por parte del otro
-                    recargarInterfaz = actividadActual instanceof AmigosActivity;
-                    break;
-                case 2:
-                    // Solicitud de partida recibida / han pedido revancha
 
-                    recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
-
-                case 3:
-                    // El otro ha aceptado la partida / revancha aceptada
-
-                    recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
-
-                    break;
-                case 4:
-                    // Oponente ha jugado
-                case 5:
-                    // Partida en empate
-                case 6:
-                    // Partida en loss
-                    recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+        // Obtener la actividad que tiene el user abierta y el id de petición, según estas es posible que se deba
+        // hacer una redirección en vez de una notificación
+        ActividadPadre actividadActual = ActividadPadre.getActividadActual();
+        int id = Integer.parseInt(remoteMessage.getData().get("id"));
+        boolean recargarInterfaz;
 
 
-                    break;
+        // ids 0-6 => Notificaciones / Redirecciones
+        // ids 7-9 => Redirecciones / NOP
 
-                case 7:
-                    // Rechazar revancha (solo afecta si se está en la pantalla de resultados vs ese oponente en concreto
+        switch (id) {
+            // IDs 0-6:
+            // Notificaciones si estás fuera de la actividad correspondiente, redirects / refreshes si en la actividad
 
-                    if (actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
-                        recargarInterfaz = true;
-                        ActividadPadre.añadirAIntent("estadoRevancha", "7");
+            case 0:
+                // Nueva solicitud de amistad recibida
+                recargarInterfaz = actividadActual instanceof AmigoSolicitudesActivity;
+                break;
+            case 1:
+                // Solicitud de amistad aceptada por parte del otro
+                recargarInterfaz = actividadActual instanceof AmigosActivity;
+                break;
+            case 2:
+                // Solicitud de partida recibida / han pedido revancha
+                recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
 
-                        // Eliminar la revancha creada de BD
-                        String[] data = {enviador, recibidor};
-                        ActividadPadre.peticionAServidor("partidas",5, data, null);
+            case 3:
+                // El otro ha aceptado la partida / revancha aceptada
+                recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
 
-                    } else {
-                        recargarInterfaz = false;
-                    }
+                break;
+            case 4:
+                // Oponente ha jugado
+                recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
 
-                case 8:
+                if (recargarInterfaz) {
+                    // Si estamos en la misma interfaz, pasar el flag del turno a true para que ahora podamos jugar
+                    ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(true));
+                }
+                break;
+            case 5:
+                // Partida en empate
+                recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+                if (recargarInterfaz) {
+                    // Si estamos en la partida adecuada, informarla de que fue un empate
+                    ActividadPadre.añadirAIntent("oponenteAcaboLaPartida", "1");
 
-                    // Recibir ping request del otro lado para enviar ping answer (rematch)
+                }
+            case 6:
+                // Partida en derrota
+                recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+                if (recargarInterfaz) {
+                    // Si estamos en la partida adecuada, informarla de que fue una derrota
+                    ActividadPadre.añadirAIntent("oponenteAcaboLaPartida", "0");
+                }
 
-                    if (actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
-                        recargarInterfaz = true;
-                        ActividadPadre.añadirAIntent("estadoRevancha", "5");
-
-                    } else {
-                        recargarInterfaz = false;
-
-                    }
+                break;
 
 
-                default:
+
+            // Mensajes firebase que nunca son notificaciones pero pueden ser redirects
+
+            case 7:
+                // Rechazar revancha (solo afecta si se está en la pantalla de resultados vs ese oponente en concreto
+
+                if (actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
+                    recargarInterfaz = true;
+                    ActividadPadre.añadirAIntent("estadoRevancha", "7");
+
+                    // Si están los dos users y uno se va, se quita la revancha de BD y se bloquea al que queda el botón de
+                    // pedir de nuevo (cuenta como rechazo directo)
+                    // Si solo hubiera un user en esta interfaz y el otro no conectase, no se quitaria la revancha pedida
+                    // pues el usuario que se sale es el que pidió la revancha y el otro no tenía la opción de aceptarla, por
+                    // lo que se quedaría en el inbox.
+
+                    String[] data = {enviador, recibidor};
+                    ActividadPadre.peticionAServidor("partidas",5, data, null);
+
+                } else {
+                    recargarInterfaz = false;
+                }
+
+            case 8:
+
+                // Recibir ping del otro lado para ver que esta activo para rematch
+
+                if (actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
+
+                    // El ping solo se procesa si se está en la misma interfaz y fuerza un refresco + update de estado de revancha
+                    // (ver PantallaFinActivity para más info de los estados)
+                    recargarInterfaz = true;
+                    ActividadPadre.añadirAIntent("estadoRevancha", "5");
+
+                } else {
                     recargarInterfaz = false;
 
-            }
+                }
 
-            if (recargarInterfaz) {
-                ActividadPadre.recargarActividad();
+            case 9:
+                // Ser expulsado de la partida porque te eliminó como amigo
+                if (actividadActual instanceof  JugarActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador)) {
 
-            } else {
+                    // si justo estaba viendo la partida que mi amigo me quito, redirigir fuera de ella, para ello
+                    // informar a la interfaz de jugar de esto y refrescarla
 
-                NotificationManager elManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                NotificationCompat.Builder elBuilder = new NotificationCompat.Builder(actividadActual.getActividadActual(), "IdCanal");
-
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    NotificationChannel elCanal = new NotificationChannel("IdCanal", "NombreCanal", NotificationManager.IMPORTANCE_DEFAULT);
-                    //Configuración del canal
-                    elCanal.setDescription("Descripción del canal");
-                    elCanal.enableLights(true);
-                    elCanal.setLightColor(Color.RED);
-                    elCanal.setVibrationPattern(new long[]{0, 1000, 500, 1000});
-                    elCanal.enableVibration(true);
-
-
-                    elManager.createNotificationChannel(elCanal);
+                    ActividadPadre.añadirAIntent("expulsadoPorNoAmigo", "true");
+                    recargarInterfaz = true;
+                } else {
+                    recargarInterfaz = false;
                 }
 
 
 
-                String titulo = actividadActual.getString(actividadActual.getResources().getIdentifier("notifTitulo"+id, "string", actividadActual.getPackageName()));
-                String body = enviador + ": " + recibidor + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
 
-                elBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), com.google.android.material.R.drawable.abc_btn_check_material))
-                        .setSmallIcon(android.R.drawable.checkbox_on_background)
-                        .setContentTitle(titulo)
-                        .setContentText(body)
-                        .setAutoCancel(true);
+            default:
+                // Escenario fallback es no refrescar la interfaz, aunque no debería ejecutarse esto
+                recargarInterfaz = false;
+
+        }
 
 
+        // Ver si se pide refrescar la interfaz
+        if (recargarInterfaz) {
+            // Si es el caso, refrescar la actividad y omitir crear una posible notificación
+            ActividadPadre.recargarActividad();
+
+            // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
+            ActividadPadre.lockRedirectsYPeticionesAServer(false);
 
 
-                elManager.notify(1, elBuilder.build());
+        } else if (id < 7) {
 
+            // Si no se pide refrescar la interfaz pero estamos en IDs 0-6, entonces debemos montar la notificación
+            // correspondiente según lo que nos ha informando firebase.(IDs 0-6 incluyen campos extra de las notificaciones en sus cuerpos)
+
+            NotificationManager elManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationCompat.Builder elBuilder = new NotificationCompat.Builder(actividadActual.getActividadActual(), "IdCanal");
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel elCanal = new NotificationChannel("IdCanal", "NombreCanal", NotificationManager.IMPORTANCE_DEFAULT);
+                //Configuración del canal
+                elCanal.setDescription("Descripción del canal");
+                elCanal.enableLights(true);
+                elCanal.setLightColor(Color.RED);
+                elCanal.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+                elCanal.enableVibration(true);
+
+
+                elManager.createNotificationChannel(elCanal);
             }
+
+
+
+            String titulo = actividadActual.getString(actividadActual.getResources().getIdentifier("notifTitulo"+id, "string", actividadActual.getPackageName()));
+            String body = enviador + ": " + recibidor + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
+
+            elBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), com.google.android.material.R.drawable.abc_btn_check_material))
+                    .setSmallIcon(android.R.drawable.checkbox_on_background)
+                    .setContentTitle(titulo)
+                    .setContentText(body)
+                    .setAutoCancel(true);
+
+
+
+
+            elManager.notify(1, elBuilder.build());
 
             // Fin del método, liberar el lock para que el usuario pueda cambiar de actividad
             ActividadPadre.lockRedirectsYPeticionesAServer(false);
 
         }
+
+
+
 
 
     }

@@ -3,6 +3,7 @@ package com.das.tresenjuerga.otrasClases;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -31,15 +32,14 @@ import java.net.URLConnection;
 
 
 
+// INSERT INTO `PARTIDAS` (`UsuarioA`, `UsuarioB`, `Aceptado`, `TurnoDeA`, `Tablero`) VALUES ('YVNlUW51eEhrNFlTSUdpaFFlNmVmQT09', 'QzQ5eVFHZW9KMU81bWxvTGlGdzZZUT09', '1', '1', 'XX-------');
 
 
 /*
 
 
 
-        Estructura de la BD (solo requiere estos comandos y no hay instancias añadidas a ella por defecto en
-        ninguna tabla)
-
+        Para arrancar la BD:
 
         CREATE DATABASE tresEnRaya;
 
@@ -47,6 +47,7 @@ import java.net.URLConnection;
         CREATE TABLE DISPOSITIVOS(Token VARCHAR(200), Cuenta VARCHAR(256), PRIMARY KEY(Token), FOREIGN KEY(Cuenta) REFERENCES USUARIOS(Nombre));
         CREATE TABLE AMISTADES(UsuarioA VARCHAR(256), UsuarioB VARCHAR(256), Aceptado TINYINT, PRIMARY KEY(UsuarioA, UsuarioB), FOREIGN KEY(UsuarioA) REFERENCES USUARIOS(Nombre), FOREIGN KEY(UsuarioB) REFERENCES USUARIOS(Nombre));
         CREATE TABLE PARTIDAS(UsuarioA VARCHAR(256), UsuarioB VARCHAR(256), Aceptado TINYINT, TurnoDeA TINYINT, Tablero VARCHAR(9), PRIMARY KEY(UsuarioA, UsuarioB), FOREIGN KEY(UsuarioA) REFERENCES USUARIOS(Nombre), FOREIGN KEY(UsuarioB) REFERENCES USUARIOS(Nombre));
+
 
 
         Para hacer llamada a server:  http://IP:port/[0].php?id=[1]&&dato1=[2]&&...&&datoN-1=[N]
@@ -65,7 +66,7 @@ import java.net.URLConnection;
         N: "dato(N-1)"
 
 
-        Se pueden hacer llamadas a 3 recursos en BD para obtener datos. Listados por orden de id por recurso:
+        Se pueden hacer llamadas a 3 recursos en BD para obtener datos + 1 recurso firebase. Listados por orden de id por recurso:
 
         usuarios.php:
 
@@ -79,7 +80,7 @@ import java.net.URLConnection;
         amistades.php:
 
         - usuariosFactiblesASolicitud(nombre) -> String[] [nombres de users que no son amigos tuyos ni están en solicitudes pendientes]
-        - crearSolicitud(solicitante, solicitado) -> int [respuesta con si se ha añadido o el error ocurrido]
+        - crearSolicitud(solicitante, solicitado) -> long [respuesta con si se ha añadido o el error ocurrido]
         - verSolicitudes(nombre) -> String[] [nombres de los users que han mandado friend request]
         - aceptarSolicitud(solicitado, solicitante) -> void
         - borrarAmistad(nombre, elAmigoAQuitar) -> void [sirve para rechazar solicitudes o borrar gente de la friendlist]
@@ -96,8 +97,27 @@ import java.net.URLConnection;
         - quienInicioPartida(nombre, contrario) -> int (0 -> No match, 1 -> Yo, 2 -> Rival)
         - miTurno(nombre, contrario) -> bool: empiezo yo?
 
-         Las notificaciones a firebase se llaman internamente desde el servidor cuando algo interesante ocurre.
 
+         Las mayoría de notificaciones a firebase se llaman internamente desde el servidor cuando algo interesante ocurre,
+         aunque hay algunas que se llaman desde el cliente.
+
+         Las que se llaman desde el cliente (firebase.php)
+         - rechazarRevancha(nombre, oponente) -> void (actualiza la UI de revancha del oponente si está ahí)
+         - pingRevancha(nombre, oponente) -> void (actualiza la UI de revancha del oponente si está ahí)
+         - expulsarDePartida(nombre, oponente) -> void (redirige al oponente a su lista de partidas si estaba mirando tu partida)
+
+         Las que se llaman desde el propio servidor
+         - notificarSolicitudDeAmistad(nombre, oponente) -> void
+         - notificarAceptoSolicitudDeAmistad(nombre, oponente) -> void
+         - notificarSolicitudDePartida(nombre, oponente) -> void
+         - notificarAceptoSolicitudDePartida(nombre, oponente) -> void
+         - notificarOponenteHaJugado(nombre, oponente) -> void
+         - notificarAOponenteFinPartidaEmpate(nombre, oponente) -> void
+         - notificarAOponenteFinPartidaDerrota(nombre, oponente) -> void
+
+         Amistades.php incluye un recurso extra que se llama solo desde el servidor
+
+         - obtenerTokensDeCuenta(nombre) -> string[]
  */
 
 
@@ -113,8 +133,13 @@ public class ConexionAServer extends Worker {
 
 
     private String obtenerParametros(int idPeticion, String[] parametrosEnUri) {
+
+        // Construye los parametros de uri de manera que output sea:
+        // id=(idPeticion)&&dato1=(parametrosEnUri[0])&&(dato2=parametrosEnUri[1])&&...&&(datoN=parametrosEnUri[N-1])
+
         String parametrosExtra = null;
         Uri.Builder builder = new Uri.Builder();
+
 
         if (idPeticion >= 0) {
             builder.appendQueryParameter("id", Integer.toString(idPeticion));
@@ -135,12 +160,23 @@ public class ConexionAServer extends Worker {
 
     private Data procesarPeticionUsuarios(int id, String result) throws ParseException, JSONException {
 
+        // Devolver la respuesta del cuerpo del servidor de una petición en usuarios.php.
+
         JSONParser parser = new JSONParser();
         JSONObject json = null;
 
         if (id == 0 || id == 1 || id == 4) {
             json = (JSONObject) parser.parse(result);
         }
+
+        /*
+            0 -> bool
+            1 -> bool
+            2 -> void
+            3 -> void
+            4 -> string (foto)
+
+         */
 
 
         switch (id) {
@@ -151,14 +187,7 @@ public class ConexionAServer extends Worker {
 
             case 4:
                 return new Data.Builder().putString("foto", (String)json.get("foto")).build();
-            /*
-            // TODO: Crear el bitmap en la actividad así
-            try {
-                   BitmapFactory.decodeStream(new ByteArrayInputStream(stringDeLaFoto.getBytes("UTF-8")));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-            */
+
 
             default:
                 return new Data.Builder().build();
@@ -167,6 +196,9 @@ public class ConexionAServer extends Worker {
     }
 
     private Data procesarPeticionAmistades(int id, String result) throws ParseException, JSONException {
+
+        // Devolver la respuesta del cuerpo del servidor de una petición en amistades.php.
+
 
         JSONParser parser = new JSONParser();
         JSONObject json = null;
@@ -177,6 +209,16 @@ public class ConexionAServer extends Worker {
             json = (JSONObject) parser.parse(result);
         }
 
+        /*
+
+            0 -> string[]
+            1 -> long
+            2 -> string[]
+            3 -> void
+            4 -> void
+            5 -> [No lo pide el cliente, el cliente no necesita saber como parsear la respuesta]
+
+         */
 
         switch (id) {
 
@@ -203,6 +245,7 @@ public class ConexionAServer extends Worker {
     private Data procesarPeticionPartidas(int id, String result) throws ParseException, JSONException {
 
 
+        // Devolver la respuesta del cuerpo del servidor de una petición en partidas.php.
 
         JSONParser parser = new JSONParser();
         JSONObject json = null;
@@ -212,6 +255,18 @@ public class ConexionAServer extends Worker {
             json = (JSONObject) parser.parse(result);
         }
 
+
+        /*
+
+            0 -> bool
+            1 -> void
+            2 -> {string[], long[]}
+            3 -> {string, string}
+            4 -> void
+            5 -> void
+            6 -> long
+
+         */
 
 
         switch (id) {
@@ -255,12 +310,10 @@ public class ConexionAServer extends Worker {
     @Override
     public Result doWork() {
 
-        // Recoger parámetros
+        // Recoger parámetros para montar URI despues
 
         Data inputData = getInputData();
-
         String recurso = inputData.getString("recurso");
-
         int idPeticion = inputData.getInt("idPeticion", -1);
         String[] parametros = inputData.getStringArray("parametros");
 
@@ -271,10 +324,12 @@ public class ConexionAServer extends Worker {
             // Preparar conexion
             String direccion =  "http://"+ConexionAServer.IP+":"+ConexionAServer.PUERTO+"/"+recurso+".php?";;
 
+            // Montar los parámetros de URI
             direccion = direccion + this.obtenerParametros(idPeticion, parametros);
             System.out.println(direccion);
 
 
+            // Conectar con servidor
             URL destino = new URL(direccion);
             HttpURLConnection urlConnection = (HttpURLConnection) destino.openConnection();
             urlConnection.setConnectTimeout(15000);
@@ -291,7 +346,7 @@ public class ConexionAServer extends Worker {
 
             if (urlConnection.getResponseCode() == 200) {
 
-                // Si se hace una peticion a firebase, no nos interesa recoger el body. Salir inmediatamente del método
+                // Recoger el cuerpo de la respuesta
 
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -328,6 +383,7 @@ public class ConexionAServer extends Worker {
                 }
 
 
+                // desconectar del servidor
                 urlConnection.disconnect();
 
 
