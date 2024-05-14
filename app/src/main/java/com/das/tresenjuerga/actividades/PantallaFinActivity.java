@@ -19,7 +19,7 @@ public class PantallaFinActivity extends ActividadPadre {
 
  /*
          Esta actividad muestra la pantalla de revancha tras acabar una partida
-         Funciona por estados para manejar revanchas en vivo (TODO: Debug esto):
+         Funciona por estados para manejar revanchas en vivo
 
                 Estados:
 
@@ -103,6 +103,7 @@ public class PantallaFinActivity extends ActividadPadre {
 
         // Ver el estado en el que estamos
         int estadoRev = Integer.parseInt(ActividadPadre.obtenerDeIntent("estadoRevancha"));
+        System.out.println("Estado prev a check: "+estadoRev);
 
         if (estadoRev < 4) {
             // Los estados previos al 4 requieren comprobar el estado de la solicitud de revancha en servidor
@@ -125,6 +126,9 @@ public class PantallaFinActivity extends ActividadPadre {
     }
 
     private void crearInterfaz(String estado) {
+
+        System.out.println("Estado: "+estado);
+
         ActividadPadre.añadirAIntent("estadoRevancha", estado);
 
 
@@ -188,13 +192,20 @@ public class PantallaFinActivity extends ActividadPadre {
             case "3":
                 // Revancha aceptada por ambas parties, enviar ping
 
+
+                descripcion.setText(super.getResources().getString(R.string.revanchaAceptado));
+                revancha.setVisibility(View.GONE);
+
+                volver.setVisibility(View.GONE);
+                volver.setEnabled(false);
+
                 ActividadPadre.peticionAServidor("firebase", 1, datos, null);
                 ActividadPadre.añadirAIntent("estadoRevancha", "4");
 
                 // Programar temporizador para timeout de conexion
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(WorkerTimeoutConexion.class).setInitialDelay(10, TimeUnit.SECONDS).build();
                 WorkManager.getInstance(this).enqueue(otwr);
-
+                ActividadPadre.recargarActividad();
                 break;
 
             case "4":
@@ -205,6 +216,8 @@ public class PantallaFinActivity extends ActividadPadre {
 
                 volver.setVisibility(View.GONE);
                 volver.setEnabled(false);
+
+                break;
 
             case "5":
                 // Aceptar ping del otro y conectar
@@ -225,7 +238,7 @@ public class PantallaFinActivity extends ActividadPadre {
 
                 ActividadPadre.peticionAServidor("partidas", 7, datos, new ObservadorDeInicioRevancha());
 
-
+                break;
 
 
 
@@ -247,7 +260,6 @@ public class PantallaFinActivity extends ActividadPadre {
                 // Cancelar tareas enqueueadas (la del error de conexion)
                 WorkManager.getInstance(this).cancelAllWork();
 
-                break;
 
         }
 
@@ -288,6 +300,7 @@ public class PantallaFinActivity extends ActividadPadre {
 
             ActividadPadre.quitarDeIntent("estadoRevancha");
             ActividadPadre.quitarDeIntent("resultado");
+            System.out.println(super.getBoolean("respuesta"));
             ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(super.getBoolean("respuesta")));
             ActividadPadre.redirigirAActividad(JugarActivity.class);
 

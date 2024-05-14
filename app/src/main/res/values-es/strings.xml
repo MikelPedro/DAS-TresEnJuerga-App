@@ -84,4 +84,6 @@
     <string name="tituloPartida">Partida contra</string>
     <string name="descPartidaTuTurno">Es tu turno. Eres</string>
     <string name="descPartidaTurnoDelOtro">Es el turno de tu oponente. Eres</string>
+    <string name="finDePartida">Fin de la partida. Procesando resultado...</string>
+    <string name="procesandoJugada">Procesando jugada...</string>
 </resources>

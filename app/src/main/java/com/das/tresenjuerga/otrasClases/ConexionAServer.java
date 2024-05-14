@@ -43,10 +43,9 @@ import java.net.URLConnection;
 
         CREATE DATABASE tresEnRaya;
 
-        CREATE TABLE USUARIOS(Nombre VARCHAR(256), Contraseña VARCHAR(64), SaltContraseña VARCHAR(40), Foto BLOB, PRIMARY KEY(Nombre));
-        CREATE TABLE DISPOSITIVOS(Token VARCHAR(200), Cuenta VARCHAR(256), PRIMARY KEY(Token), FOREIGN KEY(Cuenta) REFERENCES USUARIOS(Nombre));
+        CREATE TABLE USUARIOS(Nombre VARCHAR(256), Contraseña VARCHAR(64), SaltContraseña VARCHAR(40), Foto BLOB, Token VARCHAR(200), PRIMARY KEY(Nombre));
         CREATE TABLE AMISTADES(UsuarioA VARCHAR(256), UsuarioB VARCHAR(256), Aceptado TINYINT, PRIMARY KEY(UsuarioA, UsuarioB), FOREIGN KEY(UsuarioA) REFERENCES USUARIOS(Nombre), FOREIGN KEY(UsuarioB) REFERENCES USUARIOS(Nombre));
-        CREATE TABLE PARTIDAS(UsuarioA VARCHAR(256), UsuarioB VARCHAR(256), Aceptado TINYINT, TurnoDeA TINYINT, Tablero VARCHAR(9), PRIMARY KEY(UsuarioA, UsuarioB), FOREIGN KEY(UsuarioA) REFERENCES USUARIOS(Nombre), FOREIGN KEY(UsuarioB) REFERENCES USUARIOS(Nombre));
+        CREATE TABLE PARTIDAS(UsuarioA VARCHAR(256), UsuarioB VARCHAR(256), Aceptado TINYINT, TurnoDeA TINYINT, Finalizado TINYINT, Tablero VARCHAR(9), PRIMARY KEY(UsuarioA, UsuarioB), FOREIGN KEY(UsuarioA) REFERENCES USUARIOS(Nombre), FOREIGN KEY(UsuarioB) REFERENCES USUARIOS(Nombre));
 
 
 
@@ -91,12 +90,12 @@ import java.net.URLConnection;
         - solicitarPartida(solicitante, solicitado) -> bool: se pudo solicitar?  [la solicitud falla si ya hay una queueada (cualquiera de los dos pueden ser el solicitante) o si ya tienen una partida en curso]
         - aceptarPartida(solicitado, solicitante) -> void
         - obtenerPartidas(nombre) -> String[] y int[] [Lista de strings tiene los nombres de los oponentes. Lista de ints guarda un estado por partida: (0: solicitud de partida, 1: turno del otro, 2: tu turno)]
-        - obtenerGamestate(nombre, oponente) -> String(9 chars), String(1 char). [Primer string devuelve estado del tablero, segundo string que figura usas. Ej: "---AB--A-"  y "B"]
+        - obtenerGamestate(nombre, oponente) -> String(9 chars), String(1 char), bool [Primer string devuelve estado del tablero, segundo string que figura usas, boolean indica si fin de juego. Ej: "---AB--A-"  y "B"]
         - realizarJugada(nombre, contrario, tablero) -> void [Pone al match ese el tablero dado, la idea es ir actualizando char a char por jugada]
         - quitarPartida(nombre, contrario) -> void [Sirve para rechazar la partida o eliminarla tras acabarla]
         - quienInicioPartida(nombre, contrario) -> int (0 -> No match, 1 -> Yo, 2 -> Rival)
         - miTurno(nombre, contrario) -> bool: empiezo yo?
-
+        - finalizarPartida(nombre, contrario) -> void
 
          Las mayoría de notificaciones a firebase se llaman internamente desde el servidor cuando algo interesante ocurre,
          aunque hay algunas que se llaman desde el cliente.
@@ -251,7 +250,7 @@ public class ConexionAServer extends Worker {
         JSONObject json = null;
 
 
-        if (id == 0 || id == 2 || id == 3 || id == 6) {
+        if (id == 0 || id == 2 || id == 3 || id == 6 || id == 7) {
             json = (JSONObject) parser.parse(result);
         }
 
@@ -261,10 +260,11 @@ public class ConexionAServer extends Worker {
             0 -> bool
             1 -> void
             2 -> {string[], long[]}
-            3 -> {string, string}
+            3 -> {string, string, bool}
             4 -> void
             5 -> void
             6 -> long
+            7 -> bool
 
          */
 
@@ -272,6 +272,7 @@ public class ConexionAServer extends Worker {
         switch (id) {
 
             case 0:
+            case 7:
                 return new Data.Builder().putBoolean("respuesta", (boolean) json.get("respuesta")).build();
 
 
@@ -292,7 +293,8 @@ public class ConexionAServer extends Worker {
             case 3:
                 String figura = ((String) json.get("miFigura"));
                 String tablero = (String) json.get("tablero");
-                return new Data.Builder().putString("miFigura", figura).putString("tablero", tablero).build();
+                boolean finalizado = (boolean)  json.get("finalizado");
+                return new Data.Builder().putString("miFigura", figura).putString("tablero", tablero).putBoolean("finalizado", finalizado).build();
 
             case 6:
                 return new Data.Builder().putLong("respuesta", (long)json.get("respuesta")).build();

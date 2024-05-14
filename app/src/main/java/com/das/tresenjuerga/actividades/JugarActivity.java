@@ -60,12 +60,37 @@ public class JugarActivity extends ActividadPadre {
 
     private View fragmento;
 
-
+    private void esperar(int ms) {
+        // esperar por X millis
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_jugar);
+
+
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+
+        ActividadPadre.lockBotones(true);
+
+
+        // Obtener el fragmento de la actividad
+        this.fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
 
         // Checkear flags para ver si se requiere hacer redirect porque no tiene sentido mostrar la partida
 
@@ -76,30 +101,30 @@ public class JugarActivity extends ActividadPadre {
 
             ActividadPadre.quitarDeIntent("expulsadoPorNoAmigo");
             ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
-        } else {
 
 
-            String estadoFinPartida = ActividadPadre.obtenerDeIntent("oponenteAcaboLaPartida");
+        // Checkear redirects por fin de partida
 
-            if (!estadoFinPartida.contentEquals("")) {
-                // Si el oponente realizó una jugada que acabó la partida, entonces también se debe
-                // redirigir.
+        } else if (!ActividadPadre.obtenerDeIntent("oponenteAcaboLaPartida").contentEquals("")) {
 
-                ActividadPadre.quitarDeIntent("oponenteAcaboLaPartida");
-                this.acabarPartida(Integer.parseInt(estadoFinPartida));
-            }
+            // Si el oponente borró la partida porque se acabó, ir a la screen de resultados
+
+            ActividadPadre.añadirAIntent("resultado", ActividadPadre.obtenerDeIntent("oponenteAcaboLaPartida"));
+            ActividadPadre.quitarDeIntent("oponenteAcaboLaPartida");
+            this.acabarPartida();
+
+        } else if (!ActividadPadre.obtenerDeIntent("resultado").contentEquals("")) {
+
+            // Si se rotó el móvil antes de mandar la instrucicón de borrar la partida durante el sleep de 3s
+
+            ((TextView)this.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.finDePartida);
+            String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), ActividadPadre.obtenerDeIntent("resultado")};
+
+            // Informar al servidor de que quite la partida
+            ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida(Integer.parseInt(ActividadPadre.obtenerDeIntent("resultado")))); // quitar la partida de BD
+
         }
 
-
-    }
-
-    @Override
-    protected void onStart() {
-
-        super.onStart();
-
-        // Obtener el fragmento de la actividad
-        this.fragmento = ActividadPadre.obtenerFragmentoOrientacion();
 
         // Dar listeners a los botones
         this.fragmento.findViewById(R.id.partidaB_Volver).setOnClickListener(new BotonListener());
@@ -121,6 +146,7 @@ public class JugarActivity extends ActividadPadre {
          */
         ((ImageView)this.fragmento.findViewById(R.id.partidaI_Fondo)).setImageResource(R.drawable.fondo_0);
 
+        ActividadPadre.lockBotones(false);
 
     }
 
@@ -175,6 +201,8 @@ public class JugarActivity extends ActividadPadre {
 
             JugarActivity actividad = JugarActivity.this;
 
+
+
             // Recoger el tablero, así como la figura con la que jugamos
             actividad.tablero = super.getString("tablero"); // string de 9 chars usando '-', 'X' y 'O'
             actividad.figura = super.getString("miFigura").charAt(0); // X or O
@@ -197,19 +225,26 @@ public class JugarActivity extends ActividadPadre {
                 idString = R.string.descPartidaTurnoDelOtro;
 
             }
-            ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(idString) + " " + actividad.figura +".");
+
+            if (!super.getBoolean("finalizado")) {
+                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(idString) + " " + actividad.figura +".");
+
+            } else {
+                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.finDePartida);
+
+            }
+
 
 
 
         }
     }
-    private void acabarPartida(int resultado) {
+    private void acabarPartida() {
 
         // Pre: 0 (loss), 1 (draw), 2 (Win) desde este POV
 
         // Guardar la info relevante y pasar a la interfaz de revancha
         ActividadPadre.añadirAIntent("estadoRevancha", "0"); // por defecto, el estado de revancha es 0 (ver interfaz de revancha para más info)
-        ActividadPadre.añadirAIntent("resultado", Integer.toString(resultado)); // 0, 1 or 2.
         ActividadPadre.quitarDeIntent("tuTurno");
 
         ActividadPadre.redirigirAActividad(PantallaFinActivity.class);
@@ -244,8 +279,7 @@ public class JugarActivity extends ActividadPadre {
                 // Actualizar visualmente el cambio
                 actividad.actualizarCasillaEnUI(this.id);
 
-                // Cambiar la descripción de la partida para indicar que no es tu turno
-                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(R.string.descPartidaTurnoDelOtro) + " " + actividad.figura +".");
+                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.procesandoJugada);
 
                 // Settear el booleano que trackea si es tu turno a false
                 ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(false));
@@ -277,8 +311,6 @@ public class JugarActivity extends ActividadPadre {
 
                 // El servidor nos responde que ha updateado la partida
 
-                ActividadPadre.lockRedirectsYPeticionesAServer(true); // Bloquear al user de que cambie de interfaz hasta que se
-
 
                 // Comprobar si la partida acaba
                 JugarActivity actividad = JugarActivity.this;
@@ -286,49 +318,48 @@ public class JugarActivity extends ActividadPadre {
                 char ficha = actividad.figura;
 
                 if (this.gana(tablero, ficha, this.jugada)) {
+                    ActividadPadre.añadirAIntent("resultado", "2"); // 0, 1 or 2.
+                    ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.finDePartida);
+                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "2"};
+
+                    // Notificar al otro que la partida va a acabar
+                    ActividadPadre.peticionAServidor("partidas", 8, datos, null);
 
                     // Si se gana, esperar 3s para mostrar la matriz un poco antes de forzar redirect a la pantalla de revancha
-                    this.esperar(3000);
+                    JugarActivity.this.esperar(3000);
 
                     // Informar al servidor de que quite la partida porque se ha acabado en victoria
-                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "2"};
-                    ActividadPadre.lockRedirectsYPeticionesAServer(false);
+                    ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida(1)); // quitar la partida de BD
 
-                    ActividadPadre.peticionAServidor("partidas",5, datos, null);
 
-                    // Acabar la partida en victoria
-                    JugarActivity.this.acabarPartida(2);
 
 
                 } else if (!tablero.contains("-")) {
+                    ActividadPadre.añadirAIntent("resultado", "1");
+                    ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.finDePartida);
+                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "1"};
+
+                    // Notificar al otro que la partida va a acabar
+                    ActividadPadre.peticionAServidor("partidas", 8, datos, null);
 
                     // Si se empata, esperar 3s para mostrar la matriz un poco antes de forzar redirect a la pantalla de revancha
-                    this.esperar(3000);
+                    JugarActivity.this.esperar(3000);
 
                     // Informar al servidor de que quite la partida porque se ha acabado en empate
-                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "1"};
-                    ActividadPadre.lockRedirectsYPeticionesAServer(false);
 
-                    ActividadPadre.peticionAServidor("partidas",5, datos, null); // quitar la partida de BD
+                    ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida(1)); // quitar la partida de BD
 
-                    JugarActivity.this.acabarPartida(1);
 
                 } else {
-                    // No se hace redirect si la partida no ha acabado
-                    ActividadPadre.lockRedirectsYPeticionesAServer(false);
+                    // Cambiar la descripción de la partida para indicar que no es tu turno
+                    ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(R.string.descPartidaTurnoDelOtro) + " " + actividad.figura +".");
+
                 }
 
             }
 
 
-            private void esperar(int ms) {
-                // esperar por X millis
-                try {
-                    Thread.sleep(ms);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+
 
             private boolean gana(String tablero, char ficha, int pos) {
 
@@ -383,7 +414,22 @@ public class JugarActivity extends ActividadPadre {
             }
         }
     }
+    private class ObservadorDeQuitarPartida extends ObservadorDePeticion {
 
+
+        private int resultado;
+
+        public ObservadorDeQuitarPartida(int est) {this.resultado = est;}
+        @Override
+        protected void ejecutarTrasPeticion() {
+            // El servidor nos responde con que ha quitado ya la partida
+
+            JugarActivity.this.acabarPartida();
+
+
+
+        }
+    }
 
     private class BotonListener implements View.OnClickListener {
 

@@ -56,6 +56,18 @@ public class PerfilActivity extends ActividadPadre {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_perfil);
+
+
+
+        // Checkear flags para ver si se requiere hacer redirect porque no tiene sentido mostrar la partida
+
+        if (ActividadPadre.obtenerDeIntent("expulsadoPorNoAmigo").contentEquals("true")) {
+
+            // Si el otro te quita como amigo cuando estás viendo su perfil, redirigir
+
+            ActividadPadre.quitarDeIntent("expulsadoPorNoAmigo");
+            ActividadPadre.redirigirAActividad(AmigosActivity.class);
+        }
     }
 
     @Override

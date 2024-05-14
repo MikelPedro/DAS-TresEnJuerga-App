@@ -26,8 +26,8 @@ public abstract class ObservadorDePeticion implements Observer<WorkInfo> {
         if (workInfo != null && workInfo.getState().isFinished()) {
             this.info = workInfo.getOutputData();
 
-            ActividadPadre.lockRedirectsYPeticionesAServer(false); // unlockear el thread de nuevo para que se permita usar los botones
             this.ejecutarTrasPeticion();
+            ActividadPadre.lockBotones(false);
         }
     }
 
