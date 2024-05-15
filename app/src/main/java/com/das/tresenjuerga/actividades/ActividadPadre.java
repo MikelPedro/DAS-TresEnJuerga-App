@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
@@ -29,7 +29,7 @@ import androidx.work.WorkManager;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ConexionAServer;
-import com.das.tresenjuerga.otrasClases.ListaAdapterBase;
+import com.das.tresenjuerga.otrasClases.DialogoComoJugar;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -182,11 +182,15 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
         // Para elegir entre varias opciones en la toolBAR:
 
-        int id=item.getItemId();
+        int id = item.getItemId();
 
         if (id == R.id.toolbarConfiguracion) {
             ActividadPadre.redirigirAActividad(PreferenciasActivity.class);// redirigir a la actividad de preferencias
-        } else if( id == R.id.toolbarPerfil){
+        }else if( id == R.id.toolbarPregunta){
+            //Mostrar dialogo con 2 opciones (ver enlace y volver)
+            DialogFragment dialogo = new DialogoComoJugar();
+            dialogo.show(getSupportFragmentManager(), "dialogoIcono");
+        }else if( id == R.id.toolbarPerfil){
             ActividadPadre.añadirAIntent("userAVisualizar", ActividadPadre.obtenerDeIntent("user"));
             ActividadPadre.redirigirAActividad(PerfilActivity.class);// redirigir a la actividad de perfil
         }
