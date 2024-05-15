@@ -21,7 +21,7 @@ public class WorkerTimeoutConexion extends Worker {
     @Override
     public Result doWork() {
 
-        // Pasa al estado 6 (error de conexion) de la revancha. Esto se ejecuta al de X tiempo si la conexion no se realiza
+        // Pasa al estado 6 (error de conexion) de la revancha. Esto se ejecuta al de X tiempo de la conexion
 
         // Comprobar que el estado de revancha actualmente es efectivamente esperando conexión
         if (ActividadPadre.obtenerDeIntent("estadoRevancha").contentEquals("4")) {

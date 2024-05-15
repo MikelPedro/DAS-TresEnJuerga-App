@@ -58,7 +58,23 @@ public class AnadirAmigoActivity extends ActividadPadre {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_anadir_amigo);
 
-        EditText et = findViewById(R.id.añadirAmigoE_User);
+    }
+
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Obtener el fragmento de la actividad
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        // Dar listener a los botones
+        fragmento.findViewById(R.id.añadirAmigoB_Añadir).setOnClickListener(new BotonListener(0));
+        fragmento.findViewById(R.id.añadirAmigoB_Volver).setOnClickListener(new BotonListener(1));
+
+
+        EditText et = fragmento.findViewById(R.id.añadirAmigoE_User);
         et.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -75,21 +91,6 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
             }
         });
-    }
-
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // Obtener el fragmento de la actividad
-        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
-
-        // Dar listener a los botones
-        fragmento.findViewById(R.id.añadirAmigoB_Añadir).setOnClickListener(new BotonListener(0));
-        fragmento.findViewById(R.id.añadirAmigoB_Volver).setOnClickListener(new BotonListener(1));
-
 
     }
 

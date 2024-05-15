@@ -9,7 +9,7 @@
         android:id="@+id/partidaB_Volver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="30dp"
         android:text="@string/volver"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,96 +23,97 @@
         android:layout_marginTop="128dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/fondo_1" />
 
     <ImageView
         android:id="@+id/partidaI_0"
-        android:layout_width="80dp"
+        android:layout_width="70dp"
 
-        android:layout_height="80dp"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="136dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="144dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_1"
-        android:layout_width="80dp"
+        android:layout_width="70dp"
 
-        android:layout_height="80dp"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="136dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="168dp"
+        android:layout_marginTop="144dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_2"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="255dp"
-        android:layout_marginTop="136dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginTop="144dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_3"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="228dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="236dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_4"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="228dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="168dp"
+        android:layout_marginTop="236dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_5"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="255dp"
-        android:layout_marginTop="228dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginTop="236dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_6"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="322dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="332dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_7"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="322dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="168dp"
+        android:layout_marginTop="332dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/partidaI_8"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="255dp"
-        android:layout_marginTop="322dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginTop="332dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -133,10 +134,32 @@
         android:layout_width="wrap_content"
 
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="15dp"
         android:text="@string/procesandoJugada"
         android:textSize="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/partidaI_Fondo" />
+
+
+    <ImageView
+        android:id="@+id/partidaI_TuFigura"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="560dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textSize="20dp"
+        android:text="@string/miFichaEs"
+        app:layout_constraintBottom_toTopOf="@+id/partidaI_TuFigura"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

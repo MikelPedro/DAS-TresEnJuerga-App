@@ -21,12 +21,17 @@ public abstract class ListaAdapterBase extends BaseAdapter {
     // que sus hijos heredan
 
     private Object[] listaValores;
+
+    private View[] cardviews;
+    private int cantCardviewsCreados;
     private int cardViewTarget;
     private ActividadPadre actividad;
     public ListaAdapterBase(Object[] listaValores, int cardViewTarget) {
         this.listaValores = listaValores;
         this.cardViewTarget = cardViewTarget;
         this.actividad = ActividadPadre.getActividadActual();
+        this.cardviews = new View[this.listaValores.length];
+        this.cantCardviewsCreados = 0;
     }
 
     @Override
@@ -67,7 +72,27 @@ public abstract class ListaAdapterBase extends BaseAdapter {
     protected View crearLayout() {
         View view = ((LayoutInflater)this.actividad.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(this.cardViewTarget,null);
         this.setEstilo(view);
+        this.cardviews[this.cantCardviewsCreados] = view;
+        this.cantCardviewsCreados++;
         return view;
+    }
+    public void cambiarEstadoBotones(boolean lock) {
+
+        // Buscar todos los botones en el list adapter para lockearlos / deslockearlos
+
+        if (this.cantCardviewsCreados == this.cardviews.length) {
+            for (int i = 0; i != this.cantCardviewsCreados; i++) {
+
+                ViewGroup view = (ViewGroup) this.cardviews[i];
+
+                for (int j = 0; j != view.getChildCount(); j++) {
+                    View elemento = view.getChildAt(j);
+                    if (elemento instanceof Button) {
+                        elemento.setEnabled(!lock);
+                    }
+                }
+            }
+        }
     }
 
     private void setEstilo(View view) {
