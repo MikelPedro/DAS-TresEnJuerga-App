@@ -1,34 +1,24 @@
 package com.das.tresenjuerga.otrasClases;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.util.Base64;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-
 import org.json.JSONException;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 
 
@@ -122,7 +112,7 @@ import java.net.URLConnection;
 
 public class ConexionAServer extends Worker {
 
-    private static final String IP = "35.197.255.16";
+    private static final String IP = "35.241.240.206";
     private static final String PUERTO = "80";
 
     public ConexionAServer(@NonNull Context context, @NonNull WorkerParameters workerParams) {

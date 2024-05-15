@@ -8,6 +8,11 @@
         android:title=""
         app:showAsAction="ifRoom|withText" />
 
+    <item
+        android:id="@+id/toolbarPregunta"
+        android:icon="@drawable/baseline_question_mark_24"
+        android:title=""
+        app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/toolbarPerfil"
