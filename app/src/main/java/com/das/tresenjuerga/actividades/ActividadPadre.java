@@ -32,6 +32,7 @@ import androidx.work.WorkManager;
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ConexionAServer;
 import com.das.tresenjuerga.otrasClases.DialogoComoJugar;
+import com.das.tresenjuerga.otrasClases.ListaAdapterBase;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
