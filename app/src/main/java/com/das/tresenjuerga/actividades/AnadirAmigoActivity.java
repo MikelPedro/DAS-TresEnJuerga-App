@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
@@ -58,7 +59,19 @@ public class AnadirAmigoActivity extends ActividadPadre {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_anadir_amigo);
 
-        EditText et = findViewById(R.id.añadirAmigoE_User);
+    }
+
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Obtener el fragmento de la actividad
+        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+
+        EditText et = fragmento.findViewById(R.id.añadirAmigoE_User);
+
         et.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -75,28 +88,26 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
             }
         });
-    }
 
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // Obtener el fragmento de la actividad
-        View fragmento = ActividadPadre.obtenerFragmentoOrientacion();
+        String[] datos = {ActividadPadre.obtenerDeIntent("user")};
+        ActividadPadre.peticionAServidor("amistades", 0, datos, new ObservadorDeAmigosFactibles());
 
         // Dar listener a los botones
         fragmento.findViewById(R.id.añadirAmigoB_Añadir).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.añadirAmigoB_Volver).setOnClickListener(new BotonListener(1));
+    }
 
+    private class ObservadorDeAmigosFactibles extends ObservadorDePeticion{
 
+        @Override
+        protected void ejecutarTrasPeticion() {
+            String[] noSonAmigos = super.getStringArray("nombres");
+            // Hacer aquí lo que haga falta con la lista (rxjava)
+        }
     }
 
 
     private class BotonListener implements View.OnClickListener {
-
-
         private int id;
         public BotonListener(int id) {
             this.id = id;

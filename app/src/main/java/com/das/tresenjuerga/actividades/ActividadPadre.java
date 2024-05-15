@@ -567,12 +567,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
             - observador: El objeto que se encarga de ejecutar código justo cuando la respuesta del servidor llega de vuelta.
                           Puede ser null si no queremos atender la respuesta del servidor
 
-
          */
-
-
-
-
 
         // Construir los datos con los parámetros de entrada
 
@@ -593,7 +588,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
             ActividadPadre.lockBotones(true);
 
 
-            // Si el observador no es null, entonces también se tieen que linkar el observador a la tarea
+            // Si el observador no es null, entonces también se tienen que linkar el observador a la tarea
             // para que se ejecute cuando la tarea acabe (o sea, cuando el servidor nos responda)
 
             // Lockear los botones durante el thread para que el user no pueda cambiar de actividad durante la petición al servidor

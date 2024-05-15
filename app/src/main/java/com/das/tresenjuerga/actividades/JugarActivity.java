@@ -13,8 +13,6 @@ import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
 public class JugarActivity extends ActividadPadre {
 
-
-
     /*
         Esta interfaz muestra el estado de una partida
 
@@ -73,11 +71,6 @@ public class JugarActivity extends ActividadPadre {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_jugar);
-
-
-
-
-
     }
 
     @Override
@@ -87,10 +80,8 @@ public class JugarActivity extends ActividadPadre {
 
         ActividadPadre.lockBotones(true);
 
-
         // Obtener el fragmento de la actividad
         this.fragmento = ActividadPadre.obtenerFragmentoOrientacion();
-
 
         // Checkear flags para ver si se requiere hacer redirect porque no tiene sentido mostrar la partida
 
@@ -101,7 +92,6 @@ public class JugarActivity extends ActividadPadre {
 
             ActividadPadre.quitarDeIntent("expulsadoPorNoAmigo");
             ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
-
 
         // Checkear redirects por fin de partida
 
@@ -125,14 +115,12 @@ public class JugarActivity extends ActividadPadre {
 
         }
 
-
         // Dar listeners a los botones
         this.fragmento.findViewById(R.id.partidaB_Volver).setOnClickListener(new BotonListener());
 
         // Pedir al servidor el estado de la partida
         String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente")};
         ActividadPadre.peticionAServidor("partidas", 3, datos, new ObservadorDeTablero());
-
 
         // TODO: Poner distintos fondos segun preferencias, por ahora fondo_0 es default
 
@@ -149,8 +137,6 @@ public class JugarActivity extends ActividadPadre {
         ActividadPadre.lockBotones(false);
 
     }
-
-
 
 
     private ImageView actualizarCasillaEnUI(int pos) {
