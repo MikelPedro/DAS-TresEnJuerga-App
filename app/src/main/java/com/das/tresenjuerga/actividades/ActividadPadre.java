@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +38,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 
 public abstract class ActividadPadre extends AppCompatActivity {
@@ -349,7 +347,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
                 toolbar.setTitleTextColor(Color.WHITE); // Color titulo
 
             }
-            Toolbar toolbarsin = findViewById(R.id.toolbarPerfil);
 
 
 
