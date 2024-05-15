@@ -30,7 +30,7 @@ public class UsuarioLoggeadoActivity extends ActividadPadre {
 
         // Dar listeners a los botones
         fragmento.findViewById(R.id.usuarioLoggeadoB_Jugar).setOnClickListener(new BotonListener(0));
-        fragmento.findViewById(R.id.usuarioLoggeadoB_Perfil).setOnClickListener(new BotonListener(1));
+        //fragmento.findViewById(R.id.usuarioLoggeadoB_Perfil).setOnClickListener(new BotonListener(1));
         fragmento.findViewById(R.id.usuarioLoggeadoB_Amigos).setOnClickListener(new BotonListener(2));
         fragmento.findViewById(R.id.usuarioLoggeadoB_Salir).setOnClickListener(new BotonListener(3));
 
@@ -51,11 +51,6 @@ public class UsuarioLoggeadoActivity extends ActividadPadre {
                 case 0:
                     // Este botón va a la partidas disponibles
                     ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
-                    break;
-                case 1:
-                    // Este botón abre el perfil del usuario
-                    ActividadPadre.añadirAIntent("userAVisualizar", UsuarioLoggeadoActivity.super.obtenerDeIntent("user"));
-                    ActividadPadre.redirigirAActividad(PerfilActivity.class);
                     break;
                 case 2:
                     // Este botón abre la lista de amigos

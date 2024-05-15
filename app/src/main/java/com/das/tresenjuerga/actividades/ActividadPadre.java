@@ -112,7 +112,8 @@ public abstract class ActividadPadre extends AppCompatActivity {
         // Comprobar si se debe crear una toolbar
         if (!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName()))) {
             // Settear toolbar si no es una Activity blacklisted
-            super.setSupportActionBar(super.findViewById(R.id.toolbar));
+                super.setSupportActionBar(super.findViewById(R.id.toolbar));
+
         }
 
         // Dar el estilo al fragmento
@@ -154,13 +155,19 @@ public abstract class ActividadPadre extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
+        Toolbar toolbarInicio = findViewById(R.id.toolbar);
+
         // Comprobar si la actividad debe tener una toolbar
 
         boolean toolbarPermitida = !ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName());
 
         if (toolbarPermitida) {
-            // Si debe tenerla, inflarla al layout
-            super.getMenuInflater().inflate(R.menu.toolbar,menu);
+            // Si ha iniciado sesion inflar toolbar con opción de ver el perfil
+            if(!ActividadPadre.obtenerDeIntent("user").contentEquals("")){
+                super.getMenuInflater().inflate(R.menu.toolbarperfil,menu);
+            }else{
+                super.getMenuInflater().inflate(R.menu.toolbar,menu);
+            }
 
         }
         return toolbarPermitida;
@@ -173,20 +180,16 @@ public abstract class ActividadPadre extends AppCompatActivity {
         // Guardar que clase llamó para poder redirigir de vuelta ahí
         ActividadPadre.añadirAIntent("actividadQueLlama", this.getClass().getSimpleName());
 
-        /*
-
         // Para elegir entre varias opciones en la toolBAR:
 
         int id=item.getItemId();
 
         if (id == R.id.toolbarConfiguracion) {
-
-        } else if ...
-
-         */
-
-        // Por ahora solo una opcion, por lo que se asume que se pincha esa
-        ActividadPadre.redirigirAActividad(PreferenciasActivity.class); // redirigir a la actividad de preferencias
+            ActividadPadre.redirigirAActividad(PreferenciasActivity.class);// redirigir a la actividad de preferencias
+        } else if( id == R.id.toolbarPerfil){
+            ActividadPadre.añadirAIntent("userAVisualizar", ActividadPadre.obtenerDeIntent("user"));
+            ActividadPadre.redirigirAActividad(PerfilActivity.class);// redirigir a la actividad de perfil
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -290,7 +293,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
 
 
-
     }
 
     protected void setEstilo(View fragmento) {
@@ -343,6 +345,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
                 toolbar.setTitleTextColor(Color.WHITE); // Color titulo
 
             }
+            Toolbar toolbarsin = findViewById(R.id.toolbarPerfil);
 
 
 

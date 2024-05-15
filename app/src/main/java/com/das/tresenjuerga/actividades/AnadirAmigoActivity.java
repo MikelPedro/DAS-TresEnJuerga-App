@@ -2,8 +2,11 @@ package com.das.tresenjuerga.actividades;
 
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.util.Log;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
@@ -55,6 +58,23 @@ public class AnadirAmigoActivity extends ActividadPadre {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_anadir_amigo);
 
+        EditText et = findViewById(R.id.añadirAmigoE_User);
+        et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.i("App", "Se va a cambiar: "+s);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.i("App", "Nuevo texto: "+charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
