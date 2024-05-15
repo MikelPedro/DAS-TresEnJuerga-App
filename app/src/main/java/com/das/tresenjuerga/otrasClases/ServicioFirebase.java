@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
@@ -231,7 +230,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
             String titulo = actividadActual.getString(actividadActual.getResources().getIdentifier("notifTitulo"+id, "string", actividadActual.getPackageName()));
             String body = enviador + ": " + recibidor + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
 
-            elBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), com.google.android.material.R.drawable.abc_btn_check_material))
+            elBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.tres_en_raya))
                     .setSmallIcon(android.R.drawable.checkbox_on_background)
                     .setContentTitle(titulo)
                     .setContentText(body)
