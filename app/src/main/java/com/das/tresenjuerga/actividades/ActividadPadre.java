@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 
 public abstract class ActividadPadre extends AppCompatActivity {
@@ -51,13 +54,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
 
     // TODO: Decorar actividades, están todas creadas ya. Si quereis mover alguna de ellas a la toolbar
-    // TODO: Completar locks (bloquear toolbar y botones de BaseAdapters durante locks
-    // TODO: Debuggear:
-    /*
-        - Que la partida se borre si se cancela un rematch
-        - Que al rotar el dispositivo funciona correctamente la app en un match
-        - Ver que los locks van
-     */
+
 
 
     private static ActividadPadre actividadEnEjecucion; // La actividad que el user está visualizando
@@ -107,7 +104,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        ActividadPadre.resetLock();
+        ActividadPadre.cantidadLock = 0;
 
         // Comprobar si se debe crear una toolbar
         if (!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(!ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.contains(this.getClass().getSimpleName()))) {
@@ -179,7 +176,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
         // Guardar que clase llamó para poder redirigir de vuelta ahí
         ActividadPadre.añadirAIntent("actividadQueLlama", this.getClass().getSimpleName());
-
+        System.out.println("Guardar: "+ this.getClass().getSimpleName());
         // Para elegir entre varias opciones en la toolBAR:
 
         int id=item.getItemId();
@@ -313,6 +310,8 @@ public abstract class ActividadPadre extends AppCompatActivity {
             for (int i = 0; i != viewGroup.getChildCount(); i++) {
 
                 View elemento = viewGroup.getChildAt(i);
+
+
                 if (elemento instanceof Button) {
                     // Crear estilo del boton
                     Button boton = (Button) elemento;
@@ -481,12 +480,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
     }
 
-    private static void resetLock() {
-        ActividadPadre.cantidadLock = 0;
-        ActividadPadre.cambiarEstadoBotones(false);
-
-    }
-
     public static void lockBotones(boolean lock) {
 
         if (lock) {
@@ -509,19 +502,37 @@ public abstract class ActividadPadre extends AppCompatActivity {
     }
 
     private static void cambiarEstadoBotones(boolean lock) {
+
+        // Buscar todos los botones de la actividad para lockearlos / deslockearlos
+
         ViewGroup view = (ViewGroup) ActividadPadre.obtenerFragmentoOrientacion();
         Toolbar toolbar = ActividadPadre.actividadEnEjecucion.findViewById(R.id.toolbar);
 
         for (int i = 0; i != view.getChildCount(); i++) {
             View elemento = view.getChildAt(i);
 
+
             if (elemento instanceof Button) {
+
+                // Boton del fragment, lockearlo / unlockearlo
                 elemento.setEnabled(!lock);
+            } else if (elemento instanceof ListView) {
+
+                // Listview en el fragment, decirle que lockee / Unlockee sus botones
+
+                ListaAdapterBase adapter = (ListaAdapterBase) ((ListView)elemento).getAdapter();
+
+                if (adapter != null) {
+                    ((ListaAdapterBase)((ListView)elemento).getAdapter()).cambiarEstadoBotones(lock);
+                }
             }
 
         }
 
         if (toolbar != null) {
+
+            // Si la toolbar existe, lockear / unlockear sus botones tmb
+
             Menu menu = toolbar.getMenu();
             for (int i = 0; i < menu.size(); i++) {
                 MenuItem menuItem = menu.getItem(i);

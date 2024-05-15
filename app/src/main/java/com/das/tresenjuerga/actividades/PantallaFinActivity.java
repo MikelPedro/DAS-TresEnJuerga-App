@@ -223,8 +223,6 @@ public class PantallaFinActivity extends ActividadPadre {
                 // Aceptar ping del otro y conectar
 
 
-                // Cancelar tareas enqueueadas (la del error de conexion)
-                WorkManager.getInstance(this).cancelAllWork();
 
 
 
@@ -257,8 +255,6 @@ public class PantallaFinActivity extends ActividadPadre {
                 revancha.setVisibility(View.GONE);
 
 
-                // Cancelar tareas enqueueadas (la del error de conexion)
-                WorkManager.getInstance(this).cancelAllWork();
 
 
         }
@@ -345,7 +341,7 @@ public class PantallaFinActivity extends ActividadPadre {
                     ActividadPadre.quitarDeIntent("oponente");
 
                     // Volver
-                    ActividadPadre.redirigirAActividad(PartidasDisponiblesActivity.class);
+                    ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
 
             }
         }

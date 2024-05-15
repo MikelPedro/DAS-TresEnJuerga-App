@@ -47,7 +47,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
         // hacer una redirección en vez de una notificación
         ActividadPadre actividadActual = ActividadPadre.getActividadActual();
         int id = Integer.parseInt(remoteMessage.getData().get("id"));
-        boolean recargarInterfaz = false;
+        boolean recargarInterfaz;
         boolean forzarDeslogeo = false;
 
 
@@ -69,7 +69,8 @@ public class ServicioFirebase extends FirebaseMessagingService {
             case 2:
                 // Solicitud de partida recibida / han pedido revancha
                 recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
-
+                break;
+                
             case 3:
                 // El otro ha aceptado la partida / revancha aceptada
                 recargarInterfaz = actividadActual instanceof PartidasDisponiblesActivity || actividadActual instanceof PantallaFinActivity && ActividadPadre.obtenerDeIntent("oponente").contentEquals(enviador);
@@ -86,18 +87,28 @@ public class ServicioFirebase extends FirebaseMessagingService {
                 break;
             case 5:
                 // Partida en empate
+
+
                 recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+
                 if (recargarInterfaz) {
                     // Si estamos en la partida adecuada, informarla de que fue un empate
                     ActividadPadre.añadirAIntent("oponenteAcaboLaPartida", "1");
 
                 }
+
+                break;
             case 6:
+
                 // Partida en derrota
                 recargarInterfaz = actividadActual instanceof JugarActivity && enviador.contentEquals(ActividadPadre.obtenerDeIntent("oponente"));
+
+
+
                 if (recargarInterfaz) {
                     // Si estamos en la partida adecuada, informarla de que fue una derrota
                     ActividadPadre.añadirAIntent("oponenteAcaboLaPartida", "0");
+
                 }
 
                 break;
@@ -175,6 +186,9 @@ public class ServicioFirebase extends FirebaseMessagingService {
             case 10:
                 // Otro móvil se conecta a esta cuenta, quitar este de ella
                 forzarDeslogeo = true;
+                recargarInterfaz = false;
+
+                break;
 
             default:
                 // Escenario fallback es no refrescar la interfaz, aunque no debería ejecutarse esto

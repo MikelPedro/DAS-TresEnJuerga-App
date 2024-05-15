@@ -15,4 +15,13 @@
         app:key="estilo"
         app:summary="@string/preferenciasDescripcionEstilo"
         app:title="@string/preferenciasSubtituloEstilo" />
+
+
+    <ListPreference
+        app:dialogTitle="@string/preferenciasTituloTablero"
+        app:entries="@array/estiloTablero"
+        app:entryValues="@array/estiloTableroKey"
+        app:key="estiloTablero"
+        app:summary="@string/preferenciasDescripcionTablero"
+        app:title="@string/preferenciasSubtituloTablero" />
 </PreferenceScreen>

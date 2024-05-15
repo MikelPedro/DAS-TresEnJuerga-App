@@ -82,8 +82,12 @@
     <string name="preferenciasSubtituloEstilo">¿Qué estilo usas?</string>
     <string name="preferenciasDescripcionEstilo">Elige un estilo</string>
     <string name="tituloPartida">Partida contra</string>
-    <string name="descPartidaTuTurno">Es tu turno. Eres</string>
-    <string name="descPartidaTurnoDelOtro">Es el turno de tu oponente. Eres</string>
+    <string name="descPartidaTuTurno">Es tu turno.</string>
+    <string name="descPartidaTurnoDelOtro">Es el turno de tu oponente.</string>
     <string name="finDePartida">Fin de la partida. Procesando resultado...</string>
     <string name="procesandoJugada">Procesando jugada...</string>
+    <string name="preferenciasTituloTablero">Elige un estilo de tablero</string>
+    <string name="preferenciasSubtituloTablero">Elige un estilo de tablero</string>
+    <string name="preferenciasDescripcionTablero">¿Qué tablero quieres?</string>
+    <string name="miFichaEs">Juegas como:</string>
 </resources>

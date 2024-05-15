@@ -2,8 +2,10 @@ package com.das.tresenjuerga.actividades;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -58,6 +60,9 @@ public class JugarActivity extends ActividadPadre {
     private String tablero;
     private char figura;
 
+    private int estiloX;
+    private int estiloO;
+
     private View fragmento;
 
     private void esperar(int ms) {
@@ -111,6 +116,7 @@ public class JugarActivity extends ActividadPadre {
 
             ActividadPadre.añadirAIntent("resultado", ActividadPadre.obtenerDeIntent("oponenteAcaboLaPartida"));
             ActividadPadre.quitarDeIntent("oponenteAcaboLaPartida");
+
             this.acabarPartida();
 
         } else if (!ActividadPadre.obtenerDeIntent("resultado").contentEquals("")) {
@@ -121,10 +127,11 @@ public class JugarActivity extends ActividadPadre {
             String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), ActividadPadre.obtenerDeIntent("resultado")};
 
             // Informar al servidor de que quite la partida
-            ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida(Integer.parseInt(ActividadPadre.obtenerDeIntent("resultado")))); // quitar la partida de BD
+            ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida()); // quitar la partida de BD
 
+        } else {
+            ActividadPadre.lockBotones(false);
         }
-
 
         // Dar listeners a los botones
         this.fragmento.findViewById(R.id.partidaB_Volver).setOnClickListener(new BotonListener());
@@ -134,7 +141,14 @@ public class JugarActivity extends ActividadPadre {
         ActividadPadre.peticionAServidor("partidas", 3, datos, new ObservadorDeTablero());
 
 
-        // TODO: Poner distintos fondos segun preferencias, por ahora fondo_0 es default
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String estilo = prefs.getString("estiloTablero","0");
+
+        int estiloFondo =  super.getResources().getIdentifier("fondo_"+estilo,"drawable",super.getPackageName());
+        ((ImageView)this.fragmento.findViewById(R.id.partidaI_Fondo)).setImageResource(estiloFondo);
+        this.estiloX = super.getResources().getIdentifier("x_"+estilo,"drawable",super.getPackageName());
+        this.estiloO = super.getResources().getIdentifier("o_"+estilo,"drawable",super.getPackageName());
+
 
         /*
             Source imagenes:
@@ -142,11 +156,25 @@ public class JugarActivity extends ActividadPadre {
             0:
                fondo: https://www.istockphoto.com/es/foto/pizarra-ticktacktoe-fondo-gm946399874-258448731?searchscope=image%2Cfilm
                figuras: https://www.istockphoto.com/es/foto/tick-tack-toe-en-la-pizarra-gm1134456281-301461381?searchscope=image%2Cfilm
+            1:
+
+                fondo: https://static.vecteezy.com/system/resources/previews/001/918/357/original/tic-tac-toe-game-linear-outline-icon-neon-style-light-decoration-icon-vector.jpg
+                figuras: https://play-lh.googleusercontent.com/KZTO1L6r8CzWlg2InJoU_ndRAuvYiaS-35MyYdDPeeVCPNVfM9SBY2qRGjvvADmDIR8
+
+            2:
+                Hecho por Iván Mata, no source link
+
+                fondo:  https://www.istockphoto.com/es/foto/pizarra-ticktacktoe-fondo-gm946399874-258448731?searchscope=image%2Cfilm (editado por Mikel Pedro)
+                figuras: https://www.flaticon.es/icono-gratis/cerveza_931949?term=cerveza&page=1&position=1&origin=search&related_id=931949
+                         https://www.flaticon.es/icono-gratis/uva_1412542?term=uva&page=1&position=2&origin=search&related_id=1412542
+
+            3:
+
+
+
+
 
          */
-        ((ImageView)this.fragmento.findViewById(R.id.partidaI_Fondo)).setImageResource(R.drawable.fondo_0);
-
-        ActividadPadre.lockBotones(false);
 
     }
 
@@ -180,10 +208,10 @@ public class JugarActivity extends ActividadPadre {
 
         switch (figura) {
             case 'X': // X
-                casilla.setImageResource(R.drawable.x_0);
+                casilla.setImageResource(this.estiloX);
                 break;
             case 'O': // 0
-                casilla.setImageResource(R.drawable.o_0);
+                casilla.setImageResource(this.estiloO);
          // case '-':
          //     NOP;
 
@@ -207,6 +235,18 @@ public class JugarActivity extends ActividadPadre {
             actividad.tablero = super.getString("tablero"); // string de 9 chars usando '-', 'X' y 'O'
             actividad.figura = super.getString("miFigura").charAt(0); // X or O
 
+            // Poner el dibujo de la ficha como la que juegas
+
+            ImageView figuraMia = (ImageView)actividad.fragmento.findViewById(R.id.partidaI_TuFigura);
+
+            if (actividad.figura == 'X') {
+                figuraMia.setImageResource(actividad.estiloX);
+            } else {
+                figuraMia.setImageResource(actividad.estiloO);
+
+            }
+
+
             for (int i = 0; i != 9; i++) {
                 // Dar un listener a cada imagen del tablero, para que puedan responder cuando se pinchan en ellas
                 actividad.actualizarCasillaEnUI(i).setOnClickListener(new ImagenListener(i));
@@ -216,23 +256,29 @@ public class JugarActivity extends ActividadPadre {
             // Settear titulo ("Partida vs [BLANK]")
             ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Titulo)).setText(actividad.getResources().getString(R.string.tituloPartida) + " " + ActividadPadre.obtenerDeIntent("oponente"));
 
-            // Settear descripcion ("Es tu turno", "No es tu turno", etc..)
 
-            int idString;
-            if (ActividadPadre.obtenerDeIntent("tuTurno").contentEquals(Boolean.toString(true))) {
-                idString = R.string.descPartidaTuTurno;
-            } else {
-                idString = R.string.descPartidaTurnoDelOtro;
+            if (super.getBoolean("finalizado")) {
 
-            }
+                // Fin del match
 
-            if (!super.getBoolean("finalizado")) {
-                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(idString) + " " + actividad.figura +".");
-
-            } else {
+                ActividadPadre.lockBotones(true);
                 ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.finDePartida);
 
+            } else if (ActividadPadre.obtenerDeIntent("tuTurno").contentEquals(Boolean.toString(true))) {
+
+                // Tu turno
+
+                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(R.string.descPartidaTuTurno));
+
+            } else {
+
+                // Turno del otro
+
+                ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString( R.string.descPartidaTurnoDelOtro));
+
             }
+
+
 
 
 
@@ -241,7 +287,7 @@ public class JugarActivity extends ActividadPadre {
     }
     private void acabarPartida() {
 
-        // Pre: 0 (loss), 1 (draw), 2 (Win) desde este POV
+        // Pre: 0 (loss), 1 (draw), 2 (Win) desde este POV en "resultado"
 
         // Guardar la info relevante y pasar a la interfaz de revancha
         ActividadPadre.añadirAIntent("estadoRevancha", "0"); // por defecto, el estado de revancha es 0 (ver interfaz de revancha para más info)
@@ -305,6 +351,23 @@ public class JugarActivity extends ActividadPadre {
 
             }
 
+            private class ObservadorDeFinDeJuego extends ObservadorDePeticion {
+
+                private int estadoFinal;
+
+                public ObservadorDeFinDeJuego(int fin) {this.estadoFinal = fin;}
+
+                @Override
+                protected void ejecutarTrasPeticion() {
+                    // Si se gana, esperar 3s para mostrar la matriz un poco antes de forzar redirect a la pantalla de revancha
+                    JugarActivity.this.esperar(3000);
+
+                    String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), Integer.toString(this.estadoFinal)};
+
+                    // Informar al servidor de que quite la partida porque se ha acabado en victoria
+                    ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida()); // quitar la partida de BD
+                }
+            }
 
             @Override
             protected void ejecutarTrasPeticion() {
@@ -313,6 +376,7 @@ public class JugarActivity extends ActividadPadre {
 
 
                 // Comprobar si la partida acaba
+
                 JugarActivity actividad = JugarActivity.this;
                 String tablero = actividad.tablero;
                 char ficha = actividad.figura;
@@ -322,15 +386,8 @@ public class JugarActivity extends ActividadPadre {
                     ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.finDePartida);
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "2"};
 
-                    // Notificar al otro que la partida va a acabar
-                    ActividadPadre.peticionAServidor("partidas", 8, datos, null);
-
-                    // Si se gana, esperar 3s para mostrar la matriz un poco antes de forzar redirect a la pantalla de revancha
-                    JugarActivity.this.esperar(3000);
-
-                    // Informar al servidor de que quite la partida porque se ha acabado en victoria
-                    ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida(1)); // quitar la partida de BD
-
+                    // Notificar que la partida va a acabar en victoria
+                    ActividadPadre.peticionAServidor("partidas", 8, datos, new ObservadorDeFinDeJuego(2));
 
 
 
@@ -339,15 +396,8 @@ public class JugarActivity extends ActividadPadre {
                     ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(R.string.finDePartida);
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ActividadPadre.obtenerDeIntent("oponente"), "1"};
 
-                    // Notificar al otro que la partida va a acabar
-                    ActividadPadre.peticionAServidor("partidas", 8, datos, null);
-
-                    // Si se empata, esperar 3s para mostrar la matriz un poco antes de forzar redirect a la pantalla de revancha
-                    JugarActivity.this.esperar(3000);
-
-                    // Informar al servidor de que quite la partida porque se ha acabado en empate
-
-                    ActividadPadre.peticionAServidor("partidas",5, datos, new ObservadorDeQuitarPartida(1)); // quitar la partida de BD
+                    // Notificar que la partida va a acabar en empate
+                    ActividadPadre.peticionAServidor("partidas", 8, datos, new ObservadorDeFinDeJuego(1));
 
 
                 } else {
@@ -417,9 +467,7 @@ public class JugarActivity extends ActividadPadre {
     private class ObservadorDeQuitarPartida extends ObservadorDePeticion {
 
 
-        private int resultado;
 
-        public ObservadorDeQuitarPartida(int est) {this.resultado = est;}
         @Override
         protected void ejecutarTrasPeticion() {
             // El servidor nos responde con que ha quitado ya la partida

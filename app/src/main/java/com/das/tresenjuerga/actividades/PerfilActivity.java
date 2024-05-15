@@ -277,16 +277,29 @@ public class PerfilActivity extends ActividadPadre {
                     ActividadPadre.quitarDeIntent("userAVisualizar");
 
                     // Dependiendo de si estoy viendo mi perfil o no, deducir de donde vinimos para volver allí
-                    if (PerfilActivity.this.miPerfil) {
-                        // Si veo mi perfil, voy al menú principal de usuarios loggeados
-                        ActividadPadre.redirigirAActividad(UsuarioLoggeadoActivity.class);
+
+                    String actividadQueLlama = ActividadPadre.obtenerDeIntent("actividadQueLlama");
+                    System.out.println("Check: "+ actividadQueLlama);
+
+                    if (!actividadQueLlama.contentEquals("")) {
+                        // Si veo mi perfil, voy de donde me llamaron
+                        ActividadPadre.quitarDeIntent("actividadQueLlama");
+
+                        try {
+                            System.out.println("Ir: "+ Class.forName("com.das.tresenjuerga.actividades."+actividadQueLlama));
+
+                            // Source: https://stackoverflow.com/questions/5401467/convert-string-into-a-class-object
+                            ActividadPadre.redirigirAActividad(Class.forName("com.das.tresenjuerga.actividades."+actividadQueLlama));
+                        } catch (ClassNotFoundException e) {
+                            System.out.println("Actividad para returnear no encontrada");
+                            throw new RuntimeException(e);
+                        }
 
                     } else {
                         // Si no veo mi perfil, voy a mi lista de amigos
                         ActividadPadre.redirigirAActividad(AmigosActivity.class);
 
                     }
-
 
             }
         }

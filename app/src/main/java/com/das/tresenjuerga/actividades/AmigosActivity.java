@@ -76,7 +76,6 @@ public class AmigosActivity extends ActividadPadre {
 
             // Recoger la variable que nos da los nombres de nuestros amigos
             Object[] listaValores = super.getStringArray("nombres");
-
             // Montar el listview, cargando el cardview correspondiente
             ListaAdapterMisAmigos adapter = new ListaAdapterMisAmigos(listaValores, cardview);
             adapter.notifyDataSetChanged();

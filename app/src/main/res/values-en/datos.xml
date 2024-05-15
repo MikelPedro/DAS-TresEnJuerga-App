@@ -10,4 +10,12 @@
         <item>Neon</item>
     </string-array>
 
+    <string-array name="estiloTablero">
+        <item>Blackboard</item>
+        <item>Neon</item>
+        <item>Hand drawn </item>
+        <item>Hangover </item>
+
+    </string-array>
+
 </resources>

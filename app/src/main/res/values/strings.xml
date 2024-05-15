@@ -86,5 +86,9 @@
     <string name="descPartidaTurnoDelOtro">Desc</string>
     <string name="finDePartida">Fin de la partida. Finalizando...</string>
     <string name="procesandoJugada">Processing play...</string>
+    <string name="preferenciasTituloTablero">zzz</string>
+    <string name="preferenciasSubtituloTablero">cc</string>
+    <string name="preferenciasDescripcionTablero">asaas</string>
+    <string name="miFichaEs">eres</string>
 
 </resources>

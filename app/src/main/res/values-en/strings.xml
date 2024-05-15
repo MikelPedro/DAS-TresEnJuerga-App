@@ -82,8 +82,12 @@
     <string name="preferenciasSubtituloEstilo">What theme do you use?</string>
     <string name="preferenciasDescripcionEstilo">Choose a theme</string>
     <string name="tituloPartida">Match versus</string>
-    <string name="descPartidaTuTurno">It\'s your turn. You\'re</string>
-    <string name="descPartidaTurnoDelOtro">It\'s your opponent\'s turn. You\'re</string>
+    <string name="descPartidaTuTurno">It\'s your turn.</string>
+    <string name="descPartidaTurnoDelOtro">It\'s your opponent\'s turn.</string>
     <string name="finDePartida">End of the match. Processing result...</string>
     <string name="procesandoJugada">Processing play...</string>
+    <string name="preferenciasTituloTablero">Choose a board style</string>
+    <string name="preferenciasSubtituloTablero">Choose a board style</string>
+    <string name="preferenciasDescripcionTablero">What board would you like?</string>
+    <string name="miFichaEs">You play as:</string>
 </resources>

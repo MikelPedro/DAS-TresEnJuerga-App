@@ -122,7 +122,7 @@ import java.net.URLConnection;
 
 public class ConexionAServer extends Worker {
 
-    private static final String IP = "35.197.255.16";
+    private static final String IP = "35.241.240.206";
     private static final String PUERTO = "80";
 
     public ConexionAServer(@NonNull Context context, @NonNull WorkerParameters workerParams) {
