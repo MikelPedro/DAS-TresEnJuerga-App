@@ -201,7 +201,6 @@ public class JugarActivity extends ActividadPadre {
 
          */
 
-        // TODO: Poner distintos X/O segun preferencias, por ahora modo_0 es default
 
         ImageView casilla = (ImageView) this.fragmento.findViewById(super.getResources().getIdentifier("partidaI_"+pos, "id", super.getPackageName()));
         char figura = this.tablero.charAt(pos);
