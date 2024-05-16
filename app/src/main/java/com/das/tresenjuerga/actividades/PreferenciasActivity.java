@@ -1,7 +1,5 @@
 package com.das.tresenjuerga.actividades;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +8,6 @@ import android.view.ViewGroup;
 import com.das.tresenjuerga.R;
 
 public class PreferenciasActivity extends ActividadPadre {
-
 
 
     /*
@@ -25,11 +22,10 @@ public class PreferenciasActivity extends ActividadPadre {
           - Día
           - Neón
 
+        * Tipo de tablero
 
      */
 
-
-    // TODO: Añadir mas preferencias, como el estilo de tic tac toe a usar. Por ahora solo se usa el de pizarra (el de por defecto)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +54,7 @@ public class PreferenciasActivity extends ActividadPadre {
         super.setEstilo(fragmento);
         ViewGroup viewGroup = (ViewGroup) fragmento;
 
-        viewGroup.getChildAt(0).setBackgroundColor(Color.WHITE);
+        viewGroup.getChildAt(0).setBackgroundColor(Color.CYAN);
     }
 
 

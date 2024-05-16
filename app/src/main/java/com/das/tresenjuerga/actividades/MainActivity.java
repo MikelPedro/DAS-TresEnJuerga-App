@@ -1,10 +1,14 @@
 package com.das.tresenjuerga.actividades;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.work.WorkManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.DialogoSalir;
@@ -24,6 +28,15 @@ public class MainActivity extends ActividadPadre {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_main);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)!=
+                    PackageManager.PERMISSION_GRANTED) {
+
+                //Pedir el permiso para las notificaciones
+                ActivityCompat.requestPermissions(this, new
+                        String[]{Manifest.permission.POST_NOTIFICATIONS}, 11);
+            }
+        }
     }
 
 
