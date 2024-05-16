@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
 
@@ -54,7 +55,17 @@ public class PreferenciasActivity extends ActividadPadre {
         super.setEstilo(fragmento);
         ViewGroup viewGroup = (ViewGroup) fragmento;
 
-        viewGroup.getChildAt(0).setBackgroundColor(Color.CYAN);
+        viewGroup.getChildAt(0).setBackgroundColor(getResources().getColor(R.color.rojoclarito));
+
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+
+            // Se verifica si el hijo actual es un TextView
+            if (child instanceof TextView) {
+                // Cambia el color del texto
+                ((TextView) child).setTextColor(Color.BLACK);
+            }
+        }
     }
 
 
