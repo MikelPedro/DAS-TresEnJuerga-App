@@ -14,8 +14,8 @@ switch ($id) {
         break;
 	
     case "2":
-	    verSolicitudes($conn, $_GET['dato1']);
-	    break;
+	verSolicitudes($conn, $_GET['dato1']);
+        break;
 
     case "3":
         aceptarSolicitud($conn, $_GET['dato1'], $_GET['dato2']);
@@ -170,8 +170,8 @@ function verSolicitudes($conn, $nombre) {
 }
 
 function aceptarSolicitud($conn, $user1, $user2) {
-    $solicitante = cifrar($user1);
-    $solicitado = cifrar($user2);
+    $solicitante = cifrar($user2);
+    $solicitado = cifrar($user1);
 
     $com = $conn->prepare("UPDATE AMISTADES SET Aceptado = 1 WHERE UsuarioA = ? AND UsuarioB = ?");	    
     $com->bind_Param('ss', $solicitante, $solicitado);
@@ -190,9 +190,10 @@ function aceptarSolicitud($conn, $user1, $user2) {
 function borrarAmistad($conn, $nombre, $examigo) {
     $user = cifrar($nombre);
     $examigo = cifrar($examigo);
-
+    echo $user;
+    echo $examigo;
     $com = $conn->prepare("DELETE FROM AMISTADES WHERE (UsuarioA = ? AND UsuarioB = ?) OR (UsuarioA = ? AND UsuarioB = ?)");	    
-    $com->bind_Param('ssss', $nombre, $examigo, $examigo, $nombre);
+    $com->bind_Param('ssss', $user, $examigo, $examigo, $user);
     $com->execute();
     $com->close();
 

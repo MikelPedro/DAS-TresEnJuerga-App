@@ -14,8 +14,8 @@ switch ($id) {
         break;
 	
     case "2":
-	    setTokenEnUsuario($conn, $_GET['dato1'], $_GET['dato2']);
-	    break;
+        setTokenEnUsuario($conn, $_GET['dato1'], $_GET['dato2']);
+        break;
 
     case "3":
 
@@ -107,13 +107,26 @@ function setTokenEnUsuario($conn, $nombre, $token) {
     
     $user = cifrar($nombre);
 
-    $com = $conn->prepare("SELECT Cuenta FROM DISPOSITIVOS WHERE Token = ?");	    
-    $com->bind_Param('s', $token);
+
+
+    $com = $conn->prepare("SELECT Token FROM USUARIOS WHERE Nombre = ?");	    
+    $com->bind_Param('s', $user);
     $com->execute();
     $com->store_result();
-    $com->bind_result($cuentaAntigua);
-
-
+    $com->bind_result($tokenAntiguo);
+    $com->fetch();
+//    echo $tokenAntiguo;
+//    echo " ";
+//    echo $token;
+    if ($tokenAntiguo != $token) {
+        notificarAFirebase(10, $nombre, $nombre);
+        $com->close();
+        $com = $conn->prepare("UPDATE USUARIOS SET Token = ? WHERE Nombre = ?");    
+        $com->bind_Param('ss', $token, $user);
+        $com->execute();
+    }
+    $com->close();
+/*
 
     if (!$com->fetch()) {
         $com->close();
@@ -126,9 +139,10 @@ function setTokenEnUsuario($conn, $nombre, $token) {
         $com = $conn->prepare("UPDATE DISPOSITIVOS SET Cuenta = ? WHERE Token = ?");	  
         $com->bind_Param('ss', $user, $token);
         $com->execute();
+        notificarAFirebase(10, $nombre, );
     }
 
-
+*/
     $com->close();
 
 }
@@ -153,9 +167,8 @@ function bajarFotoDePerfil($conn, $nombre) {
     $com->bind_result($foto);
     $com->fetch();
     $com->close();
-
     $resultados = array(
-        'foto' => base64_decode($foto)
+        'foto' => $foto
     );
 
     echo json_encode($resultados);
@@ -164,7 +177,7 @@ function bajarFotoDePerfil($conn, $nombre) {
 
 function obtenerTokensDeCuenta($conn, $nombre) {
     $user = cifrar($nombre);
-    $com = $conn->prepare("SELECT Token FROM DISPOSITIVOS WHERE Cuenta = ?");       
+    $com = $conn->prepare("SELECT Token FROM USUARIOS WHERE Nombre = ?");       
     $com->bind_Param('s', $user);
     $com->execute();
     $com->store_result();
