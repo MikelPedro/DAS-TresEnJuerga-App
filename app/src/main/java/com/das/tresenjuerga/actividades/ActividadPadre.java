@@ -75,6 +75,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
         ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("JugarActivity");
         ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("PantallaFinActivity");
         ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("PreferenciasActivity");
+        ActividadPadre.ACTIVIDADES_SIN_TOOLBAR.add("PerfilActivity");
 
     }
 
