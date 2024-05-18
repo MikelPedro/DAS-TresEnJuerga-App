@@ -90,4 +90,5 @@
     <string name="preferenciasSubtituloTablero">Choose a board style</string>
     <string name="preferenciasDescripcionTablero">What board would you like?</string>
     <string name="miFichaEs">You play as:</string>
+    <string name="sugeridos">Suggested people:</string>
 </resources>

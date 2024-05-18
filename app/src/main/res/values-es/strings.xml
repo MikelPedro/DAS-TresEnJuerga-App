@@ -90,4 +90,5 @@
     <string name="preferenciasSubtituloTablero">Elige un estilo de tablero</string>
     <string name="preferenciasDescripcionTablero">¿Qué tablero quieres?</string>
     <string name="miFichaEs">Juegas como:</string>
+    <string name="sugeridos">Gente sugerida:</string>
 </resources>

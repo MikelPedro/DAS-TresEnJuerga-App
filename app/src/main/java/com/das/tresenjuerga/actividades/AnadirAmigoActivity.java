@@ -1,16 +1,33 @@
 package com.das.tresenjuerga.actividades;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.StateSet;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.util.Log;
+import android.widget.ListView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
+import org.checkerframework.checker.units.qual.A;
+import org.checkerframework.framework.qual.DefaultQualifier;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 public class AnadirAmigoActivity extends ActividadPadre {
 
 
@@ -53,6 +70,10 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
      */
 
+    private Arbol arbolNombres;
+    private ListView laListaDeDisponibles;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +82,22 @@ public class AnadirAmigoActivity extends ActividadPadre {
     }
 
 
+    private void actualizarListaPosiblesVisualmente(ArrayList<String> posibles) {
+
+        ArrayAdapter eladaptador =
+                new ArrayAdapter<String>(AnadirAmigoActivity.this, android.R.layout.simple_list_item_1, posibles);
+        this.laListaDeDisponibles.setAdapter(eladaptador);
+
+    }
+
+    private void actualizarListaPosiblesVisualmente(String[] posibles) {
+
+        ArrayAdapter eladaptador =
+                new ArrayAdapter<String>(AnadirAmigoActivity.this, android.R.layout.simple_list_item_1, posibles);
+        ListView lalista = (ListView) findViewById(R.id.anadirAmigoL_Disponibles);
+        this.laListaDeDisponibles.setAdapter(eladaptador);
+
+    }
 
     @Override
     protected void onStart() {
@@ -72,27 +109,67 @@ public class AnadirAmigoActivity extends ActividadPadre {
         // Dar listener a los botones
         fragmento.findViewById(R.id.añadirAmigoB_Añadir).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.añadirAmigoB_Volver).setOnClickListener(new BotonListener(1));
+        this.laListaDeDisponibles = (ListView) findViewById(R.id.anadirAmigoL_Disponibles);
+        this.laListaDeDisponibles.setBackgroundColor(Color.WHITE);
+
+        String[] datos = {ActividadPadre.obtenerDeIntent("user")};
+        ActividadPadre.peticionAServidor("amistades", 0, datos, new ObservadorDeAmigosFactibles());
 
 
         EditText et = fragmento.findViewById(R.id.añadirAmigoE_User);
-        et.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.i("App", "Se va a cambiar: "+s);
-            }
+        et.addTextChangedListener(new ObservadorDeTexto());
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.i("App", "Nuevo texto: "+charSequence);
-            }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
 
     }
+
+
+
+
+    private class ObservadorDeTexto implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            Log.i("App", "Se va a cambiar: "+s);
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            Log.i("App", "Nuevo texto: "+charSequence);
+
+            ArrayList<String> disponibles = null;
+            if (AnadirAmigoActivity.this.arbolNombres != null) {
+                disponibles = AnadirAmigoActivity.this.arbolNombres.buscarPalabras(charSequence.toString());
+
+
+
+            } else {
+                disponibles = new ArrayList<>();
+            }
+
+
+            AnadirAmigoActivity.this.actualizarListaPosiblesVisualmente(disponibles);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    }
+    private class ObservadorDeAmigosFactibles extends ObservadorDePeticion {
+
+        @Override
+        protected void ejecutarTrasPeticion() {
+
+
+            AnadirAmigoActivity.this.arbolNombres = new Arbol(super.getStringArray("nombres"));
+
+            AnadirAmigoActivity.this.actualizarListaPosiblesVisualmente(super.getStringArray("nombres"));
+
+        }
+    }
+
+
 
 
     private class BotonListener implements View.OnClickListener {
@@ -132,6 +209,8 @@ public class AnadirAmigoActivity extends ActividadPadre {
                     // Status code 0 == Success!
                     ActividadPadre.mostrarToast(R.string.solicitudAñadida);
 
+                    ActividadPadre.recargarActividad();
+
                 } else {
                     // Si status code != 0, algun tipo de error, los mensajes de error están listados en orden en strings.xml por lo que se accede al mensaje correspondiente en forma de array
                     ActividadPadre.mostrarToast(ActividadPadre.getActividadActual().getResources().getIdentifier("errorAmigo"+respuesta, "string", ActividadPadre.getActividadActual().getPackageName()));
@@ -141,5 +220,115 @@ public class AnadirAmigoActivity extends ActividadPadre {
         }
     }
 
+    private class Arbol {
 
+        // Estructura de arbol para navegar los nombres, solo está pensado para añadir elementos
+        // al arbol y buscarlos, no quitarlos
+
+        private Nodo root;
+
+
+        public Arbol(String[] palabras) {
+            this.root = new Nodo("", false);
+
+            for (String palabra : palabras) {
+                this.añadirString(palabra);
+            }
+
+        }
+
+
+
+
+        private void añadirString(String palabra) {
+            this.root.añadirString(palabra, 0);
+        }
+
+        public ArrayList<String> buscarPalabras(String substring) {
+
+            Nodo inicio = this.root.irA(substring, 0);
+
+            ArrayList<String> palabrasValidas = new ArrayList<>();
+
+            if (inicio != null) {
+                inicio.buscarTodasLasPalabrasHijas(palabrasValidas);
+            }
+
+
+
+            return palabrasValidas;
+        }
+
+        private class Nodo {
+
+            public Nodo(String valor, boolean esPalabra) {
+                this.valor = valor;
+                this.hijos = new ArrayList<>();
+                this.nextLetra = new HashMap<>();
+                this.esPalabra = esPalabra;
+            }
+
+            private ArrayList<Nodo> hijos;
+            private HashMap<Character, Integer> nextLetra;
+
+            private boolean esPalabra;
+            private String valor;
+
+
+            private void añadirString(String palabra, int posChar) {
+
+
+                if (posChar == palabra.length()) {
+                    this.esPalabra = true;
+
+                } else {
+
+                    char letra = palabra.charAt(posChar);
+
+                    if (!this.nextLetra.containsKey(letra)) {
+                        this.nextLetra.put(letra, this.hijos.size());
+                        this.hijos.add(new Nodo(palabra.substring(0, posChar+1), false));
+                    }
+
+                    this.hijos.get(this.nextLetra.get(letra)).añadirString(palabra, posChar+1);
+
+                }
+
+
+            }
+
+
+            private Nodo irA(String target, int posChar) {
+
+                if (posChar == target.length()) {
+                    return this;
+                } else if (this.nextLetra.containsKey(target.charAt(posChar))) {
+                    return this.hijos.get(this.nextLetra.get(target.charAt(posChar))).irA(target, posChar + 1);
+                } else {
+                    return null;
+                }
+
+
+            }
+
+
+            private void buscarTodasLasPalabrasHijas(ArrayList<String> palabras) {
+
+                if (this.esPalabra) {
+                    palabras.add(this.valor);
+                }
+
+                for (Nodo hijo : this.hijos) {
+                    hijo.buscarTodasLasPalabrasHijas(palabras);
+                }
+
+            }
+
+
+        }
+
+
+
+
+    }
 }

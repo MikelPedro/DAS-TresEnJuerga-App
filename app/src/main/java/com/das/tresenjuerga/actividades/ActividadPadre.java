@@ -13,8 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -523,11 +525,12 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
                 // Listview en el fragment, decirle que lockee / Unlockee sus botones
 
-                ListaAdapterBase adapter = (ListaAdapterBase) ((ListView)elemento).getAdapter();
+                ListAdapter adapter = ((ListView)elemento).getAdapter();
 
-                if (adapter != null) {
-                    ((ListaAdapterBase)((ListView)elemento).getAdapter()).cambiarEstadoBotones(lock);
+                if (adapter instanceof ListaAdapterBase) {
+                    ((ListaAdapterBase) adapter).cambiarEstadoBotones(lock);
                 }
+
             }
 
         }
