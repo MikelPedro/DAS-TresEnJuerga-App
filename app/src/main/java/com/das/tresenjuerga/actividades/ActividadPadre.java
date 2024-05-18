@@ -40,15 +40,11 @@ import java.util.Locale;
 
 public abstract class ActividadPadre extends AppCompatActivity {
 
-
-
     // Toda actividad que pueda ser ejecutada hereda de esta clase
 
     // Esta clase es abstracta, es decir, no existe una instancia de esta clase en sí porque no representa
     // ninguna pantalla del juego, solo sirve para agrupar funcionalidades comunes de todas las pantallas
     // de la app.
-
-
 
     // TODO: Decorar actividades, están todas creadas ya. Si quereis mover alguna de ellas a la toolbar
     // TODO: Completar locks (bloquear toolbar y botones de BaseAdapters durante locks
@@ -66,7 +62,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
 
     public static ActividadPadre getActividadActual() {return ActividadPadre.actividadEnEjecucion;} // Getter de la actividad
-
 
     private static int fragmento; // el layout que se va a cargar
     private int idContenedor; // el contenedor en el que se va a cargar el layout
@@ -223,11 +218,9 @@ public abstract class ActividadPadre extends AppCompatActivity {
                   Fragment:   activity_uno_portrait / activity_uno_landscape
 
 
-
          Source mapeo name a id -> https://stackoverflow.com/questions/64158273/what-does-getresources-getidentifier-do-in-android
 
          Source getClassName() -> https://stackoverflow.com/questions/6271417/java-get-the-current-class-name
-
 
          */
 
@@ -242,7 +235,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
         // Settear la lectura del nombre de la clase a que justo omita la palabra
         // "Activity" del final
         int charTarget = nombreClase.length() - 8; // No iteramos por la palabra "Activity", los ultimos 8 chars
-
 
         // Iterar por caracteres que no forme la palabra "Activity" del final
         for (int idx = 0; idx < charTarget; idx++ ) {
@@ -273,7 +265,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
         } else {
             nombreLayout = "activity" + nombreActividad + "_portrait"; // dar "activity" delante y "_portrait" detras si portrait
         }
-
 
         // Obtener los ids en int de los recursos respectivos para poder usarlos
 
@@ -332,9 +323,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
                     texto.setTypeface(null, Typeface.BOLD);
                     texto.setTextColor(Color.rgb(38, 186, 240));
 
-
                 }
-
 
             }
 
@@ -383,9 +372,7 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
             }
 
-
         }
-
 
     }
 
@@ -442,7 +429,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
     }
 
 
-
     protected static View obtenerFragmentoOrientacion() {
         return actividadEnEjecucion.getSupportFragmentManager().findFragmentById(actividadEnEjecucion.idContenedor).getView();
     }
@@ -451,10 +437,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
         // Cierra la actividad actual y abre ActividadTarget.
         // Todos los datos del intent de la actividad actual se pasan a la siguiente actividad
-
-
-
-
 
 
 
@@ -471,12 +453,9 @@ public abstract class ActividadPadre extends AppCompatActivity {
             }
         }
 
-
         // Redirigir
         ActividadPadre.actividadEnEjecucion.startActivity(intent);
         ActividadPadre.actividadEnEjecucion.finish();
-
-
 
 
     }
@@ -502,9 +481,6 @@ public abstract class ActividadPadre extends AppCompatActivity {
                 ActividadPadre.cambiarEstadoBotones(false);
             }
         }
-
-
-
 
     }
 
@@ -603,16 +579,12 @@ public abstract class ActividadPadre extends AppCompatActivity {
         // Encolar la tarea para que se ejecute ASAP
         WorkManager.getInstance(actAct).enqueue(otwr);
 
-
-
     }
-
 
     public static void pushearTokenABDYLoggear(String user) {
 
         // Este método vincula el token del móvil con la cuenta en la que se está iniciando sesión
         // Tras esto, se redirige a la actividad de usuario loggeado
-
 
         // Añadir al intent el nombre del usuario registrado
         ActividadPadre.añadirAIntent("user", user);

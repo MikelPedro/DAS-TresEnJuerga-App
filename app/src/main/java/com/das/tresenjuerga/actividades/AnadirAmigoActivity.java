@@ -1,6 +1,10 @@
 package com.das.tresenjuerga.actividades;
 
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,6 +15,9 @@ import android.widget.TextView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class AnadirAmigoActivity extends ActividadPadre {
 
@@ -91,6 +98,7 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
         String[] datos = {ActividadPadre.obtenerDeIntent("user")};
         ActividadPadre.peticionAServidor("amistades", 0, datos, new ObservadorDeAmigosFactibles());
+        Log.d("QUERY", datos[0]);
 
         // Dar listener a los botones
         fragmento.findViewById(R.id.añadirAmigoB_Añadir).setOnClickListener(new BotonListener(0));
@@ -102,10 +110,11 @@ public class AnadirAmigoActivity extends ActividadPadre {
         @Override
         protected void ejecutarTrasPeticion() {
             String[] noSonAmigos = super.getStringArray("nombres");
+            List<String> l = Arrays.asList(noSonAmigos);
+            Observable<String> o = Observable.fromIterable(l);
             // Hacer aquí lo que haga falta con la lista (rxjava)
         }
     }
-
 
     private class BotonListener implements View.OnClickListener {
         private int id;
@@ -120,12 +129,10 @@ public class AnadirAmigoActivity extends ActividadPadre {
                     // El server nos responderá con un status code para ver que ha ocurrido
                     String[] datos = {ActividadPadre.obtenerDeIntent("user"), ((EditText)AnadirAmigoActivity.super.findViewById(R.id.añadirAmigoE_User)).getText().toString()};
                     ActividadPadre.peticionAServidor("amistades", 1, datos, new ObservadorDeAñadirAmigo());
-
                     break;
                 case 1:
                     // Este botón va una interfaz atrás, a la de la lista de amigos
                     ActividadPadre.redirigirAActividad(AmigosActivity.class);
-
 
             }
         }
@@ -150,6 +157,5 @@ public class AnadirAmigoActivity extends ActividadPadre {
             }
         }
     }
-
 
 }
