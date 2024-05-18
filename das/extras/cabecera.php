@@ -1,8 +1,8 @@
 <?php
 
-$DB_SERVER="35.197.255.16"; #la dirección del servidor
+$DB_SERVER="35.241.240.206"; #la dirección del servidor
 $DB_USER="root"; #el usuario para esa base de datos
-$DB_PASS="123456"; #la clave para ese usuario
+$DB_PASS="0KiXKW"; #la clave para ese usuario
 $DB_DATABASE="tresEnRaya"; #la base de datos a la que hay que conectarse
 # Se establece la conexión:
 $conn = mysqli_connect($DB_SERVER, $DB_USER, $DB_PASS, $DB_DATABASE);
@@ -75,11 +75,9 @@ function notificarAFirebase($id, $enviador, $target) {
     
     */
     
-    $url = 'http://35.197.255.16:80/usuarios.php?id=5&&dato1='.strval($target);
-	echo $url;    
+    $url = 'http://35.241.240.206:80/usuarios.php?id=5&&dato1='.strval($target);    
     // Realizar la solicitud GET
     $tokens = file_get_contents($url);
-    echo $tokens;
     $tokens = json_decode($tokens, true);
     
     switch ($id) {
@@ -113,8 +111,7 @@ function notificarAFirebase($id, $enviador, $target) {
             break;    
     }
     
-        
-    
+            
     
     if (!empty($tokens['tokens'])) {
     
@@ -122,21 +119,42 @@ function notificarAFirebase($id, $enviador, $target) {
             'Authorization: key=AAAA4oLSdW0:APA91bHMRr6ABO7ECxWm85-rCeO5uqYdbzxmPRAze97ilEkarz1VQ7QiihP2GDcSHMo5tFF9D2Dq97ktFVJ-uixy08XIZInfZLt-2qi1UtEULW3AamjEwYX5mfeVZPFrx-NUD3J350Ra',
             'Content-Type: application/json'
             );
-        $msg= array(
-            'registration_ids'=> $tokens['tokens'],
+
+        // Los mensajes con id menor a 7 son notificaciones, 7 o más solo son datos
+       // que se interesan recoger si el otro user está en su móvil
+
+        if (intval($id) < 7) {
+                $msg= array(
+                'registration_ids'=> $tokens['tokens'],
         
-                'notification' => array(
-                    'body' => $msgNotif,
-                    'title' => $titulo,
-                    'icon' => 'checkbox_on_background'
-                ),
-                'data' => array(
-                    'id' => $id,
-                    'enviador' => $enviador,
-                    'recibidor' => $target
-                )
-            
-        );
+                    'notification' => array(
+                        'body' => $msgNotif,
+                        'title' => $titulo,
+                        'icon' => 'checkbox_on_background'
+                    ),
+                    'data' => array(
+                        'id' => $id,
+                        'enviador' => $enviador,
+                        'recibidor' => $target
+                    )
+
+       	    );
+ 	} else {
+                $msg = array(
+                'registration_ids'=> $tokens['tokens'],
+
+                    'data' => array(
+                        'id' => $id,
+                        'enviador' => $enviador,
+                        'recibidor' => $target
+                    )
+
+            );
+
+
+	}
+
+
         $msgJSON= json_encode ( $msg);
         
         $ch = curl_init(); #inicializar el handler de curl
@@ -154,10 +172,10 @@ function notificarAFirebase($id, $enviador, $target) {
         $resultado= curl_exec( $ch );
         #cerrar el handler de curl
         curl_close( $ch );
-        echo $resultado;        
-        if (curl_errno($ch)) {
-            print curl_error($ch);
-        }
+//        echo $resultado;        
+//        if (curl_errno($ch)) {
+//            print curl_error($ch);
+//        }
         
         
     }
