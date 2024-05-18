@@ -34,6 +34,9 @@ public class AnadirAmigoActivity extends ActividadPadre {
     /*
         Esta actividad permite introducir el nombre de alguien para poder mandarle una solicitud de amistad.
 
+
+        Según se escribe en el EditText, se enseña la gente disponible que encaja con lo tecleado
+
         La solicitud de amistad falla si:
           - La persona no existe
           - La persona ya es amigo
@@ -41,32 +44,10 @@ public class AnadirAmigoActivity extends ActividadPadre {
           - La persona te ha mandado una solicitud pendiente
           - La persona eres tu mismo
 
+
         Cada caso tiene su toast de error personalizado, así como el mensaje de success
 
 
-
-     */
-
-
-    // TODO: Obtener la lista de gente que pueden ser amigos. (lo de lo ultimo de la teoria) [Mikel]
-
-    /*
-        Para obtener la lista de amigos posibles, usar el siguiente codigo:
-
-
-            private void tuMetodo() {
-                String[] datos = {ActividadPadre.obtenerDeIntent("user")};
-                ActividadPadre.peticionAServidor("amistades", 0, datos, new ObservadorDeAmigosFactibles());
-            }
-
-            private class ObservadorDeAmigosFactibles extends ObservadorDePeticion {
-
-                @Override
-                protected void ejecutarTrasPeticion() {
-                    String[] genteQueNoSonAmigosTuyos = super.getStringArray("nombres");
-                    // Hacer con esa lista de string lo que haga falta
-                }
-            }
 
      */
 
@@ -82,6 +63,8 @@ public class AnadirAmigoActivity extends ActividadPadre {
     }
 
 
+
+    // Métodos que actualizan los listview para poner solo los posibles en la lista
     private void actualizarListaPosiblesVisualmente(ArrayList<String> posibles) {
 
         ArrayAdapter eladaptador =
@@ -109,12 +92,20 @@ public class AnadirAmigoActivity extends ActividadPadre {
         // Dar listener a los botones
         fragmento.findViewById(R.id.añadirAmigoB_Añadir).setOnClickListener(new BotonListener(0));
         fragmento.findViewById(R.id.añadirAmigoB_Volver).setOnClickListener(new BotonListener(1));
+
+
+        // Encontrar el listview y darle un fondo blanco (para que se vea en cualquier estilo)
+
         this.laListaDeDisponibles = (ListView) findViewById(R.id.anadirAmigoL_Disponibles);
         this.laListaDeDisponibles.setBackgroundColor(Color.WHITE);
+
+        // Pedir a server la gente disponible que tenemos para añadir para mostrarlos en el listview despues
 
         String[] datos = {ActividadPadre.obtenerDeIntent("user")};
         ActividadPadre.peticionAServidor("amistades", 0, datos, new ObservadorDeAmigosFactibles());
 
+
+        // Buscar el editText y darle el listener para ir actualizando lo que se va tecleando
 
         EditText et = fragmento.findViewById(R.id.añadirAmigoE_User);
         et.addTextChangedListener(new ObservadorDeTexto());
@@ -130,12 +121,15 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            Log.i("App", "Se va a cambiar: "+s);
+            // NOP
         }
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            Log.i("App", "Nuevo texto: "+charSequence);
+
+
+            // Se ha escrito algo nuevo, buscar en el árbol de gente disponible quienes
+            // matchean con la string introducida hasta ahora
 
             ArrayList<String> disponibles = null;
             if (AnadirAmigoActivity.this.arbolNombres != null) {
@@ -144,6 +138,9 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
 
             } else {
+
+                // Fallback: Si no se ha recibido la respuesta del servidor todavía con los nombres
+                // el arbol no existe, por ahora no mostrar ningún nombre en la lista
                 disponibles = new ArrayList<>();
             }
 
@@ -153,13 +150,17 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
         @Override
         public void afterTextChanged(Editable s) {
-
+            // NOP
         }
     }
     private class ObservadorDeAmigosFactibles extends ObservadorDePeticion {
 
         @Override
         protected void ejecutarTrasPeticion() {
+
+            // Tras recibir la respuesta del servidor con los nombres, darselos al árbol para
+            // que los ordene de manera que se puedan filtrar más fácilmente después
+            // y proceder a mostrar todos esos nombres en la lista de sugeridos
 
 
             AnadirAmigoActivity.this.arbolNombres = new Arbol(super.getStringArray("nombres"));
@@ -209,6 +210,8 @@ public class AnadirAmigoActivity extends ActividadPadre {
                     // Status code 0 == Success!
                     ActividadPadre.mostrarToast(R.string.solicitudAñadida);
 
+
+                    // Se mandó la solicitud, refrescar la actividad para quitarlo de la lista de sugeridos
                     ActividadPadre.recargarActividad();
 
                 } else {
@@ -229,7 +232,10 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
 
         public Arbol(String[] palabras) {
-            this.root = new Nodo("", false);
+
+            // Inicializar el árbol con las palabras del array como válidas
+
+            this.root = new Nodo("");
 
             for (String palabra : palabras) {
                 this.añadirString(palabra);
@@ -241,16 +247,26 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
 
         private void añadirString(String palabra) {
+
+            // Añadir la palabra al árbol
+
             this.root.añadirString(palabra, 0);
         }
 
         public ArrayList<String> buscarPalabras(String substring) {
+
+            // Buscar todas las palabras que empiezan por substring y devolverlas
+
+
+            // Primero, encontrar el nodo que encaja con substring, para buscar a partir de ahí
+            // y no iterar el arbol entero
 
             Nodo inicio = this.root.irA(substring, 0);
 
             ArrayList<String> palabrasValidas = new ArrayList<>();
 
             if (inicio != null) {
+                // Si dicho nodo existe, buscar en todos sus hijos las palabras que existen
                 inicio.buscarTodasLasPalabrasHijas(palabrasValidas);
             }
 
@@ -261,16 +277,18 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
         private class Nodo {
 
-            public Nodo(String valor, boolean esPalabra) {
+            // Cada nodo del árbol, almacena el valor de la string hasta el momento,
+            // así como los pointers a sus sucesores y la letra extra que añaden a la string
+
+            public Nodo(String valor) {
                 this.valor = valor;
                 this.hijos = new ArrayList<>();
                 this.nextLetra = new HashMap<>();
-                this.esPalabra = esPalabra;
+                this.esPalabra = false;
             }
 
             private ArrayList<Nodo> hijos;
             private HashMap<Character, Integer> nextLetra;
-
             private boolean esPalabra;
             private String valor;
 
@@ -278,18 +296,24 @@ public class AnadirAmigoActivity extends ActividadPadre {
             private void añadirString(String palabra, int posChar) {
 
 
+                // Añadir la palabra al árbol
+
                 if (posChar == palabra.length()) {
+                    // Si el nodo encaja con el valor de la palabra, marcarlo como palabra
                     this.esPalabra = true;
 
                 } else {
 
+                    // Si no lo es, buscar la ruta a la siguiente letra
                     char letra = palabra.charAt(posChar);
 
                     if (!this.nextLetra.containsKey(letra)) {
+                        // Si dicha ruta no existe, crear el nodo para crear dicha ruta
                         this.nextLetra.put(letra, this.hijos.size());
-                        this.hijos.add(new Nodo(palabra.substring(0, posChar+1), false));
+                        this.hijos.add(new Nodo(palabra.substring(0, posChar+1)));
                     }
 
+                    // Viajar al nodo de la siguiente letra
                     this.hijos.get(this.nextLetra.get(letra)).añadirString(palabra, posChar+1);
 
                 }
@@ -300,11 +324,16 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
             private Nodo irA(String target, int posChar) {
 
+                // Buscar el nodo que contiene la string "target"
+
                 if (posChar == target.length()) {
+                    // Si es este nodo, devolverlo
                     return this;
                 } else if (this.nextLetra.containsKey(target.charAt(posChar))) {
+                    // Si no lo es pero contiene pointer a la siguiente letra, pedir al siguiente nodo recursivamente la respuesta
                     return this.hijos.get(this.nextLetra.get(target.charAt(posChar))).irA(target, posChar + 1);
                 } else {
+                    // Si no hay letra, no hay ruta a la palabra, return null
                     return null;
                 }
 
@@ -314,11 +343,16 @@ public class AnadirAmigoActivity extends ActividadPadre {
 
             private void buscarTodasLasPalabrasHijas(ArrayList<String> palabras) {
 
+                // Almacenar en el array todas aquellas palabras que existen en el árbol a partir
+                // de este nodo a sus hijos
+
                 if (this.esPalabra) {
+                    // Si este nodo contiene una palabra válida, añadir su palabra al árbol
                     palabras.add(this.valor);
                 }
 
                 for (Nodo hijo : this.hijos) {
+                    // Pedir a todos sus hijos que busquen palabras recursivamente
                     hijo.buscarTodasLasPalabrasHijas(palabras);
                 }
 
