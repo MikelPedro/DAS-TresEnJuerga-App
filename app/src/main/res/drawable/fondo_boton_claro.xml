@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Color de fondo del botón -->
+    <gradient
+        android:startColor="@color/colorClaroBtn"
+        android:endColor="@color/design_default_color_secondary_variant"
+        android:angle="0"
+        />
+    <!-- Esquinas redondeadas del botón -->
+    <corners android:radius="16dp" />
+</shape>

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "972857439597",
+    "project_id": "das2024-417814",
+    "storage_bucket": "das2024-417814.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972857439597:android:847afdacec5cc8df1bd664",
+        "android_client_info": {
+          "package_name": "com.das.tresenjuerga"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFzPBUE1HhHK0SqWesJSEqkYc3IUMVCAE"
+        },
+        {
+          "current_key": "AIzaSyAIQhHR2O6TEF3clV11IxjwqlX4jPMMrUA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972857439597:android:7e2f20788c817aa21bd664",
+        "android_client_info": {
+          "package_name": "com.example.biblioteca"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFzPBUE1HhHK0SqWesJSEqkYc3IUMVCAE"
+        },
+        {
+          "current_key": "AIzaSyAIQhHR2O6TEF3clV11IxjwqlX4jPMMrUA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="idioma">
+        <item>Español</item>
+        <item>Inglés</item>
+    </string-array>
+    <string-array name="estilo">
+        <item>Día</item>
+        <item>Neón</item>
+    </string-array>
+
+    <string-array name="estiloTablero">
+        <item>Pizarra</item>
+        <item>Neón</item>
+        <item>Dibujado</item>
+        <item>Juerga</item>
+
+    </string-array>
+
+
+</resources>

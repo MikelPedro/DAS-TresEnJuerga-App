@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="idiomaKey">
+        <item>es</item>
+        <item>en</item>
+    </string-array>
+    <string-array name="estiloKey">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+
+    <string-array name="estiloTableroKey">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+
+    </string-array>
+
+    <string-array name="idioma">
+        <item>Español</item>
+        <item>Inglés</item>
+    </string-array>
+    <string-array name="estilo">
+        <item>Estilo 1</item>
+        <item>Estilo 2</item>
+    </string-array>
+
+
+
+    <string-array name="estiloTablero">
+        <item>Estilo 1</item>
+        <item>Estilo 2</item>
+        <item>Estilo 3</item>
+        <item>Estilo 4</item>
+
+    </string-array>
+</resources>

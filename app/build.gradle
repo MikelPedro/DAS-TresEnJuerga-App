@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services' // FIREBASE
+
 }
 
 android {
@@ -29,12 +31,22 @@ android {
 }
 
 dependencies {
+    implementation "androidx.work:work-runtime:2.9.0" // PARA WORKER DE CONEXION CON BD REMOTA
+    implementation ('com.googlecode.json-simple:json-simple:1.1.1') // PARA JSON PARSER
+            { exclude group: 'junit', module: 'junit'}
+    implementation platform('com.google.firebase:firebase-bom:32.8.0') // FIREBASE
+
+    implementation 'com.google.firebase:firebase-analytics' // FIREBASE
+    implementation 'com.google.firebase:firebase-messaging:23.4.1' // FIREBASE
 
     implementation 'androidx.work:work-runtime:2.9.0'
     implementation 'com.google.firebase:firebase-messaging:23.4.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.preference:preference:1.2.1'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.12' //RXJAVA
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0' //RXJAVA
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

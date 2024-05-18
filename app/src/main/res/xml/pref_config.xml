@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference
+        app:dialogTitle="@string/preferenciasTituloIdioma"
+        app:entries="@array/idioma"
+        app:entryValues="@array/idiomaKey"
+        app:key="idioma"
+        app:summary="@string/preferenciasDescripcionIdioma"
+        app:title="@string/preferenciasSubtituloIdioma"/>
+    <ListPreference
+        app:dialogTitle="@string/preferenciasTituloEstilo"
+        app:entries="@array/estilo"
+        app:entryValues="@array/estiloKey"
+        app:key="estilo"
+        app:summary="@string/preferenciasDescripcionEstilo"
+        app:title="@string/preferenciasSubtituloEstilo" />
+
+
+    <ListPreference
+        app:dialogTitle="@string/preferenciasTituloTablero"
+        app:entries="@array/estiloTablero"
+        app:entryValues="@array/estiloTableroKey"
+        app:key="estiloTablero"
+        app:summary="@string/preferenciasDescripcionTablero"
+        app:title="@string/preferenciasSubtituloTablero" />
+</PreferenceScreen>
