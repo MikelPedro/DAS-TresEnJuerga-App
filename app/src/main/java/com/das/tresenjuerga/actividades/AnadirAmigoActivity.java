@@ -84,7 +84,7 @@ public class AnadirAmigoActivity extends ActividadPadre {
         // Encontrar el listview y darle un fondo blanco (para que se vea en cualquier estilo)
 
         this.laListaDeDisponibles = (ListView) findViewById(R.id.anadirAmigoL_Disponibles);
-        this.laListaDeDisponibles.setBackgroundColor(Color.WHITE);
+        this.laListaDeDisponibles.setBackgroundColor(Color.GRAY);
 
         // Pedir a server la gente disponible que tenemos para añadir para mostrarlos en el listview despues
 
