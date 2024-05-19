@@ -33,7 +33,6 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
         String recibidor = remoteMessage.getData().get("recibidor");
         String enviador = remoteMessage.getData().get("enviador");
-        System.out.println("Recibido de firebase:" +Integer.parseInt(remoteMessage.getData().get("id"))+", enviador:"+enviador);
 
         // Estamos en la app al recibir el msg de Firebase, crear la notificación
         // (si no estuviera la app abierta, Firebase haría automáticamente este paso)
@@ -228,7 +227,7 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
 
             String titulo = actividadActual.getString(actividadActual.getResources().getIdentifier("notifTitulo"+id, "string", actividadActual.getPackageName()));
-            String body = enviador + ": " + recibidor + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
+            String body = recibidor + ": " + enviador + " "+ actividadActual.getString(actividadActual.getResources().getIdentifier("notif"+id, "string", actividadActual.getPackageName()));
 
             elBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.tres_en_raya))
                     .setSmallIcon(android.R.drawable.checkbox_on_background)
