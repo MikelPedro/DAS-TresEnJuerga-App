@@ -30,8 +30,8 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
 
 
         // Dar los listeners correspondientes a los botones
-        view.findViewById(R.id.instanciaSolicitudB_Aceptar).setOnClickListener(new BotonListener(0));
-        view.findViewById(R.id.instanciaSolicitudB_Rechazar).setOnClickListener(new BotonListener(1));
+        view.findViewById(R.id.instanciaSolicitudB_Aceptar).setOnClickListener(new BotonListener(0, this.nombreSolicitante));
+        view.findViewById(R.id.instanciaSolicitudB_Rechazar).setOnClickListener(new BotonListener(1, this.nombreSolicitante));
 
 
 
@@ -47,14 +47,16 @@ public class ListaAdapterSolicitudes extends ListaAdapterBase {
 
 
         private int id;
-        public BotonListener(int id) {
+        private String nombreSolicitante;
+        public BotonListener(int id, String nombreSolicitante) {
             this.id = id;
+            this.nombreSolicitante = nombreSolicitante;
         }
 
         @Override
         public void onClick(View v) {
 
-            String[] datos = {ActividadPadre.getActividadActual().obtenerDeIntent("user"), ListaAdapterSolicitudes.this.nombreSolicitante};
+            String[] datos = {ActividadPadre.getActividadActual().obtenerDeIntent("user"), this.nombreSolicitante};
 
             switch (this.id) {
                 case 0:

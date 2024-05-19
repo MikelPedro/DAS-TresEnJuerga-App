@@ -58,16 +58,16 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
 
         if (solicitud) {
             // si es una petición, el botón de la izquierda rechaza la petición
-            view.findViewById(R.id.instanciaPartidaB_Rechazar).setOnClickListener(new BotonListener(pos,0));
+            view.findViewById(R.id.instanciaPartidaB_Rechazar).setOnClickListener(new BotonListener(0, this.oponente, this.tuTurno));
             // si es una peticion, el botón de la derecha hace la acción de aceptar
-            botonDer.setOnClickListener(new BotonListener(pos, 1));
+            botonDer.setOnClickListener(new BotonListener(1, this.oponente, this.tuTurno));
             botonDer.setText(R.string.aceptar);
 
         } else {
             // si es una partida en curso, no necesitamos el botón de la izquierda
             view.findViewById(R.id.instanciaPartidaB_Rechazar).setVisibility(View.GONE);
             // si es una partida en curso, el botón de la derecha hace la acción de ver la partida
-            botonDer.setOnClickListener(new BotonListener(pos, 2));
+            botonDer.setOnClickListener(new BotonListener( 2, this.oponente, this.tuTurno));
             botonDer.setText(R.string.entrarAPartida);
 
         }
@@ -84,11 +84,14 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
     private class BotonListener implements View.OnClickListener {
 
 
-        private int pos;
+        private String oponente;
         private int id;
-        public BotonListener(int pos, int id) {
-            this.pos = pos;
+
+        private boolean tuTurno;
+        public BotonListener(int id, String oponente, boolean tuTurno) {
             this.id = id;
+            this.oponente = oponente;
+            this.tuTurno = tuTurno;
         }
 
         @Override
@@ -99,14 +102,14 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
             switch (this.id) {
                 case 0:
                     // Rechazar match, pedir a servidor esto
-                    String[] datosRechazar = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterPartidasDisponibles.this.oponente, "0"};
+                    String[] datosRechazar = {ActividadPadre.obtenerDeIntent("user"), this.oponente, "0"};
                     ActividadPadre.peticionAServidor("partidas", 5, datosRechazar, new ObservadorDeProcesarPeticion());
 
                     break;
 
                 case 1:
                     // Aceptar match, pedir a servidor esto
-                    String[] datosAceptar = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterPartidasDisponibles.this.oponente};
+                    String[] datosAceptar = {ActividadPadre.obtenerDeIntent("user"), this.oponente};
                     ActividadPadre.peticionAServidor("partidas", 1, datosAceptar, new ObservadorDeProcesarPeticion());
 
                     break;
@@ -114,8 +117,8 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
                 case 2:
 
                     // Ver match (redirigir a la interfaz de Jugar9
-                    ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(ListaAdapterPartidasDisponibles.this.tuTurno));
-                    ActividadPadre.añadirAIntent("oponente", ListaAdapterPartidasDisponibles.this.oponente);
+                    ActividadPadre.añadirAIntent("tuTurno", Boolean.toString(this.tuTurno));
+                    ActividadPadre.añadirAIntent("oponente", this.oponente);
                     ActividadPadre.redirigirAActividad(JugarActivity.class);
 
 

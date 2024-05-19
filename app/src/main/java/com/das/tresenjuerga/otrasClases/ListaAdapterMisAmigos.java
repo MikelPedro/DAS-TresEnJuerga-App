@@ -31,13 +31,13 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
 
 
         // Dar los listeners correspondientes a los botones
-        view.findViewById(R.id.instanciaAmigoB_VerInfo).setOnClickListener(new BotonListener(0));
-        view.findViewById(R.id.instanciaAmigoB_Retar).setOnClickListener(new BotonListener(1));
-        view.findViewById(R.id.instanciaAmigoB_Eliminar).setOnClickListener(new BotonListener(2));
+        view.findViewById(R.id.instanciaAmigoB_VerInfo).setOnClickListener(new BotonListener(0, this.amigo));
+        view.findViewById(R.id.instanciaAmigoB_Retar).setOnClickListener(new BotonListener(1, this.amigo));
+        view.findViewById(R.id.instanciaAmigoB_Eliminar).setOnClickListener(new BotonListener(2, this.amigo));
 
 
 
-
+        System.out.println(this.amigo);
 
         return view;
     }
@@ -48,20 +48,21 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
 
 
         private int id;
-        public BotonListener(int id) {
-            this.id = id;
+        private String amigo;
+        public BotonListener(int id, String amigo) {
+            this.id = id; this.amigo = amigo;
         }
 
         @Override
         public void onClick(View v) {
 
-            String[] datos = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo};
-
+            String[] datos = {ActividadPadre.obtenerDeIntent("user"), this.amigo};
+            System.out.println(this.amigo);
 
             switch (this.id) {
                 case 0:
                     // Ver perfil
-                    ActividadPadre.añadirAIntent("userAVisualizar", ListaAdapterMisAmigos.this.amigo);
+                    ActividadPadre.añadirAIntent("userAVisualizar", this.amigo);
                     ActividadPadre.redirigirAActividad(PerfilActivity.class);
                     break;
                 case 1:
@@ -72,7 +73,7 @@ public class ListaAdapterMisAmigos extends ListaAdapterBase{
                     // Borrar amigo, pedir a servidor que borre al usuario de su lista de amigos y su partida relacionada con él
                     ActividadPadre.peticionAServidor("amistades", 4, datos, new ObservadorDeBorrarAmigo());
 
-                    String[] data = {ActividadPadre.obtenerDeIntent("user"), ListaAdapterMisAmigos.this.amigo, "0"};
+                    String[] data = {ActividadPadre.obtenerDeIntent("user"), this.amigo, "0"};
                     ActividadPadre.peticionAServidor("partidas", 5, data, null);
 
 
