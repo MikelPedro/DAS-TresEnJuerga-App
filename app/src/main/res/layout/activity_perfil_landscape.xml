@@ -21,7 +21,7 @@
         android:id="@+id/textView7"
         android:layout_width="86dp"
         android:layout_height="39dp"
-        android:layout_marginStart="112dp"
+        android:layout_marginStart="68dp"
         android:layout_marginTop="60dp"
         android:text="@string/nombre"
         android:textSize="24dp"
@@ -53,21 +53,24 @@
         android:id="@+id/perfilB_CambiarFoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="272dp"
-        android:layout_marginTop="76dp"
+        android:layout_marginEnd="60dp"
         android:text="@string/cambiarFoto"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/perfilT_Nombre" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perfilT_Nombre"
+        app:layout_constraintVertical_bias="0.146" />
 
     <Button
         android:id="@+id/perfilB_Volver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="112dp"
-        android:layout_marginTop="64dp"
         android:text="@string/volver"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/perfilB_CambiarFoto"
+        app:layout_constraintHorizontal_bias="0.515"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:layout_constraintTop_toBottomOf="@+id/textView7"
+        app:layout_constraintVertical_bias="0.128" />
 
     <TextView
         android:id="@+id/textView9"
