@@ -5,29 +5,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.StateSet;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.util.Log;
 import android.widget.ListView;
 
 import com.das.tresenjuerga.R;
 import com.das.tresenjuerga.otrasClases.ObservadorDePeticion;
 
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.framework.qual.DefaultQualifier;
-
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 public class AnadirAmigoActivity extends ActividadPadre {
 
 
@@ -67,7 +54,7 @@ public class AnadirAmigoActivity extends ActividadPadre {
     // Métodos que actualizan los listview para poner solo los posibles en la lista
     private void actualizarListaPosiblesVisualmente(ArrayList<String> posibles) {
 
-        ArrayAdapter eladaptador =
+        ArrayAdapter<String> eladaptador =
                 new ArrayAdapter<String>(AnadirAmigoActivity.this, android.R.layout.simple_list_item_1, posibles);
         this.laListaDeDisponibles.setAdapter(eladaptador);
 
