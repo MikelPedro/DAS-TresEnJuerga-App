@@ -98,6 +98,7 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
         public void onClick(View v) {
 
 
+            String[] datos = {ActividadPadre.obtenerDeIntent("user"), this.oponente};
 
             switch (this.id) {
                 case 0:
@@ -105,12 +106,18 @@ public class ListaAdapterPartidasDisponibles extends ListaAdapterBase {
                     String[] datosRechazar = {ActividadPadre.obtenerDeIntent("user"), this.oponente, "0"};
                     ActividadPadre.peticionAServidor("partidas", 5, datosRechazar, new ObservadorDeProcesarPeticion());
 
+                    // Mandar ping por si el oponente está en la pantalla de revancha de rechazo
+                    ActividadPadre.peticionAServidor("firebase", 0, datos, null);
+
                     break;
 
                 case 1:
                     // Aceptar match, pedir a servidor esto
                     String[] datosAceptar = {ActividadPadre.obtenerDeIntent("user"), this.oponente};
                     ActividadPadre.peticionAServidor("partidas", 1, datosAceptar, new ObservadorDeProcesarPeticion());
+
+                    // Mandar ping por si el oponente está en la pantalla de revancha de acepto
+                    ActividadPadre.peticionAServidor("firebase", 1, datos, null);
 
                     break;
 

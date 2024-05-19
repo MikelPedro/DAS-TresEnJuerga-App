@@ -401,7 +401,7 @@ public class JugarActivity extends ActividadPadre {
 
                 } else {
                     // Cambiar la descripción de la partida para indicar que no es tu turno
-                    ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(R.string.descPartidaTurnoDelOtro) + " " + actividad.figura +".");
+                    ((TextView)actividad.fragmento.findViewById(R.id.partidaT_Descripcion)).setText(actividad.getResources().getString(R.string.descPartidaTurnoDelOtro));
 
                 }
 
