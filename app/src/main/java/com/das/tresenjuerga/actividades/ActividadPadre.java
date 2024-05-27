@@ -129,10 +129,17 @@ public abstract class ActividadPadre extends AppCompatActivity {
 
         // Guardar el bundle para luego recuperarlo tras la rotación del movil
 
-        Bundle bundle = super.getIntent().getExtras();
+        if (super.getIntent() != null) {
 
-        for (String key : bundle.keySet()) {
-            savedInstanceState.putString(key, bundle.getString(key));
+            Bundle bundle = super.getIntent().getExtras();
+
+            if (bundle != null) {
+                for (String key : bundle.keySet()) {
+                    savedInstanceState.putString(key, bundle.getString(key));
+                }
+            }
+
+
         }
 
         super.onSaveInstanceState(savedInstanceState);
